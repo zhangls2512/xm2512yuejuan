@@ -1,0 +1,20 @@
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite build && vite preview"
+  },
+  "dependencies": {
+    "@opentiny/vue": "latest",
+    "js-cookie": "latest",
+    "vue": "latest",
+    "vue-router": "latest"
+  },
+  "devDependencies": {
+    "@opentiny/unplugin-tiny-vue": "latest",
+    "@vitejs/plugin-vue": "latest",
+    "unplugin-auto-import": "latest",
+    "unplugin-vue-components": "latest",
+    "vite": "latest"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "@zhangxm2512/xm2512yuejuan",
+  "version": "1.0.0",
+  "description": "轩铭2512开发的智能阅卷系统。",
+  "keywords": [
+    "xm2512",
+    "yuejuan"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://gitcode.com/zhangls2512/xm2512yuejuan.git"
+  },
+  "license": "MIT",
+  "author": "zls2512",
+  "type": "commonjs",
+  "main": "main.js",
+  "dependencies": {
+    "bcrypt": "latest",
+    "mime-types": "latest",
+    "mongodb": "latest",
+    "sharp": "latest"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
