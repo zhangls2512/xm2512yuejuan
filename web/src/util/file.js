@@ -1,4 +1,4 @@
-export async function readFile() {
+export function readFile() {
   return new Promise((resolve) => {
     const input = document.createElement('input')
     input.type = 'file'
@@ -18,7 +18,7 @@ export async function readFile() {
     input.click()
   })
 }
-export async function readImage() {
+export function readImage() {
   return new Promise((resolve) => {
     const input = document.createElement('input')
     input.type = 'file'
@@ -37,4 +37,24 @@ export async function readImage() {
     }
     input.click()
   })
+}
+export function getImageSize(base64) {
+  return new Promise(resolve => {
+    const img = new Image()
+    img.onload = () => {
+      resolve({
+        width: img.width,
+        height: img.height
+      })
+    }
+    img.src = base64
+  })
+}
+export function createTransparentImage(width, height) {
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  const ctx = canvas.getContext('2d')
+  const base64 = canvas.toDataURL('image/png')
+  return base64
 }

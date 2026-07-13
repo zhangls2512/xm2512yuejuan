@@ -114,7 +114,7 @@ function start(configfilepath) {
         response.end()
       })
     }).listen(readConfig(configfilepath, 'port'))
-    console.log('服务器启动成功，请访问 http://localhost:8080')
+    console.log('服务器启动成功，请访问：http://localhost:8080')
   } catch (err) {
     console.log('服务器启动失败')
     console.log(err.stack)

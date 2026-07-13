@@ -55,9 +55,6 @@ async function get() {
 get()
 async function selectAnswer(index) {
   const content = await readImage()
-  if (!content) {
-    return
-  }
   answer.value.subjectiveQuestionGroup[index].answer = content
 }
 async function submit() {

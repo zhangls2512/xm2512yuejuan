@@ -93,6 +93,10 @@ const router = createRouter({
             {
               path: '/examsubjectanswer',
               component: () => import('/src/pages/examsubjectanswer.vue')
+            },
+            {
+              path: '/mark',
+              component: () => import('/src/pages/mark.vue')
             }
           ]
         }

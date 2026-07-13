@@ -1,6 +1,6 @@
 'use strict'
 exports.main = async (event, configfilepath) => {
-  const { write } = require('../../util/file')
+  const { read, write } = require('../../util/file')
   const { readConfig } = require('../../util/readconfig')
   const db = await (require('../util/db').database(configfilepath))
   const { getImageInfo } = require('../util/image')
@@ -16,7 +16,7 @@ exports.main = async (event, configfilepath) => {
     return {
       errCode: 400,
       errMsg: '请求参数错误',
-      errFix: '传递有效的score参数'
+      errFix: '传递有效的stepScore参数'
     }
   }
   if (!Array.isArray(requestdata.traceImage) || !requestdata.traceImage.every(item => typeof (item) == 'string' && (!item || /^data:image\/\w+;base64,/.test(item)))) {
@@ -114,7 +114,7 @@ exports.main = async (event, configfilepath) => {
       return {
         errCode: 400,
         errMsg: '请求参数错误',
-        errFix: '传递有效的score参数'
+        errFix: '传递有效的stepScore参数'
       }
     }
     const markgroup = examsubjectres.markGroup.find(item => item.questionName.includes(marklogres.questionName))
@@ -135,7 +135,7 @@ exports.main = async (event, configfilepath) => {
       }
     }
     const examgetres = await db.collection('exam').findOne({
-      examId: requestdata.id
+      examId: marklogres.examId
     })
     if (!examgetres) {
       return {
@@ -639,7 +639,7 @@ exports.main = async (event, configfilepath) => {
           })
         }
       }
-      const dir = read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + marklogres.examId + '/' + marklogres.subject + '/marktraceimage/' + marklogres.studentAccount + '/' + marklogres.questionName + '-' + marktype + '-')
+      const dir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + marklogres.examId + '/' + marklogres.subject + '/marktraceimage/' + marklogres.studentAccount + '/' + marklogres.questionName + '-' + marktype + '-'
       for (let i = 0; i < requestdata.traceImage.length; i++) {
         const item = requestdata.traceImage[i]
         write(dir + i, item)

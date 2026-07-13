@@ -33,16 +33,10 @@ if (info) {
 }
 async function selectQuestion() {
   const content = await readImage()
-  if (!content) {
-    return
-  }
   question.value = content
 }
 async function selectAnswer() {
   const content = await readImage()
-  if (!content) {
-    return
-  }
   answer.value = content
 }
 function add() {

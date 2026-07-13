@@ -31,7 +31,7 @@ async function get() {
   data.value = res.data.map(item => {
     const date = new Date(item.examTime)
     item.examTime = [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-')
-    item.normalmarkgroupname = item.normalMarkGroup.map(s => s.name).join('、')
+    item.normalmarkgroupname = item.normalMarkGroupName.join('、')
     item.arbitratemarkgroupname = item.arbitrateMarkGroupName.join('、')
     item.adminmarkgroupname = item.adminMarkGroupName.join('、')
     return item
@@ -45,6 +45,9 @@ async function currentpageChange(t) {
 async function pagesizeChange(t) {
   pagesize.value = t
   get()
+}
+function mark(info) {
+  router.push('/mark?info=' + encode(info))
 }
 </script>
 
@@ -71,7 +74,7 @@ async function pagesizeChange(t) {
           <div v-if="item.normalmarkgroupname != ''" class="cz">
             <div class="spacebetween">
               <div>普通【{{ item.normalmarkgroupname }}】</div>
-              <tiny-button type="success" :disabled="item.markStatus == 'paused'">阅卷</tiny-button>
+              <tiny-button type="success" :disabled="item.markStatus == 'paused'" @click="mark(item)">阅卷</tiny-button>
             </div>
             <div class="line"></div>
           </div>

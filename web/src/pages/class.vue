@@ -45,9 +45,6 @@ async function copy(value) {
 }
 async function newClass() {
   const content = await readFile()
-  if (!content) {
-    return
-  }
   let info
   try {
     info = JSON.parse(content)
@@ -78,9 +75,6 @@ function info(info) {
 }
 async function updateClass(id) {
   const content = await readFile()
-  if (!content) {
-    return
-  }
   let info
   try {
     info = JSON.parse(content)

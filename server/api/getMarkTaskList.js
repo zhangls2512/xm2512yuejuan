@@ -63,7 +63,7 @@ exports.main = async (event, configfilepath) => {
           subject: item.name,
           markStatus: item.markStatus,
           admin: false,
-          normalMarkGroup: [],
+          normalMarkGroupName: [],
           arbitrateMarkGroupName: [],
           adminMarkGroupName: []
         }
@@ -72,10 +72,7 @@ exports.main = async (event, configfilepath) => {
         }
         item.markGroup.forEach(m => {
           if (m.member.map(i => i.account).includes(account.account)) {
-            resultitem.normalMarkGroup.push({
-              name: m.name,
-              quota: m.quota
-            })
+            resultitem.normalMarkGroupName.push(m.name)
           }
           if (m.arbitrator.includes(account.account)) {
             resultitem.arbitrateMarkGroupName.push(m.name)

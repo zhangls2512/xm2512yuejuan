@@ -59,9 +59,6 @@ function newExam() {
 }
 async function newSubject(id) {
   const content = await readFile()
-  if (!content) {
-    return
-  }
   let info
   try {
     info = JSON.parse(content)
@@ -86,9 +83,6 @@ async function newSubject(id) {
 }
 async function updateSubject(id, subject) {
   const content = await readFile()
-  if (!content) {
-    return
-  }
   let info
   try {
     info = JSON.parse(content)
