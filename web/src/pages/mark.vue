@@ -8,6 +8,8 @@ import request from '../util/request'
 const route = useRoute()
 const info = route.query.info
 const data = ref({})
+const type = ref('')
+const markgroupnamearr = ref('')
 const markgroupname = ref('')
 const markgroupfinished = ref(0)
 const markgroupquota = ref(0)
@@ -17,12 +19,19 @@ const traceimage = ref([])
 const markloglist = ref([])
 const marklist = ref([])
 const consistencycheck = ref(false)
+const scorehistory = ref('')
 if (info) {
   try {
-    data.value = decode(info)
-    if (data.value.normalMarkGroupName.length > 0) {
-      markgroupname.value = data.value.normalMarkGroupName[0]
+    const res = decode(info)
+    data.value = res.info
+    type.value = res.type
+    if (res.type == 'normal') {
+      markgroupnamearr.value = data.value.normalMarkGroupName
     }
+    if (res.type == 'arbitrate') {
+      markgroupnamearr.value = data.value.arbitrateMarkGroupName
+    }
+    markgroupname.value = markgroupnamearr.value[0]
     get()
   } catch {
   }
@@ -35,13 +44,14 @@ async function get() {
   markloglist.value = []
   marklist.value = []
   consistencycheck.value = false
+  scorehistory.value = ''
   const res = await request({
     apiPath: '/getMarkTask',
     body: {
       id: data.value.examId,
       subject: data.value.subject,
       name: markgroupname.value,
-      type: 'normal'
+      type: type.value
     }
   })
   answerimage.value = res.data.answerImage
@@ -54,7 +64,15 @@ async function get() {
       doubtful: false
     }
   })
-  consistencycheck.value = res.data.consistencyCheck
+  if (!res.data.consistencyCheck) {
+    consistencycheck.value = false
+  }
+  if (res.data.consistencyCheck) {
+    consistencycheck.value = true
+  }
+  if (res.data.scoreHistory) {
+    scorehistory.value = res.data.scoreHistory
+  }
   for (let i = 0; i < answerimage.value.length; i++) {
     const item = answerimage.value[i]
     if (!item) {
@@ -134,17 +152,27 @@ async function submit() {
       <tiny-breadcrumb-item :to="{ path: '/processingmarktask' }" label="阅卷任务"></tiny-breadcrumb-item>
       <tiny-breadcrumb-item :to="{ path: '/mark' }" label="阅卷"></tiny-breadcrumb-item>
     </tiny-breadcrumb>
+    <div class="sp">
+      <div class="large-bold-text">{{ data.examName }}</div>
+      <tiny-tag type="info">{{ data.examType }}</tiny-tag>
+      <div class="bold-text">时间</div>
+      <div>{{ data.examTime }}</div>
+      <div class="bold-text">科目</div>
+      <div>{{ data.subject }}</div>
+      <div class="bold-text">阅卷类型</div>
+      <div v-if="type == 'normal'">正常</div>
+      <div v-if="type == 'arbitrate'">仲裁</div>
+    </div>
     <div class="spacebetween">
       <div class="cz" style="width:80%">
         <div class="spacebetween">
           <div class="sp">
             <div class="bold-text">题组</div>
             <tiny-base-select v-model="markgroupname" style="width:150px">
-              <tiny-option v-for="item in data.normalMarkGroupName" :value="item"
-                @change="changeselect(item)"></tiny-option>
+              <tiny-option v-for="item in markgroupnamearr" :value="item" @change="changeselect(item)"></tiny-option>
             </tiny-base-select>
-            <div class="bold-text">已阅量/任务量</div>
-            <div>{{ markgroupfinished }}/{{ markgroupquota }}</div>
+            <div v-if="type == 'normal'" class="bold-text">已阅量/任务量</div>
+            <div v-if="type == 'normal'">{{ markgroupfinished }}/{{ markgroupquota }}</div>
           </div>
           <div class="sp">
             <div class="clickwz">阅卷记录</div>
@@ -189,6 +217,27 @@ async function submit() {
           </div>
         </div>
         <tiny-button v-if="markloglist.length > 0" type="success" @click="submit">提交分数</tiny-button>
+        <div v-if="type == 'arbitrate' && scorehistory != ''" class="cz">
+          <div class="large-bold-text">历史分数</div>
+          <div class="sp">
+            <div class="bold-text">一评</div>
+            <div class="cz" style="flex:1">
+              <div v-for="item, index in scorehistory.first">步骤{{ index + 1 }}：{{ item }}</div>
+            </div>
+          </div>
+          <div class="sp">
+            <div class="bold-text">二评</div>
+            <div class="cz" style="flex:1">
+              <div v-for="item, index in scorehistory.second">步骤{{ index + 1 }}：{{ item }}</div>
+            </div>
+          </div>
+          <div v-if="scorehistory.third.length > 0" class="sp">
+            <div class="bold-text">三评</div>
+            <div class="cz" style="flex:1">
+              <div v-for="item, index in scorehistory.third">步骤{{ index + 1 }}：{{ item }}</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

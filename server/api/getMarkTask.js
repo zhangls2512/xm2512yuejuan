@@ -443,7 +443,10 @@ exports.main = async (event, configfilepath) => {
               questionName: {
                 $in: markgroup.questionName
               },
-              consistencyChecked: false
+              consistencyChecked: false,
+              type: {
+                $in: ['first', 'second', 'third']
+              }
             }
           },
           {
@@ -458,7 +461,6 @@ exports.main = async (event, configfilepath) => {
           questionName: {
             $in: markgroup.questionName
           },
-          consistencyChecked: false,
           studentAccount: data[0].studentAccount,
           type: 'system',
           $or: [
@@ -476,7 +478,7 @@ exports.main = async (event, configfilepath) => {
         const result = {
           answerImage: [],
           marklogList: [],
-          consistencyCheck: false
+          consistencyCheck: true
         }
         const marklog = data[0]
         if (!examsubjectres.answerOnline) {
@@ -520,13 +522,12 @@ exports.main = async (event, configfilepath) => {
     }
     if (requestdata.type == 'arbitrate') {
       let data
-      if (examsubjectres.time == 2) {
+      if (markgroup.time == 2) {
         data = await db.collection('marklog').aggregate([
           {
             $match: {
               examId: requestdata.id,
               subject: requestdata.subject,
-              questionName: item,
               type: 'system',
               firstMarkerAccount: {
                 $nin: ['', account.account]
@@ -534,10 +535,16 @@ exports.main = async (event, configfilepath) => {
               secondMarkerAccount: {
                 $nin: ['', account.account]
               },
+              arbitrateMarkerAccount: '',
               questionReason: '',
-              minScoreDiff: {
-                $gt: examsubjectres.subjectiveQuestion.find(q => q.name == item).arbitrateScoreDiff
-              }
+              $or: markgroup.questionName.map(item => {
+                return {
+                  questionName: item,
+                  minScoreDiff: {
+                    $gt: examsubjectres.subjectiveQuestion.find(q => q.name == item).arbitrateScoreDiff
+                  }
+                }
+              })
             }
           },
           {
@@ -547,13 +554,12 @@ exports.main = async (event, configfilepath) => {
           }
         ]).toArray()
       }
-      if (examsubjectres.time == 3) {
+      if (markgroup.time == 3) {
         data = await db.collection('marklog').aggregate([
           {
             $match: {
               examId: requestdata.id,
               subject: requestdata.subject,
-              questionName: markgroup.questionName,
               type: 'system',
               firstMarkerAccount: {
                 $nin: ['', account.account]
@@ -564,10 +570,16 @@ exports.main = async (event, configfilepath) => {
               thirdMarkerAccount: {
                 $nin: ['', account.account]
               },
+              arbitrateMarkerAccount: '',
               questionReason: '',
-              minScoreDiff: {
-                $gt: examsubjectres.subjectiveQuestion.find(q => q.name == item).arbitrateScoreDiff
-              }
+              $or: markgroup.questionName.map(item => {
+                return {
+                  questionName: item,
+                  minScoreDiff: {
+                    $gt: examsubjectres.subjectiveQuestion.find(q => q.name == item).arbitrateScoreDiff
+                  }
+                }
+              })
             }
           },
           {
@@ -584,15 +596,16 @@ exports.main = async (event, configfilepath) => {
           errFix: '无修复建议'
         }
       }
+      const marklog = data[0]
       const result = {
         answerImage: [],
-        marklog: {},
+        marklogList: [],
         scoreHistory: {
-          first: [],
-          second: []
+          first: marklog.firstMarkStepScore,
+          second: marklog.secondMarkStepScore,
+          third: marklog.thirdMarkStepScore
         }
       }
-      const marklog = data[0]
       if (!examsubjectres.answerOnline) {
         const answer = await db.collection('answer').findOne({
           examId: requestdata.id,
@@ -618,16 +631,11 @@ exports.main = async (event, configfilepath) => {
       if (examsubjectres.answerOnline) {
         result.answerImage.push(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/answer/' + marklog.studentAccount + '/' + requestdata.name))
       }
-      result.marklog = {
+      result.marklogList.push({
         id: marklog.marklogId,
         questionName: marklog.questionName,
         stepScore: examsubjectres.subjectiveQuestion.find(item => item.name == marklog.questionName).stepScore
-      }
-      result.scoreHistory.first = marklog.firstMarkStepScore
-      result.scoreHistory.second = marklog.secondMarkStepScore
-      if (examsubjectres.time == 3) {
-        result.scoreHistory.third = marklog.thirdMarkStepScore
-      }
+      })
       return {
         errCode: 0,
         errMsg: '成功',

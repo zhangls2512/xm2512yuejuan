@@ -241,32 +241,34 @@ exports.main = async (event, configfilepath) => {
           finalstepscore = average(marklogres.secondMarkStepScore, requestdata.stepScore)
         }
       }
-      if (!marklogres.firstMarkerAccount && member) {
-        type = 'newfirst'
-        marktype = 'first'
-        finalstepscore = requestdata.stepScore
-      }
-      if (!['', account.account].includes(marklogres.firstMarkerAccount) && !marklogres.secondMarkerAccount && markgroup.time >= 2 && member) {
-        type = 'newsecond'
-        marktype = 'second'
-        const firstsum = sum(marklogres.firstMarkStepScore)
-        const secondsum = sum(requestdata.stepScore)
-        minscorediff = Math.abs(secondsum - firstsum)
-        finalstepscore = average(marklogres.firstMarkStepScore, requestdata.stepScore)
-      }
-      if (!['', account.account].includes(marklogres.firstMarkerAccount) && !['', account.account].includes(marklogres.secondMarkerAccount) && markgroup.time == 3 && marklogres.minScoreDiff > question.arbitrateScoreDiff && member) {
-        type = 'newthird'
-        marktype = 'third'
-        const res = sanping(marklogres.firstMarkStepScore, marklogres.secondMarkStepScore, requestdata.stepScore)
-        minscorediff = res.minscorediff
-        finalstepscore = res.finalstepscore
-      }
-      if (!['', account.account].includes(marklogres.firstMarkerAccount) && !['', account.account].includes(marklogres.secondMarkerAccount) && markgroup.time >= 2 && marklogres.minScoreDiff > question.arbitrateScoreDiff && isarbitrator) {
-        if (!marklogres.thirdMarkerAccount || marklogres.thirdMarkerAccount != account.account) {
-          if (markgroup.time == 2 || (markgroup.time == 3 && marklogres.thirdMarkerAccount)) {
-            type = 'newarbitrate'
-            marktype = 'arbitrate'
-            finalstepscore = requestdata.stepScore
+      if (!type) {
+        if (!marklogres.firstMarkerAccount && member) {
+          type = 'newfirst'
+          marktype = 'first'
+          finalstepscore = requestdata.stepScore
+        }
+        if (!['', account.account].includes(marklogres.firstMarkerAccount) && !marklogres.secondMarkerAccount && markgroup.time >= 2 && member) {
+          type = 'newsecond'
+          marktype = 'second'
+          const firstsum = sum(marklogres.firstMarkStepScore)
+          const secondsum = sum(requestdata.stepScore)
+          minscorediff = Math.abs(secondsum - firstsum)
+          finalstepscore = average(marklogres.firstMarkStepScore, requestdata.stepScore)
+        }
+        if (!['', account.account].includes(marklogres.firstMarkerAccount) && !['', account.account].includes(marklogres.secondMarkerAccount) && markgroup.time == 3 && marklogres.minScoreDiff > question.arbitrateScoreDiff && member) {
+          type = 'newthird'
+          marktype = 'third'
+          const res = sanping(marklogres.firstMarkStepScore, marklogres.secondMarkStepScore, requestdata.stepScore)
+          minscorediff = res.minscorediff
+          finalstepscore = res.finalstepscore
+        }
+        if (!['', account.account].includes(marklogres.firstMarkerAccount) && !['', account.account].includes(marklogres.secondMarkerAccount) && markgroup.time >= 2 && marklogres.minScoreDiff > question.arbitrateScoreDiff && isarbitrator) {
+          if (!marklogres.thirdMarkerAccount || marklogres.thirdMarkerAccount != account.account) {
+            if (markgroup.time == 2 || (markgroup.time == 3 && marklogres.thirdMarkerAccount)) {
+              type = 'newarbitrate'
+              marktype = 'arbitrate'
+              finalstepscore = requestdata.stepScore
+            }
           }
         }
       }
@@ -717,7 +719,7 @@ exports.main = async (event, configfilepath) => {
           markerAccount: account.account,
           type: 'consistencycheck',
           marklogId: [requestdata.id],
-          scoreDiff: [Math.abs(data.totalScore - sum(requestdata.score))]
+          scoreDiff: [Math.abs(data.totalScore - sum(requestdata.stepScore))]
         })
       }
       if (check) {
@@ -730,7 +732,7 @@ exports.main = async (event, configfilepath) => {
         }, {
           $set: {
             marklogId: check.marklogId.concat([requestdata.id]),
-            scoreDiff: check.scoreDiff.concat([Math.abs(data.totalScore - sum(requestdata.score))])
+            scoreDiff: check.scoreDiff.concat([Math.abs(data.totalScore - sum(requestdata.stepScore))])
           }
         })
       }

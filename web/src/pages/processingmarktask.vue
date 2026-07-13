@@ -46,8 +46,12 @@ async function pagesizeChange(t) {
   pagesize.value = t
   get()
 }
-function mark(info) {
-  router.push('/mark?info=' + encode(info))
+function mark(info, type) {
+  const param = {
+    info: info,
+    type: type
+  }
+  router.push('/mark?info=' + encode(param))
 }
 </script>
 
@@ -74,14 +78,16 @@ function mark(info) {
           <div v-if="item.normalmarkgroupname != ''" class="cz">
             <div class="spacebetween">
               <div>普通【{{ item.normalmarkgroupname }}】</div>
-              <tiny-button type="success" :disabled="item.markStatus == 'paused'" @click="mark(item)">阅卷</tiny-button>
+              <tiny-button type="success" :disabled="item.markStatus == 'paused'"
+                @click="mark(item, 'normal')">阅卷</tiny-button>
             </div>
             <div class="line"></div>
           </div>
           <div v-if="item.arbitratemarkgroupname != ''" class="cz">
             <div class="spacebetween">
-              <div>仲裁【{{ item.adminmarkgroupname }}】</div>
-              <tiny-button type="info" :disabled="item.markStatus == 'paused'">仲裁</tiny-button>
+              <div>仲裁【{{ item.arbitratemarkgroupname }}】</div>
+              <tiny-button type="info" :disabled="item.markStatus == 'paused'"
+                @click="mark(item, 'arbitrate')">仲裁</tiny-button>
             </div>
             <div class="line"></div>
           </div>
