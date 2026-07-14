@@ -50,7 +50,7 @@ export function getImageSize(base64) {
     img.src = base64
   })
 }
-export function createTransparentImage(width, height) {
+export function getTransparentImage(width, height) {
   const canvas = document.createElement('canvas')
   canvas.width = width
   canvas.height = height

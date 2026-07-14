@@ -59,7 +59,7 @@ function checkSubjectConfig(requestdata, olddata) {
   }
   const admin = []
   const adminaccount = []
-  const validpermissions = ['dealQuestion', 'getMarkProcess', 'updateScore', 'manageAnswer']
+  const validpermissions = ['dealQuestion', 'getMarkProgress', 'updateScore', 'manageAnswer']
   for (let i = 0; i < requestdata.admin.length; i++) {
     const item = requestdata.admin[i]
     if (typeof (item.account) != 'string' || item.account.length != 36 || !Array.isArray(item.permission) || !item.permission.every(p => validpermissions.includes(p))) {
@@ -382,7 +382,7 @@ function checkSubjectConfig(requestdata, olddata) {
       }
     }
     questionitem.questionName = [...new Set(questionitem.questionName)]
-    const validpermissions = ['dealQuestion', 'getMarkProcess']
+    const validpermissions = ['dealQuestion', 'getMarkProgress']
     const tempadmin = []
     const tempadminaccount = []
     for (let i = 0; i < questionitem.admin.length; i++) {
@@ -450,50 +450,39 @@ function checkSubjectConfig(requestdata, olddata) {
         errFix: '传递有效的markGroup参数'
       }
     }
-    if (questionitem.time == 1) {
-      requestdata.markGroup[i] = {
-        name: questionitem.name,
-        questionName: questionitem.questionName,
-        admin: questionitem.admin,
-        member: tempmember,
-        consistencyCheckPercent: questionitem.consistencyCheckPercent,
-        time: 1
+    if (typeof (questionitem.secondMarkPercent) != 'number' || questionitem.secondMarkPercent <= 0 || questionitem.secondMarkPercent > 1) {
+      return {
+        errCode: 400,
+        errMsg: '请求参数错误',
+        errFix: '传递有效的markGroup参数'
       }
-    } else {
-      if (typeof (questionitem.secondMarkPercent) != 'number' || questionitem.secondMarkPercent <= 0 || questionitem.secondMarkPercent > 1) {
-        return {
-          errCode: 400,
-          errMsg: '请求参数错误',
-          errFix: '传递有效的markGroup参数'
-        }
-      }
-      if (!Array.isArray(questionitem.arbitrator) || !questionitem.arbitrator.every(item => typeof (item) == 'string' && item.length == 36)) {
-        return {
-          errCode: 400,
-          errMsg: '请求参数错误',
-          errFix: '传递有效的markGroup参数'
-        }
-      }
-      const arbitrator = [...new Set(questionitem.arbitrator)]
-      if ([...new Set(tempmember.map(item => item.account).concat(arbitrator))].length < questionitem.time + 1) {
-        return {
-          errCode: 400,
-          errMsg: '请求参数错误',
-          errFix: '传递有效的markGroup参数'
-        }
-      }
-      requestdata.markGroup[i] = {
-        name: questionitem.name,
-        questionName: questionitem.questionName.sort((a, b) => a.localeCompare(b)),
-        admin: questionitem.admin,
-        member: tempmember,
-        consistencyCheckPercent: questionitem.consistencyCheckPercent,
-        time: questionitem.time,
-        secondMarkPercent: questionitem.secondMarkPercent,
-        arbitrator: arbitrator
-      }
-      result.adminAccount = result.adminAccount.concat(arbitrator)
     }
+    if (!Array.isArray(questionitem.arbitrator) || !questionitem.arbitrator.every(item => typeof (item) == 'string' && item.length == 36)) {
+      return {
+        errCode: 400,
+        errMsg: '请求参数错误',
+        errFix: '传递有效的markGroup参数'
+      }
+    }
+    const arbitrator = [...new Set(questionitem.arbitrator)]
+    if ([...new Set(tempmember.map(item => item.account).concat(arbitrator))].length < questionitem.time + 1) {
+      return {
+        errCode: 400,
+        errMsg: '请求参数错误',
+        errFix: '传递有效的markGroup参数'
+      }
+    }
+    requestdata.markGroup[i] = {
+      name: questionitem.name,
+      questionName: questionitem.questionName.sort((a, b) => a.localeCompare(b)),
+      admin: questionitem.admin,
+      member: tempmember,
+      consistencyCheckPercent: questionitem.consistencyCheckPercent,
+      time: questionitem.time,
+      secondMarkPercent: questionitem.secondMarkPercent,
+      arbitrator: arbitrator
+    }
+    result.adminAccount = result.adminAccount.concat(arbitrator)
   }
   if (!checkArrSame([...new Set(requestdata.markGroup.map(item => item.questionName).flat())], result.subjectiveQuestion.map(item => item.name))) {
     return {
@@ -769,7 +758,7 @@ function isCoordValid(coord) {
   return Array.isArray(coord) && coord.length == 4 && coord.every(item => Number.isInteger(item) && item >= 0) && coord[2] > coord[0] && coord[3] > coord[1]
 }
 function isXyValid(xy) {
-  return Array.isArray(xy) && coord.length == 2 && xy.every(item => Number.isInteger(item) && item >= 0)
+  return Array.isArray(xy) && xy.length == 2 && xy.every(item => Number.isInteger(item) && item >= 0)
 }
 module.exports = {
   checkSubjectConfig,

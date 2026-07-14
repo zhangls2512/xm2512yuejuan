@@ -1,0 +1,77 @@
+<script setup>
+document.title = '智能阅卷系统 - 班级管理 - 班级详情'
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { decode } from '../util/code'
+import request from '../util/request'
+const route = useRoute()
+const info = route.query.info
+const data = ref({})
+const markprogress = ref('')
+if (info) {
+  try {
+    data.value = decode(info)
+    if (data.value.source == 'exam') {
+      document.title = '智能阅卷系统 - 考试管理 - 阅卷进度'
+    }
+    if (data.value.source == 'marktask') {
+      document.title = '智能阅卷系统 - 阅卷任务 - 阅卷进度'
+    }
+    get()
+  } catch {
+  }
+}
+async function get() {
+  markprogress.value = ''
+  const res = await request({
+    apiPath: '/getMarkProgress',
+    body: {
+      id: data.value.examId,
+      subject: data.value.subject
+    }
+  })
+  TinyModal.message({
+    message: '获取数据成功',
+    status: 'success'
+  })
+  markprogress.value = res.data
+}
+</script>
+
+<template>
+  <div class="cz">
+    <tiny-breadcrumb>
+      <tiny-breadcrumb-item v-if="data.source == 'exam'" :to="{ path: '/processingexam' }"
+        label="考试管理"></tiny-breadcrumb-item>
+      <tiny-breadcrumb-item v-if="data.source == 'marktask'" :to="{ path: '/processingmarktask' }"
+        label="阅卷任务"></tiny-breadcrumb-item>
+      <tiny-breadcrumb-item :to="{ path: '/dealquestion' }" label="阅卷进度"></tiny-breadcrumb-item>
+    </tiny-breadcrumb>
+    <div class="sp">
+      <div class="large-bold-text">{{ data.examName }}</div>
+      <tiny-tag type="info">{{ data.examType }}</tiny-tag>
+      <div class="bold-text">时间</div>
+      <div>{{ data.examTime }}</div>
+      <div class="bold-text">科目</div>
+      <div>{{ data.subject }}</div>
+    </div>
+    <div><tiny-button type="info" @click="get">刷新</tiny-button></div>
+    <div v-if="markprogress != '' && markprogress.progress != false" class="sp">
+      <div class="bold-text">整体</div>
+      <tiny-progress style="width:50%" stroke-width="12" :percentage="markprogress.progress"></tiny-progress>
+      <div>{{ markprogress.finished }}/{{ markprogress.total }}</div>
+    </div>
+    <div v-if="markprogress != ''" class="bold-text">小题</div>
+    <div v-for="item, index in markprogress.list" v-if="markprogress != ''" class="cz">
+      <div v-if="index > 0" class="line"></div>
+      <div class="sp">
+        <div class="bold-text">{{ item.questionName }}</div>
+        <tiny-progress style="width:50%" stroke-width="12" :percentage="item.progress"></tiny-progress>
+        <div>{{ item.finished }}/{{ item.total }}</div>
+        <div class="cz" style="flex:1">
+          <div v-for="i in item.detail">{{ i.name }}：{{ i.count }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

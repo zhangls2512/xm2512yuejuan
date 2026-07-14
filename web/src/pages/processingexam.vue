@@ -106,6 +106,20 @@ async function updateSubject(id, subject) {
     get()
   }
 }
+async function deleteSubject(id, subject) {
+  await request({
+    apiPath: '/deleteExamSubject',
+    body: {
+      id: id,
+      name: subject
+    }
+  })
+  TinyModal.message({
+    message: '删除成功',
+    status: 'success'
+  })
+  get()
+}
 async function updateMarkStatus(id, subject, markstatus) {
   TinyModal.confirm({
     status: 'info',
@@ -130,28 +144,34 @@ async function updateMarkStatus(id, subject, markstatus) {
     }
   })
 }
-function subjectConfig(info) {
+function config(info) {
   router.push('/examsubjectconfig?info=' + encode(info))
 }
-function subjectAnswer(id, subject) {
+function answer(id, subject) {
   router.push('/examsubjectanswer?info=' + encode({
     examId: id,
     subject: subject
   }))
 }
-async function deleteSubject(id, subject) {
-  await request({
-    apiPath: '/deleteExamSubject',
-    body: {
-      id: id,
-      name: subject
-    }
-  })
-  TinyModal.message({
-    message: '删除成功',
-    status: 'success'
-  })
-  get()
+function markProgress(exam, subject) {
+  router.push('/markprogress?info=' + encode({
+    examId: exam.examId,
+    examName: exam.name,
+    examType: exam.type,
+    examTime: exam.time,
+    subject: subject,
+    source: 'exam'
+  }))
+}
+function dealQuestion(exam, subject) {
+  router.push('/dealquestion?info=' + encode({
+    examId: exam.examId,
+    examName: exam.name,
+    examType: exam.type,
+    examTime: exam.time,
+    subject: subject,
+    source: 'exam'
+  }))
 }
 function updateExam(info) {
   router.push('/updateexam?info=' + encode(info))
@@ -237,8 +257,14 @@ async function endExam(id) {
               </div>
               <div class="sp">
                 <div v-if="subject.markStatus == 'end'" class="footer-text">阅卷已结束。</div>
-                <div class="clickwz" @click="subjectConfig(subject)">查看配置</div>
-                <div v-if="admin == true" class="clickwz" @click="subjectAnswer(item.examId, subject.name)">作答记录</div>
+                <div class="clickwz" @click="config(subject)">查看配置</div>
+                <div v-if="admin == true" class="clickwz" @click="answer(item.examId, subject.name)">作答记录</div>
+                <div v-if="admin == true && subject.markStatus == 'processing'" class="clickwz"
+                  @click="markProgress(item, subject.name)">阅卷进度
+                </div>
+                <div v-if="admin == true && subject.markStatus == 'processing'" class="clickwz"
+                  @click="dealQuestion(item, subject.name)">处理问题卷
+                </div>
               </div>
             </div>
             <tiny-popconfirm title="提示" message="删除成功后无法恢复，确定删除？" type="warning" trigger="hover"

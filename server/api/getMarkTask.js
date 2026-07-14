@@ -535,6 +535,9 @@ exports.main = async (event, configfilepath) => {
               secondMarkerAccount: {
                 $nin: ['', account.account]
               },
+              thirdMarkerAccount: {
+                $ne: account.account
+              },
               arbitrateMarkerAccount: '',
               questionReason: '',
               $or: markgroup.questionName.map(item => {

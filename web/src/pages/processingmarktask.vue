@@ -53,6 +53,26 @@ function mark(info, type) {
   }
   router.push('/mark?info=' + encode(param))
 }
+function markProgress(info) {
+  router.push('/markprogress?info=' + encode({
+    examId: info.examId,
+    examName: info.examName,
+    examType: info.examType,
+    examTime: info.examTime,
+    subject: info.subject,
+    source: 'marktask'
+  }))
+}
+function dealQuestion(info) {
+  router.push('/dealquestion?info=' + encode({
+    examId: info.examId,
+    examName: info.examName,
+    examType: info.examType,
+    examTime: info.examTime,
+    subject: info.subject,
+    source: 'marktask'
+  }))
+}
 </script>
 
 <template>
@@ -94,14 +114,24 @@ function mark(info, type) {
           <div v-if="item.adminmarkgroupname != ''" class="cz">
             <div class="spacebetween">
               <div>题组长【{{ item.adminmarkgroupname }}】</div>
-              <tiny-button type="info" :disabled="item.markStatus == 'paused'">管理</tiny-button>
+              <div class="sp">
+                <tiny-button type="info" :disabled="item.markStatus == 'paused'"
+                  @click="markProgress(item)">阅卷进度</tiny-button>
+                <tiny-button type="warning" :disabled="item.markStatus == 'paused'"
+                  @click="dealQuestion(item)">处理问题卷</tiny-button>
+              </div>
             </div>
             <div class="line"></div>
           </div>
           <div v-if="item.admin == true" class="cz">
             <div class="spacebetween">
               <div>科组长</div>
-              <tiny-button type="info">管理</tiny-button>
+              <div class="sp">
+                <tiny-button type="info" :disabled="item.markStatus == 'paused'"
+                  @click="markProgress(item)">阅卷进度</tiny-button>
+                <tiny-button type="warning" :disabled="item.markStatus == 'paused'"
+                  @click="dealQuestion(item)">处理问题卷</tiny-button>
+              </div>
             </div>
             <div class="line"></div>
           </div>

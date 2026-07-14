@@ -97,6 +97,14 @@ const router = createRouter({
             {
               path: '/mark',
               component: () => import('/src/pages/mark.vue')
+            },
+            {
+              path: '/markprogress',
+              component: () => import('/src/pages/markprogress.vue')
+            },
+            {
+              path: '/dealquestion',
+              component: () => import('/src/pages/dealquestion.vue')
             }
           ]
         }

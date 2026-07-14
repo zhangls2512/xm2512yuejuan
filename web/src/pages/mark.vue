@@ -3,7 +3,7 @@ document.title = '智能阅卷系统 - 阅卷任务 - 阅卷'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { decode } from '../util/code'
-import { createTransparentImage, getImageSize, readImage } from '../util/file'
+import { getTransparentImage, getImageSize, readImage } from '../util/file'
 import request from '../util/request'
 const route = useRoute()
 const info = route.query.info
@@ -20,6 +20,38 @@ const markloglist = ref([])
 const marklist = ref([])
 const consistencycheck = ref(false)
 const scorehistory = ref('')
+const historymarklog = ref([])
+const currentpage = ref(1)
+const pagesize = ref(10)
+const huiping = ref(false)
+const dialog = ref(false)
+const reason = ref('')
+async function getHistoryMarklog() {
+  const res = await request({
+    apiPath: '/getHistoryMarklogList',
+    body: {
+      id: data.value.examId,
+      subject: data.value.subject,
+      name: markgroupname.value,
+      type: type.value,
+      skip: (currentpage.value - 1) * pagesize.value,
+      limit: pagesize.value
+    }
+  })
+  TinyModal.message({
+    message: '获取数据成功',
+    status: 'success'
+  })
+  historymarklog.value = res.data
+}
+async function currentpageChange(t) {
+  currentpage.value = t
+  getHistoryMarklog()
+}
+async function pagesizeChange(t) {
+  pagesize.value = t
+  getHistoryMarklog()
+}
 if (info) {
   try {
     const res = decode(info)
@@ -33,18 +65,38 @@ if (info) {
     }
     markgroupname.value = markgroupnamearr.value[0]
     get()
+    getHistoryMarklog()
   } catch {
   }
 }
 async function get() {
-  markgroupfinished.value = 0
-  markgroupquota.value = 0
+  huiping.value = false
   answerimage.value = []
   traceimage.value = []
   markloglist.value = []
   marklist.value = []
   consistencycheck.value = false
   scorehistory.value = ''
+  const finished = await request({
+    apiPath: '/getHistoryMarklogCount',
+    body: {
+      id: data.value.examId,
+      subject: data.value.subject,
+      name: markgroupname.value,
+      type: type.value
+    }
+  })
+  markgroupfinished.value = finished.count
+  const quota = await request({
+    apiPath: '/getMarkTaskQuota',
+    body: {
+      id: data.value.examId,
+      subject: data.value.subject,
+      name: markgroupname.value,
+      type: type.value
+    }
+  })
+  markgroupquota.value = quota.quota
   const res = await request({
     apiPath: '/getMarkTask',
     body: {
@@ -85,7 +137,7 @@ async function get() {
     }
     if (item) {
       const size = await getImageSize(item)
-      const transparent = await createTransparentImage(size.width, size.height)
+      const transparent = await getTransparentImage(size.width, size.height)
       traceimage.value.push({
         data: transparent,
         transparent: transparent,
@@ -98,6 +150,7 @@ async function get() {
 function changeselect(name) {
   markgroupname.value = name
   get()
+  getHistoryMarklog()
 }
 async function enterfullscreen() {
   await document.documentElement.requestFullscreen()
@@ -139,10 +192,91 @@ async function submit() {
     })
   }
   TinyModal.message({
-    message: '提交分数成功',
+    message: '提交成功',
     status: 'success'
   })
   get()
+  getHistoryMarklog()
+}
+function openDialog() {
+  dialog.value = true
+}
+function closeDialog() {
+  dialog.value = false
+  reason.value = ''
+}
+async function newQuestion() {
+  if (!reason.value) {
+    TinyModal.message({
+      message: '请输入原因',
+      status: 'warning'
+    })
+    return
+  }
+  for (let i = 0; i < marklist.value.length; i++) {
+    const markitem = marklist.value[i]
+    await request({
+      apiPath: '/newQuestionMarklog',
+      body: {
+        id: markloglist.value[i].id,
+        reason: reason.value
+      }
+    })
+  }
+  TinyModal.message({
+    message: '提交成功',
+    status: 'success'
+  })
+  get()
+}
+async function mark(id) {
+  huiping.value = true
+  answerimage.value = []
+  traceimage.value = []
+  markloglist.value = []
+  marklist.value = []
+  consistencycheck.value = false
+  scorehistory.value = ''
+  const res = await request({
+    apiPath: '/getHistoryMarklogInfo',
+    body: {
+      id: id
+    }
+  })
+  answerimage.value = res.data.answerImage
+  markloglist.value = res.data.marklogList
+  marklist.value = res.data.marklogList.map(item => {
+    return {
+      stepScore: item.markStepScore,
+      excellent: item.excellent,
+      typicalMistake: item.typicalMistake,
+      doubtful: item.doubtful
+    }
+  })
+  if (res.data.scoreHistory) {
+    scorehistory.value = res.data.scoreHistory
+  }
+  for (let i = 0; i < res.data.traceImage.length; i++) {
+    const item = res.data.traceImage[i]
+    if (!item) {
+      traceimage.value.push({
+        data: '',
+        transparent: '',
+        width: 0,
+        height: 0
+      })
+    }
+    if (item) {
+      const size = await getImageSize(item)
+      const transparent = await getTransparentImage(size.width, size.height)
+      traceimage.value.push({
+        data: item,
+        transparent: transparent,
+        width: size.width,
+        height: size.height
+      })
+    }
+  }
 }
 </script>
 
@@ -164,18 +298,18 @@ async function submit() {
       <div v-if="type == 'arbitrate'">仲裁</div>
     </div>
     <div class="spacebetween">
-      <div class="cz" style="width:80%">
+      <div class="cz" style="width:55%;height:100%">
         <div class="spacebetween">
           <div class="sp">
             <div class="bold-text">题组</div>
             <tiny-base-select v-model="markgroupname" style="width:150px">
               <tiny-option v-for="item in markgroupnamearr" :value="item" @change="changeselect(item)"></tiny-option>
             </tiny-base-select>
-            <div v-if="type == 'normal'" class="bold-text">已阅量/任务量</div>
-            <div v-if="type == 'normal'">{{ markgroupfinished }}/{{ markgroupquota }}</div>
+            <div class="bold-text">已阅量/任务量</div>
+            <div>{{ markgroupfinished }}/{{ markgroupquota }}</div>
           </div>
           <div class="sp">
-            <div class="clickwz">阅卷记录</div>
+            <div v-if="huiping == true" class="clickwz" @click="get">继续阅卷</div>
             <div v-if="fullscreen == false" class="clickwz" @click="enterfullscreen">全屏阅卷</div>
             <div v-if="fullscreen == true" class="clickwz" @click="exitfullscreen">退出全屏</div>
           </div>
@@ -194,51 +328,84 @@ async function submit() {
           <img v-if="item == ''" src="/errorimage.png"></img>
         </div>
       </div>
-      <div class="cz" style="width:20%">
-        <div v-for="item, index in markloglist" class="cz">
-          <div class="bold-text">{{ item.questionName }}</div>
-          <div v-for="i, j in item.stepScore" class="sp">
-            <div>步骤{{ j + 1 }}</div>
-            <div>
-              <tiny-radio v-for="ii in i" v-model="marklist[index].stepScore[j]" :label="ii">{{ ii }}</tiny-radio>
+      <div class="sp" style="width:40%;height:100%">
+        <div class="cz" style="width:50%;height:100%">
+          <div v-for="item, index in markloglist" class="cz">
+            <div class="bold-text">{{ item.questionName }}</div>
+            <div v-if="item.stepScore.length == 1">
+              <tiny-radio v-for="ii in item.stepScore[0]" v-model="marklist[index].stepScore[0]" :label="ii">{{ ii
+              }}</tiny-radio>
+            </div>
+            <div v-for="i, j in item.stepScore" v-if="item.stepScore.length > 1" class="sp">
+              <div>步骤{{ j + 1 }}</div>
+              <div>
+                <tiny-radio v-for="ii in i" v-model="marklist[index].stepScore[j]" :label="ii">{{ ii }}</tiny-radio>
+              </div>
+            </div>
+            <div class="sp">
+              <div>优秀</div>
+              <tiny-switch v-model="marklist[index].excellent"></tiny-switch>
+            </div>
+            <div class="sp">
+              <div>错误</div>
+              <tiny-switch v-model="marklist[index].typicalMistake"></tiny-switch>
+            </div>
+            <div class="sp">
+              <div>存疑</div>
+              <tiny-switch v-model="marklist[index].doubtful"></tiny-switch>
             </div>
           </div>
           <div class="sp">
-            <div>优秀</div>
-            <tiny-switch v-model="marklist[index].excellent"></tiny-switch>
+            <tiny-button v-if="markloglist.length > 0" type="success" @click="submit">提交</tiny-button>
+            <tiny-button v-if="markloglist.length > 0" type="warning" @click="openDialog">提交问题卷</tiny-button>
           </div>
-          <div class="sp">
-            <div>错误</div>
-            <tiny-switch v-model="marklist[index].typicalMistake"></tiny-switch>
-          </div>
-          <div class="sp">
-            <div>存疑</div>
-            <tiny-switch v-model="marklist[index].doubtful"></tiny-switch>
+          <div v-if="type == 'arbitrate' && scorehistory != ''" class="cz">
+            <div class="large-bold-text">历史分数</div>
+            <div class="sp">
+              <div class="bold-text">一评</div>
+              <div class="cz" style="flex:1">
+                <div v-for="item, index in scorehistory.first">步骤{{ index + 1 }}：{{ item }}</div>
+              </div>
+            </div>
+            <div class="sp">
+              <div class="bold-text">二评</div>
+              <div class="cz" style="flex:1">
+                <div v-for="item, index in scorehistory.second">步骤{{ index + 1 }}：{{ item }}</div>
+              </div>
+            </div>
+            <div v-if="scorehistory.third.length > 0" class="sp">
+              <div class="bold-text">三评</div>
+              <div class="cz" style="flex:1">
+                <div v-for="item, index in scorehistory.third">步骤{{ index + 1 }}：{{ item }}</div>
+              </div>
+            </div>
           </div>
         </div>
-        <tiny-button v-if="markloglist.length > 0" type="success" @click="submit">提交分数</tiny-button>
-        <div v-if="type == 'arbitrate' && scorehistory != ''" class="cz">
-          <div class="large-bold-text">历史分数</div>
+        <div class="cz" style="width:50%;height:100%">
           <div class="sp">
-            <div class="bold-text">一评</div>
-            <div class="cz" style="flex:1">
-              <div v-for="item, index in scorehistory.first">步骤{{ index + 1 }}：{{ item }}</div>
-            </div>
+            <div class="large-bold-text">阅卷记录</div>
+            <tiny-button type="info" @click="getHistoryMarklog">刷新</tiny-button>
           </div>
-          <div class="sp">
-            <div class="bold-text">二评</div>
-            <div class="cz" style="flex:1">
-              <div v-for="item, index in scorehistory.second">步骤{{ index + 1 }}：{{ item }}</div>
-            </div>
-          </div>
-          <div v-if="scorehistory.third.length > 0" class="sp">
-            <div class="bold-text">三评</div>
-            <div class="cz" style="flex:1">
-              <div v-for="item, index in scorehistory.third">步骤{{ index + 1 }}：{{ item }}</div>
-            </div>
-          </div>
+          <tiny-grid :data="historymarklog">
+            <tiny-grid-column field="questionName" title="题号" align="center"></tiny-grid-column>
+            <tiny-grid-column field="totalScore" title="分数" align="center"></tiny-grid-column>
+            <tiny-grid-column field="doubtful" title="存疑" align="center" format-text="boole"></tiny-grid-column>
+            <tiny-grid-column title="操作" align="center">
+              <template #default="{ row }">
+                <tiny-button type="info" @click="mark(row.id)">回评</tiny-button>
+              </template>
+            </tiny-grid-column>
+          </tiny-grid>
+          <tiny-pager mode="number" :current-page="currentpage" :page-size="pagesize" :page-sizes="[5, 10, 15, 20]"
+            :total="markgroupfinished" @current-change="currentpageChange" @size-change="pagesizeChange"></tiny-pager>
         </div>
       </div>
     </div>
+    <tiny-dialog-box class="dialog" :visible="dialog" title="原因" @close="closeDialog">
+      <tiny-input v-model="reason" clearable placeholder="请输入原因"></tiny-input>
+      <template #footer>
+        <tiny-button type="info" @click="newQuestion">提交</tiny-button>
+      </template>
+    </tiny-dialog-box>
   </div>
 </template>
