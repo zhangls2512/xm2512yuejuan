@@ -3,7 +3,7 @@ document.title = '智能阅卷系统 - 考试管理 - 进行中'
 import { ref } from 'vue'
 import cookie from 'js-cookie'
 import { encode } from '../util/code'
-import { readFile } from '../util/file'
+import { readFile, saveFile } from '../util/file'
 import request from '../util/request'
 import router from '../router'
 const admin = ref(false)
@@ -173,6 +173,16 @@ function dealQuestion(exam, subject) {
     source: 'exam'
   }))
 }
+async function getAnswerCsv(exam, subject) {
+  const res = await request({
+    apiPath: '/getAnswerCsv',
+    body: {
+      id: exam.examId,
+      name: subject
+    }
+  })
+  saveFile(res.data, exam.name + '（' + subject + '）小题明细.csv')
+}
 function updateExam(info) {
   router.push('/updateexam?info=' + encode(info))
 }
@@ -257,14 +267,15 @@ async function endExam(id) {
               </div>
               <div class="sp">
                 <div v-if="subject.markStatus == 'end'" class="footer-text">阅卷已结束。</div>
-                <div class="clickwz" @click="config(subject)">查看配置</div>
-                <div v-if="admin == true" class="clickwz" @click="answer(item.examId, subject.name)">作答记录</div>
+                <div v-if="subject.markStatus != 'end'" class="clickwz" @click="config(subject)">查看配置</div>
+                <div v-if="admin == true && subject.markStatus != 'end'" class="clickwz"
+                  @click="answer(item.examId, subject.name)">作答记录</div>
                 <div v-if="admin == true && subject.markStatus == 'processing'" class="clickwz"
-                  @click="markProgress(item, subject.name)">阅卷进度
-                </div>
+                  @click="markProgress(item, subject.name)">阅卷进度</div>
                 <div v-if="admin == true && subject.markStatus == 'processing'" class="clickwz"
-                  @click="dealQuestion(item, subject.name)">处理问题卷
-                </div>
+                  @click="dealQuestion(item, subject.name)">处理问题卷</div>
+                <div v-if="admin == true && subject.markStatus == 'end'" class="clickwz"
+                  @click="getAnswerCsv(item, subject.name)">导出小题明细</div>
               </div>
             </div>
             <tiny-popconfirm title="提示" message="删除成功后无法恢复，确定删除？" type="warning" trigger="hover"

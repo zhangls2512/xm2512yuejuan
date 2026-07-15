@@ -56,22 +56,13 @@ async function pagesizeChange(t) {
         </div>
         <div>时间：{{ item.examTime }}</div>
         <div>科目：{{ item.subject }}</div>
-        <div v-if="item.adminmarkgroupname != '' || item.admin == true" class="line"></div>
-        <div class="cz">
-          <div v-if="item.adminmarkgroupname != ''" class="cz">
-            <div class="spacebetween">
-              <div>题组长【{{ item.adminmarkgroupname }}】</div>
-              <tiny-button type="info" :disabled="item.markStatus == 'paused'">管理</tiny-button>
-            </div>
-            <div class="line"></div>
+        <div v-if="item.admin == true" class="cz">
+          <div class="line"></div>
+          <div class="spacebetween">
+            <div>科组长</div>
+            <tiny-button type="info">工具箱</tiny-button>
           </div>
-          <div v-if="item.admin == true" class="cz">
-            <div class="spacebetween">
-              <div>科组长</div>
-              <tiny-button type="info">工具箱</tiny-button>
-            </div>
-            <div class="line"></div>
-          </div>
+          <div class="line"></div>
         </div>
       </div>
     </div>

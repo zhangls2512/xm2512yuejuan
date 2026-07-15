@@ -730,20 +730,11 @@ function checkArrEqual(a, b) {
   const sb = b.sort()
   return sa.every((item, index) => item == sb[index])
 }
-function arrMaxItem(arr) {
-  let max = arr[0]
-  for (let i = 1; i < arr.length; i++) {
-    if (arr[i] > max) {
-      max = arr[i]
-    }
-  }
-  return max
-}
 function getTotalScoreFromQuestionName(result, name, subject) {
   if (!subject) {
     const questionitem = result.objectiveQuestion.find(item => item.name == name)
     const scorearr = [...new Set(questionitem.correctOptionCountRule.map(item => item.score).concat(questionitem.specialOptionGroupRule.map(item => item.score)))]
-    return arrMaxItem(scorearr)
+    return Math.max(...scorearr)
   }
   if (subject) {
     const stepscore = result.subjectiveQuestion.find(item => item.name == name).stepScore

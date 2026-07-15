@@ -65,7 +65,7 @@ async function get() {
     <div v-for="item, index in markprogress.list" v-if="markprogress != ''" class="cz">
       <div v-if="index > 0" class="line"></div>
       <div class="sp">
-        <div class="bold-text">{{ item.questionName }}</div>
+        <div>{{ item.questionName }}</div>
         <tiny-progress style="width:50%" stroke-width="12" :percentage="item.progress"></tiny-progress>
         <div>{{ item.finished }}/{{ item.total }}</div>
         <div class="cz" style="flex:1">

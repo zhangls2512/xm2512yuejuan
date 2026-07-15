@@ -58,3 +58,14 @@ export function getTransparentImage(width, height) {
   const base64 = canvas.toDataURL('image/png')
   return base64
 }
+export function saveFile(content, filename) {
+  const blob = new Blob([content])
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}

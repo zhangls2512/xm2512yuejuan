@@ -42,6 +42,10 @@ async function get() {
       limit: pagesize.value
     }
   })
+  TinyModal.message({
+    message: '获取数据成功',
+    status: 'success'
+  })
   questionmarklog.value = res.data
 }
 async function currentpageChange(t) {

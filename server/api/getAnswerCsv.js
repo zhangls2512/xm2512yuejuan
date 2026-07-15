@@ -1,7 +1,5 @@
 'use strict'
 exports.main = async (event, configfilepath) => {
-  const { rmdir } = require('../../util/file')
-  const { readConfig } = require('../../util/readconfig')
   const db = await (require('../util/db').database(configfilepath))
   const requestdata = JSON.parse(event.body)
   if (typeof (requestdata.id) != 'string' || requestdata.id.length != 36) {
@@ -11,18 +9,11 @@ exports.main = async (event, configfilepath) => {
       errFix: '传递有效的id参数'
     }
   }
-  if (typeof (requestdata.subject) != 'string' || !requestdata.subject) {
+  if (typeof (requestdata.name) != 'string' || !requestdata.name) {
     return {
       errCode: 400,
       errMsg: '请求参数错误',
-      errFix: '传递有效的subject参数'
-    }
-  }
-  if (typeof (requestdata.studentAccount) != 'string' || requestdata.studentAccount.length != 36) {
-    return {
-      errCode: 400,
-      errMsg: '请求参数错误',
-      errFix: '传递有效的studentAccount参数'
+      errFix: '传递有效的name参数'
     }
   }
   const res = await require('../util/authcheck').main(event.headers, configfilepath)
@@ -56,7 +47,7 @@ exports.main = async (event, configfilepath) => {
     }
     const examsubjectgetres = await db.collection('examsubject').findOne({
       examId: requestdata.id,
-      name: requestdata.subject
+      name: requestdata.name
     })
     if (!examsubjectgetres) {
       return {
@@ -65,10 +56,10 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    if (examsubjectgetres.markStatus == 'end') {
+    if (examsubjectgetres.markStatus != 'end') {
       return {
         errCode: 400,
-        errMsg: '阅卷已结束',
+        errMsg: '阅卷未结束',
         errFix: '无修复建议'
       }
     }
@@ -81,7 +72,7 @@ exports.main = async (event, configfilepath) => {
           errFix: '无修复建议'
         }
       }
-      if (adminexist && !adminexist.permission.includes('manageAnswer')) {
+      if (adminexist && !adminexist.permission.includes('getAnswerCsv')) {
         return {
           errCode: 403,
           errMsg: '无权限',
@@ -89,33 +80,53 @@ exports.main = async (event, configfilepath) => {
         }
       }
     }
-    const deleteres = await db.collection('answer').deleteOne({
-      examId: requestdata.id,
-      subject: requestdata.subject,
-      studentAccount: requestdata.studentAccount
-    })
-    if (deleteres.deletedCount != 0) {
-      if (!examsubjectgetres.answerOnline || (examsubjectgetres.answerOnline && examsubjectgetres.markGroup.length > 0)) {
-        const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject
-        rmdir(rootdir + '/answer/' + requestdata.studentAccount)
-        rmdir(rootdir + '/marktraceimage/' + requestdata.studentAccount)
-      }
-      await db.collection('marklog').deleteMany({
-        examId: requestdata.id,
-        subject: requestdata.subject,
-        studentAccount: requestdata.studentAccount
+    function generatecsv(subject, marklog) {
+      const rows = []
+      const questionnamearr = subject.objectiveQuestion.map(item => item.name).concat(subject.subjectiveQuestion.map(item => item.name))
+      rows.push(['题号'].concat(questionnamearr).join(','))
+      const studentmap = {}
+      marklog.forEach(item => {
+        const student = item.studentAccount;
+        if (!studentmap[student]) {
+          studentmap[student] = {}
+        }
+        const question = subject.objectiveQuestion.find(q => q.name == item.questionName)
+        if (question) {
+          if (item.answer.length == 0) {
+            studentmap[student][item.questionName] = '未选'
+          }
+          if (item.answer.length > 0) {
+            studentmap[student][item.questionName] = item.answer.map(i => question.option[i]).join('')
+          }
+        }
+        if (!question) {
+          studentmap[student][item.questionName] = item.finalTotalScore
+        }
       })
-      return {
-        errCode: 0,
-        errMsg: '成功'
-      }
+      Object.entries(studentmap).forEach(item => {
+        const row = [item[0]]
+        questionnamearr.forEach(i => {
+          const answer = item[1][i]
+          if (!answer) {
+            row.push('-')
+          }
+          if (answer) {
+            row.push(answer)
+          }
+        })
+        rows.push(row.join(','))
+      })
+      return rows.join('\r\n')
     }
-    if (deleteres.deletedCount == 0) {
-      return {
-        errCode: 400,
-        errMsg: '作答不存在',
-        errFix: '无修复建议'
-      }
+    const marklog = await db.collection('marklog').find({
+      examId: requestdata.id,
+      subject: requestdata.name,
+      type: 'system'
+    }).toArray()
+    return {
+      errCode: 0,
+      errMsg: '成功',
+      data: generatecsv(examsubjectgetres, marklog)
     }
   }
 }
