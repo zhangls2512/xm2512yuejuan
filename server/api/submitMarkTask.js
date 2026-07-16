@@ -155,13 +155,6 @@ exports.main = async (event, configfilepath) => {
       return arr.reduce((sum, num) => sum + num, 0)
     }
     if (!requestdata.consistencyCheck) {
-      if (marklogres.thirdMarkerAccount && (marklogres.thirdMarkerAccount != account.account || !member)) {
-        return {
-          errCode: 403,
-          errMsg: '无权限',
-          errFix: '无修复建议'
-        }
-      }
       if (marklogres.arbitrateMarkerAccount && (marklogres.arbitrateMarkerAccount != account.account || !isarbitrator)) {
         return {
           errCode: 403,
@@ -223,10 +216,17 @@ exports.main = async (event, configfilepath) => {
       if (marklogres.secondMarkerAccount == account.account && member) {
         type = 'updatesecond'
         marktype = 'second'
-        const firstsum = sum(marklogres.firstMarkStepScore)
-        const secondsum = sum(requestdata.stepScore)
-        minscorediff = Math.abs(secondsum - firstsum)
-        finalstepscore = average(marklogres.firstMarkStepScore, requestdata.stepScore)
+        if (!marklogres.thirdMarkerAccount) {
+          const firstsum = sum(marklogres.firstMarkStepScore)
+          const secondsum = sum(requestdata.stepScore)
+          minscorediff = Math.abs(secondsum - firstsum)
+          finalstepscore = average(marklogres.firstMarkStepScore, requestdata.stepScore)
+        }
+        if (marklogres.thirdMarkerAccount) {
+          const res = sanping(marklogres.firstMarkStepScore, requestdata.stepScore, marklogres.thirdMarkStepScore)
+          minscorediff = res.minscorediff
+          finalstepscore = res.finalstepscore
+        }
       }
       if (marklogres.firstMarkerAccount == account.account && member) {
         type = 'updatefirst'
@@ -234,11 +234,16 @@ exports.main = async (event, configfilepath) => {
         if (!marklogres.secondMarkerAccount) {
           finalstepscore = requestdata.stepScore
         }
-        if (marklogres.secondMarkerAccount) {
+        if (!marklogres.thirdMarkerAccount) {
           const firstsum = sum(requestdata.stepScore)
           const secondsum = sum(marklogres.secondMarkStepScore)
           minscorediff = Math.abs(secondsum - firstsum)
           finalstepscore = average(marklogres.secondMarkStepScore, requestdata.stepScore)
+        }
+        if (marklogres.thirdMarkerAccount) {
+          const res = sanping(requestdata.stepScore, marklogres.secondMarkStepScore, marklogres.thirdMarkStepScore)
+          minscorediff = res.minscorediff
+          finalstepscore = res.finalstepscore
         }
       }
       if (!type) {
@@ -255,7 +260,7 @@ exports.main = async (event, configfilepath) => {
           minscorediff = Math.abs(secondsum - firstsum)
           finalstepscore = average(marklogres.firstMarkStepScore, requestdata.stepScore)
         }
-        if (!['', account.account].includes(marklogres.firstMarkerAccount) && !['', account.account].includes(marklogres.secondMarkerAccount) && markgroup.time == 3 && marklogres.minScoreDiff > question.arbitrateScoreDiff && member) {
+        if (!['', account.account].includes(marklogres.firstMarkerAccount) && !['', account.account].includes(marklogres.secondMarkerAccount) && markgroup.time == 3 && marklogres.minScoreDiff > question.arbitrateScoreDiff && member && !marklogres.thirdMarkerAccount) {
           type = 'newthird'
           marktype = 'third'
           const res = sanping(marklogres.firstMarkStepScore, marklogres.secondMarkStepScore, requestdata.stepScore)

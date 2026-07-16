@@ -9,7 +9,7 @@ exports.main = async (event, configfilepath) => {
       errFix: '传递有效的id参数'
     }
   }
-  if (typeof (requestdata.name) != 'string' || !requestdata.name || requestdata.name.includes('/') || requestdata.name.length > 255) {
+  if (typeof (requestdata.name) != 'string' || !requestdata.name || requestdata.name.includes('/') || requestdata.name.length > 255 || requestdata.name == '全科') {
     return {
       errCode: 400,
       errMsg: '请求参数错误',

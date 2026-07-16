@@ -119,13 +119,13 @@ async function updateQuestion() {
     <tiny-form>
       <tiny-form-item label="题目">
         <div class="cz">
-          <tiny-button type="info" @click="selectQuestion">选择图片</tiny-button>
+          <div><tiny-button type="info" @click="selectQuestion">选择图片</tiny-button></div>
           <img v-if="question != ''" :src="question"></img>
         </div>
       </tiny-form-item>
       <tiny-form-item label="答案">
         <div class="cz">
-          <tiny-button type="info" @click="selectAnswer">选择图片</tiny-button>
+          <div><tiny-button type="info" @click="selectAnswer">选择图片</tiny-button></div>
           <img v-if="answer != ''" :src="answer"></img>
         </div>
       </tiny-form-item>

@@ -141,7 +141,7 @@ async function submit() {
           <tiny-tag v-if="q.extra == true" type="info">附加题</tiny-tag>
           <img v-if="q.question != ''" :src="q.question"></img>
         </div>
-        <tiny-button type="info" @click="selectAnswer(index)">选择图片</tiny-button>
+        <div><tiny-button type="info" @click="selectAnswer(index)">选择图片</tiny-button></div>
         <img v-if="answer.subjectiveQuestionGroup[index].answer != ''"
           :src="answer.subjectiveQuestionGroup[index].answer"></img>
       </div>

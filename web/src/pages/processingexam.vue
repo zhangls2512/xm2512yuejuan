@@ -248,8 +248,7 @@ async function endExam(id) {
                 <div v-if="admin == true" class="sp">
                   <div v-if="subject.markStatus != 'end'" class="clickwz"
                     @click="updateSubject(item.examId, subject.name)">○
-                    编辑配置
-                  </div>
+                    编辑配置</div>
                   <div v-if="subject.markStatus == 'end'" class="disabledwz">☑ 编辑配置</div>
                   <div class="disabledwz">····</div>
                   <div v-if="subject.markStatus == 'paused'" class="clickwz"
@@ -270,9 +269,9 @@ async function endExam(id) {
                 <div v-if="subject.markStatus != 'end'" class="clickwz" @click="config(subject)">查看配置</div>
                 <div v-if="admin == true && subject.markStatus != 'end'" class="clickwz"
                   @click="answer(item.examId, subject.name)">作答记录</div>
-                <div v-if="admin == true && subject.markStatus == 'processing'" class="clickwz"
+                <div v-if="admin == true && subject.markStatus != 'end'" class="clickwz"
                   @click="markProgress(item, subject.name)">阅卷进度</div>
-                <div v-if="admin == true && subject.markStatus == 'processing'" class="clickwz"
+                <div v-if="admin == true && subject.markStatus != 'end'" class="clickwz"
                   @click="dealQuestion(item, subject.name)">处理问题卷</div>
                 <div v-if="admin == true && subject.markStatus == 'end'" class="clickwz"
                   @click="getAnswerCsv(item, subject.name)">导出小题明细</div>

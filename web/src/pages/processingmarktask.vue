@@ -115,10 +115,8 @@ function dealQuestion(info) {
             <div class="spacebetween">
               <div>题组长【{{ item.adminmarkgroupname }}】</div>
               <div class="sp">
-                <tiny-button type="info" :disabled="item.markStatus == 'paused'"
-                  @click="markProgress(item)">阅卷进度</tiny-button>
-                <tiny-button type="warning" :disabled="item.markStatus == 'paused'"
-                  @click="dealQuestion(item)">处理问题卷</tiny-button>
+                <tiny-button type="info" @click="markProgress(item)">阅卷进度</tiny-button>
+                <tiny-button type="warning" @click="dealQuestion(item)">处理问题卷</tiny-button>
               </div>
             </div>
             <div class="line"></div>
@@ -127,10 +125,8 @@ function dealQuestion(info) {
             <div class="spacebetween">
               <div>科组长</div>
               <div class="sp">
-                <tiny-button type="info" :disabled="item.markStatus == 'paused'"
-                  @click="markProgress(item)">阅卷进度</tiny-button>
-                <tiny-button type="warning" :disabled="item.markStatus == 'paused'"
-                  @click="dealQuestion(item)">处理问题卷</tiny-button>
+                <tiny-button type="info" @click="markProgress(item)">阅卷进度</tiny-button>
+                <tiny-button type="warning" @click="dealQuestion(item)">处理问题卷</tiny-button>
               </div>
             </div>
             <div class="line"></div>

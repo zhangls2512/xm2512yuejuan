@@ -95,7 +95,7 @@ function checkSubjectConfig(requestdata, olddata) {
         errFix: '传递有效的objectiveQuestion参数'
       }
     }
-    if (typeof (questionitem.subject) != 'string') {
+    if (typeof (questionitem.subject) != 'string' || questionitem.subject == '全科') {
       return {
         errCode: 400,
         errMsg: '请求参数错误',
@@ -236,7 +236,7 @@ function checkSubjectConfig(requestdata, olddata) {
         errFix: '传递有效的subjectiveQuestion参数'
       }
     }
-    if (typeof (questionitem.subject) != 'string') {
+    if (typeof (questionitem.subject) != 'string' || questionitem.subject == '全科') {
       return {
         errCode: 400,
         errMsg: '请求参数错误',
