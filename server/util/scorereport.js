@@ -5,10 +5,16 @@ function average(arr) {
   if (arr.length == 0) {
     return 0
   }
-  return Number((arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(2))
+  return fixtwo((arr.reduce((a, b) => a + b, 0) / arr.length))
 }
 function standarddeviation(arr) {
-  return Number((Math.sqrt(arr.reduce((s, x) => s + (x - average(arr)) ** 2, 0) / arr.length)).toFixed(2))
+  if (arr.length == 0) {
+    return 0
+  }
+  return fixtwo(Math.sqrt(arr.reduce((s, x) => s + (x - average(arr)) ** 2, 0) / arr.length))
+}
+function fixtwo(num) {
+  return Number(num.toFixed(2))
 }
 function calcObjectiveScore(config, answer) {
   const specialrules = config.specialOptionGroupRule.map(item => {
@@ -275,6 +281,11 @@ function getScoreReport(subject, classes, marklog, config) {
       jointmap.student[index].jointRank = index + 1
     }
   })
+  if (config.scoreTimes != 1) {
+    jointmap.student.forEach(item => {
+      item.totalScoreWithoutExtra = fixtwo(item.totalScoreWithoutExtra * config.scoreTimes)
+    })
+  }
   const jointstudentscorearr = jointmap.student.map(item => config.fuScoreRules.length > 0 ? item.fuScore : item.totalScoreWithoutExtra)
   jointmap.averageScore = average(jointstudentscorearr)
   jointmap.scoreStandardDeviation = standarddeviation(jointstudentscorearr)
