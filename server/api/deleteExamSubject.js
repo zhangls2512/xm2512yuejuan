@@ -104,7 +104,7 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const scorereportgetres = await db.collection('scorereport').findOne({
+    const scorereportgetres = await db.collection('scorereportconfig').findOne({
       examId: requestdata.id,
       subject: requestdata.name
     })

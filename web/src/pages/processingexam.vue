@@ -135,10 +135,18 @@ async function updateMarkStatus(id, subject, markstatus) {
             markStatus: markstatus
           }
         })
-        TinyModal.message({
-          message: '操作成功',
-          status: 'success'
-        })
+        if (markstatus != 'end') {
+          TinyModal.message({
+            message: '操作成功',
+            status: 'success'
+          })
+        }
+        if (markstatus == 'end') {
+          TinyModal.message({
+            message: '操作成功。成绩报告正在后台生成，请耐心等待',
+            status: 'success'
+          })
+        }
         get()
       }
     }

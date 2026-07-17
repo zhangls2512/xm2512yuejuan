@@ -59,7 +59,7 @@ async function login() {
         <div class="title">登录</div>
         <tiny-form>
           <tiny-form-item label="账号">
-            <tiny-input v-model="account" clearable minlength="8" maxlength="36" autocomplete="username"
+            <tiny-input v-model="account" clearable minlength="36" maxlength="36" autocomplete="username"
               placeholder="请输入账号"></tiny-input>
           </tiny-form-item>
           <tiny-form-item label="密码">

@@ -115,7 +115,7 @@ exports.main = async (event, configfilepath) => {
       }
     })
     if (requestdata.markStatus == 'end') {
-      //生成成绩报告
+      require('../util/scorereport').generateDefaultScoreReport(examgetres, examsubjectgetres, configfilepath)
     }
     return {
       errCode: 0,
