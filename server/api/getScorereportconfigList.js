@@ -67,14 +67,14 @@ exports.main = async (event, configfilepath) => {
       examId: requestdata.id,
       name: requestdata.subject
     })
-    if (!examsubjectgetres) {
-      return {
-        errCode: 400,
-        errMsg: '科目不存在',
-        errFix: '无修复建议'
-      }
-    }
     if (requestdata.subject != '多学科') {
+      if (!examsubjectgetres) {
+        return {
+          errCode: 400,
+          errMsg: '科目不存在',
+          errFix: '无修复建议'
+        }
+      }
       if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
         const adminexist = examsubjectgetres.admin.find(item => item.account == account.account)
         if (!adminexist) {
@@ -94,7 +94,8 @@ exports.main = async (event, configfilepath) => {
       }
     }
     const data = await db.collection('scorereportconfig').find({
-      examId: requestdata.id
+      examId: requestdata.id,
+      subject: requestdata.subject
     }, {
       projection: {
         _id: false,

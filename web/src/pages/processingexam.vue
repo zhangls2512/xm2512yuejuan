@@ -244,6 +244,7 @@ async function endExam(id) {
           </div>
           <div class="sp">
             <tiny-button type="success" @click="newSubject(item.examId)">新增科目</tiny-button>
+            <tiny-button type="info" @click="scorereportconfig(item.examId, '多学科')">多学科成绩报告配置</tiny-button>
             <tiny-button type="info" @click="updateExam(item)">修改</tiny-button>
             <tiny-popconfirm title="提示" message="删除成功后无法恢复，确定删除？" type="warning" trigger="hover"
               @confirm="deleteExam(item.examId)">
