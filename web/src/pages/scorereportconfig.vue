@@ -87,8 +87,8 @@ async function deleteScorereportconfig(id) {
           </div>
           <div class="sp">
             <tiny-button type="info" @click="updateScorereportconfig(item)">修改</tiny-button>
-            <tiny-popconfirm title="提示" message="删除成功后无法恢复，确定删除？" type="warning" trigger="hover"
-              @confirm="deleteScorereportconfig(item.scorereportconfigId)">
+            <tiny-popconfirm v-if="item.type == 'custom'" title="提示" message="删除成功后无法恢复，确定删除？" type="warning"
+              trigger="hover" @confirm="deleteScorereportconfig(item.scorereportconfigId)">
               <template #reference>
                 <tiny-button type="danger">删除</tiny-button>
               </template>

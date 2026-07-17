@@ -86,7 +86,7 @@ exports.main = async (event, configfilepath) => {
             errFix: '无修复建议'
           }
         }
-        if (adminexist && !adminexist.permission.includes('updateMarkStatus')) {
+        if (adminexist && !adminexist.permission.includes('manageScorereportconfig')) {
           return {
             errCode: 403,
             errMsg: '无权限',
