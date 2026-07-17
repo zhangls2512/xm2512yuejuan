@@ -46,13 +46,6 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    if (examgetres.schoolId && account.schoolId != examgetres.schoolId) {
-      return {
-        errCode: 403,
-        errMsg: '无权限',
-        errFix: '无修复建议'
-      }
-    }
     const examsubjectgetres = await db.collection('examsubject').findOne({
       examId: requestdata.id,
       name: requestdata.subject

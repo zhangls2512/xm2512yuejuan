@@ -63,6 +63,32 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
+    if (adminaccount.length > 0) {
+      let validadmins = []
+      if (!account.schoolId) {
+        validadmins = await db.collection('account').find({
+          type: {
+            $ne: 'student'
+          }
+        }).toArray()
+      }
+      if (account.schoolId) {
+        validadmins = await db.collection('account').find({
+          schoolId: account.schoolId,
+          type: {
+            $ne: 'student'
+          }
+        }).toArray()
+      }
+      validadmins = validadmins.map(item => item.account)
+      if (adminaccount.some(item => !validadmins.includes(item))) {
+        return {
+          errCode: 400,
+          errMsg: '请求参数错误',
+          errFix: '传递有效的admin参数'
+        }
+      }
+    }
     await db.collection('exam').insertOne({
       schoolId: account.schoolId,
       examId: crypto.randomUUID(),

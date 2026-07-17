@@ -55,13 +55,34 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
+    const student = [...new Set(requestdata.student)]
+    const teacher = [...new Set(allteacher)]
+    const accountres = await db.collection('account').find({
+      schoolId: account.schoolId
+    }).toArray()
+    const validstudents = accountres.filter(item => item.type == 'student').map(item => item.account)
+    if (student.some(item => !validstudents.includes(item))) {
+      return {
+        errCode: 400,
+        errMsg: '请求参数错误',
+        errFix: '传递有效的student参数'
+      }
+    }
+    const validteachers = accountres.filter(item => item.type == 'teacher').map(item => item.account)
+    if (teacher.some(item => !validteachers.includes(item))) {
+      return {
+        errCode: 400,
+        errMsg: '请求参数错误',
+        errFix: '传递有效的subject参数'
+      }
+    }
     await db.collection('class').insertOne({
       schoolId: account.schoolId,
       classId: crypto.randomUUID(),
       name: requestdata.name,
-      student: [...new Set(requestdata.student)],
+      student: student,
       subject: subject,
-      teacherAccount: [...new Set(allteacher)]
+      teacherAccount: teacher
     })
     return {
       errCode: 0,

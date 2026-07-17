@@ -38,13 +38,6 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    if (examgetres.schoolId && account.schoolId != examgetres.schoolId) {
-      return {
-        errCode: 403,
-        errMsg: '无权限',
-        errFix: '无修复建议'
-      }
-    }
     if (examgetres.end) {
       return {
         errCode: 400,
@@ -96,6 +89,51 @@ exports.main = async (event, configfilepath) => {
     if (checkres.errCode != 0) {
       return checkres
     } else {
+      if (checkres.data.class.length > 0) {
+        let validclass = []
+        if (!examgetres.schoolId) {
+          validclass = await db.collection('class').find({}).toArray()
+        }
+        if (examgetres.schoolId) {
+          validclass = await db.collection('class').find({
+            schoolId: account.schoolId
+          }).toArray()
+        }
+        validclass = validadmins.map(item => item.classId)
+        if (checkres.data.class.some(item => !validclass.includes(item))) {
+          return {
+            errCode: 400,
+            errMsg: '请求参数错误',
+            errFix: '传递有效的class参数'
+          }
+        }
+      }
+      if (checkres.data.adminAccount.length > 0) {
+        let validadmins = []
+        if (!examgetres.schoolId) {
+          validadmins = await db.collection('account').find({
+            type: {
+              $ne: 'student'
+            }
+          }).toArray()
+        }
+        if (examgetres.schoolId) {
+          validadmins = await db.collection('account').find({
+            schoolId: account.schoolId,
+            type: {
+              $ne: 'student'
+            }
+          }).toArray()
+        }
+        validadmins = validadmins.map(item => item.account)
+        if (checkres.data.adminAccount.some(item => !validadmins.includes(item))) {
+          return {
+            errCode: 400,
+            errMsg: '请求参数错误',
+            errFix: '传递有效的参数'
+          }
+        }
+      }
       if (!checkres.data.answerOnline) {
         await db.collection('examsubject').updateOne({
           examId: requestdata.id,

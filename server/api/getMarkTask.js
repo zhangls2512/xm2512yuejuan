@@ -102,23 +102,6 @@ exports.main = async (event, configfilepath) => {
         }
       }
     }
-    const examgetres = await db.collection('exam').findOne({
-      examId: requestdata.id
-    })
-    if (!examgetres) {
-      return {
-        errCode: 400,
-        errMsg: '考试不存在',
-        errFix: '无修复建议'
-      }
-    }
-    if (examgetres.schoolId && examgetres.schoolId != account.schoolId) {
-      return {
-        errCode: 403,
-        errMsg: '无权限',
-        errFix: '无修复建议'
-      }
-    }
     if (requestdata.type == 'normal') {
       const quota = [Infinity, 0]
       const count = await db.collection('marklog').countDocuments({

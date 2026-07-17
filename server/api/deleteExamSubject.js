@@ -40,13 +40,6 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    if (examgetres.schoolId && account.schoolId != examgetres.schoolId) {
-      return {
-        errCode: 403,
-        errMsg: '无权限',
-        errFix: '无修复建议'
-      }
-    }
     if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
       const adminexist = examgetres.admin.find(item => item.account == account.account)
       if (!adminexist) {

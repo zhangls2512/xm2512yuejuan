@@ -136,13 +136,6 @@ exports.main = async (event, configfilepath) => {
       const examgetres = await db.collection('exam').findOne({
         examId: requestdata.id
       })
-      if (examgetres.schoolId && account.schoolId != examgetres.schoolId) {
-        return {
-          errCode: 403,
-          errMsg: '无权限',
-          errFix: '无修复建议'
-        }
-      }
       if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
         const adminexist = data.admin.find(item => item.account == account.account)
         if (!adminexist) {
@@ -374,16 +367,6 @@ exports.main = async (event, configfilepath) => {
         student: account.account
       })
       if (!classids.some(item => data.class.includes(item))) {
-        return {
-          errCode: 403,
-          errMsg: '无权限',
-          errFix: '无修复建议'
-        }
-      }
-      const examgetres = await db.collection('exam').findOne({
-        examId: requestdata.id
-      })
-      if (examgetres.schoolId && account.schoolId != examgetres.schoolId) {
         return {
           errCode: 403,
           errMsg: '无权限',
