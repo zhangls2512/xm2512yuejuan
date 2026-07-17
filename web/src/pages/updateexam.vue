@@ -14,28 +14,24 @@ const account = ref('')
 const accountpermission = ref([])
 const permission = ref([
   {
-    value: 'endExam',
-    label: '结束考试'
+    value: 'updateExamEndStatus',
+    label: '结束、重启考试'
   },
   {
-    value: 'restartExam',
-    label: '重启考试'
-  },
-  {
-    value: 'updateExam',
-    label: '修改考试'
+    value: 'updateExamInfo',
+    label: '修改考试信息'
   },
   {
     value: 'deleteExam',
     label: '删除考试'
   },
   {
-    value: 'newSubject',
-    label: '新增科目'
+    value: 'manageSubject',
+    label: '管理科目'
   },
   {
-    value: 'deleteSubject',
-    label: '删除科目'
+    value: 'manageScorereportconfig',
+    label: '管理多学科成绩报告配置'
   }
 ])
 const route = useRoute()

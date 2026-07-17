@@ -39,7 +39,7 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    if (admin && !admin.permission.includes('restartExam')) {
+    if (admin && !admin.permission.includes('updateExamEndStatus')) {
       return {
         errCode: 403,
         errMsg: '无权限',

@@ -191,6 +191,12 @@ async function getAnswerCsv(exam, subject) {
   })
   saveFile(res.data, exam.name + '（' + subject + '）小题明细.csv')
 }
+function scorereportconfig(examid, subject) {
+  router.push('/scorereportconfig?info=' + encode({
+    examId: examid,
+    subject: subject
+  }))
+}
 function updateExam(info) {
   router.push('/updateexam?info=' + encode(info))
 }
@@ -283,6 +289,8 @@ async function endExam(id) {
                   @click="dealQuestion(item, subject.name)">处理问题卷</div>
                 <div v-if="admin == true && subject.markStatus == 'end'" class="clickwz"
                   @click="getAnswerCsv(item, subject.name)">导出小题明细</div>
+                <div v-if="admin == true && subject.markStatus == 'end'" class="clickwz"
+                  @click="scorereportconfig(item.examId, subject.name)">成绩报告配置</div>
               </div>
             </div>
             <tiny-popconfirm title="提示" message="删除成功后无法恢复，确定删除？" type="warning" trigger="hover"

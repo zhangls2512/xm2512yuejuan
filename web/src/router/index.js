@@ -105,6 +105,10 @@ const router = createRouter({
             {
               path: '/dealquestion',
               component: () => import('/src/pages/dealquestion.vue')
+            },
+            {
+              path: '/scorereportconfig',
+              component: () => import('/src/pages/scorereportconfig.vue')
             }
           ]
         }

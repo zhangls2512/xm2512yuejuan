@@ -33,7 +33,7 @@ exports.main = async (event, configfilepath) => {
   }
   const admin = []
   const adminaccount = []
-  const validpermissions = ['endExam', 'restartExam', 'updateExam', 'deleteExam', 'newSubject', 'deleteSubject']
+  const validpermissions = ['updateExamEndStatus', 'updateExamInfo', 'deleteExam', 'manageSubject', 'manageScorereportconfig']
   for (let i = 0; i < requestdata.admin.length; i++) {
     const item = requestdata.admin[i]
     if (typeof (item.account) != 'string' || item.account.length != 36 || !Array.isArray(item.permission) || !item.permission.every(p => validpermissions.includes(p))) {

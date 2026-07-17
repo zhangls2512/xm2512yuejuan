@@ -49,7 +49,7 @@ exports.main = async (event, configfilepath) => {
           errFix: '无修复建议'
         }
       }
-      if (adminexist && !adminexist.permission.includes('deleteSubject')) {
+      if (adminexist && !adminexist.permission.includes('manageSubject')) {
         return {
           errCode: 403,
           errMsg: '无权限',

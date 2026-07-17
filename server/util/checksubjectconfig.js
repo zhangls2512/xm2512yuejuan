@@ -59,7 +59,7 @@ function checkSubjectConfig(requestdata, olddata) {
   }
   const admin = []
   const adminaccount = []
-  const validpermissions = ['dealQuestion', 'getMarkProgress', 'updateScore', 'manageAnswer']
+  const validpermissions = ['dealQuestion', 'getMarkProgress', 'updateScore', 'manageAnswer', 'manageScorereportconfig', 'getAnswerCsv', 'updateConfig']
   for (let i = 0; i < requestdata.admin.length; i++) {
     const item = requestdata.admin[i]
     if (typeof (item.account) != 'string' || item.account.length != 36 || !Array.isArray(item.permission) || !item.permission.every(p => validpermissions.includes(p))) {
@@ -95,7 +95,7 @@ function checkSubjectConfig(requestdata, olddata) {
         errFix: '传递有效的objectiveQuestion参数'
       }
     }
-    if (typeof (questionitem.subject) != 'string' || questionitem.subject == '全科') {
+    if (typeof (questionitem.subject) != 'string' || questionitem.subject == '多学科') {
       return {
         errCode: 400,
         errMsg: '请求参数错误',
@@ -236,7 +236,7 @@ function checkSubjectConfig(requestdata, olddata) {
         errFix: '传递有效的subjectiveQuestion参数'
       }
     }
-    if (typeof (questionitem.subject) != 'string' || questionitem.subject == '全科') {
+    if (typeof (questionitem.subject) != 'string' || questionitem.subject == '多学科') {
       return {
         errCode: 400,
         errMsg: '请求参数错误',

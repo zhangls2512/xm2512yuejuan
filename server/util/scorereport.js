@@ -465,19 +465,20 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
   }).toArray()
   for (let i = 0; i < subjects.length; i++) {
     const item = subjects[i]
-    let scoreconfigid = ''
-    const scoreconfig = await db.collection('scorereportconfig').findOne({
+    let scorereportconfigid = ''
+    const scorereportconfig = await db.collection('scorereportconfig').findOne({
       examId: exam.examId,
       subject: item.name,
       type: 'system'
     })
-    if (!scoreconfig) {
-      scoreconfigid = crypto.randomUUID()
+    if (!scorereportconfig) {
+      scorereportconfigid = crypto.randomUUID()
       await db.collection('scorereportconfig').insertOne({
         examId: exam.examId,
         subject: item.name,
         type: 'system',
-        scoreconfigId: scoreconfigid,
+        scorereportconfigId: scorereportconfigid,
+        config: item.config,
         studentVisible: true,
         classTeacherVisible: true,
         jointVisibleAccount: [],
@@ -485,15 +486,15 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
         classVisibleAccount: []
       })
     }
-    if (scoreconfig) {
-      scoreconfigid = scoreconfig.scoreconfigId
+    if (scorereportconfig) {
+      scorereportconfigid = scorereportconfig.scorereportconfigId
     }
     const scorereport = getScoreReport(subject, classes, marklog, item.config)
     await db.collection('scorereport').deleteMany({
-      scoreconfigId: scoreconfigid
+      scorereportconfigId: scorereportconfigid
     })
     await db.collection('scorereport').insertOne({
-      scoreconfigId: scoreconfigid,
+      scorereportconfigId: scorereportconfigid,
       type: 'joint',
       question: scorereport.joint.question,
       student: scorereport.joint.student,
@@ -503,7 +504,7 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
     for (let j = 0; j < scorereport.school.length; j++) {
       const school = scorereport.school[j]
       await db.collection('scorereport').insertOne({
-        scoreconfigId: scoreconfigid,
+        scorereportconfigId: scorereportconfigid,
         type: 'school',
         schoolId: school.schoolId,
         question: school.question,
@@ -515,7 +516,7 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
     for (let j = 0; j < scorereport.class.length; j++) {
       const classitem = scorereport.class[j]
       await db.collection('scorereport').insertOne({
-        scoreconfigId: scoreconfigid,
+        scorereportconfigId: scorereportconfigid,
         type: 'class',
         classId: classitem.classId,
         question: classitem.question,
