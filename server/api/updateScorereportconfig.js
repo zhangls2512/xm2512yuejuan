@@ -136,21 +136,21 @@ exports.main = async (event, configfilepath) => {
             errFix: '传递有效的config参数'
           }
         }
-        if (typeof (ruleitem.radio) != 'number' || ruleitem.radio <= 0 || ruleitem.radio > 1) {
+        if (typeof (ruleitem.ratio) != 'number' || ruleitem.ratio <= 0 || ruleitem.ratio > 1) {
           return {
             errCode: 400,
             errMsg: '请求参数错误',
             errFix: '传递有效的config参数'
           }
         }
-        if (i > 0 && ruleitem.radio < requestdata.config.fuScoreRule[i - 1].radio) {
+        if (i > 0 && ruleitem.ratio < requestdata.config.fuScoreRule[i - 1].ratio) {
           return {
             errCode: 400,
             errMsg: '请求参数错误',
             errFix: '传递有效的config参数'
           }
         }
-        if (i == requestdata.config.fuScoreRule.length - 1 && ruleitem.radio != 1) {
+        if (i == requestdata.config.fuScoreRule.length - 1 && ruleitem.ratio != 1) {
           return {
             errCode: 400,
             errMsg: '请求参数错误',
@@ -187,7 +187,7 @@ exports.main = async (event, configfilepath) => {
         }
         config.fuScoreRule.push({
           level: ruleitem.level,
-          radio: ruleitem.radio,
+          ratio: ruleitem.ratio,
           max: ruleitem.max,
           min: ruleitem.min
         })

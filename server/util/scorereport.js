@@ -87,7 +87,7 @@ function generateGradedReport(rawscores, levels) {
     result.push({
       rawScore: item,
       fuScore: Math.round(rawscorediff == 0 ? (levels[levelindex].min + (levelscorediff / 2)) : (levels[levelindex].min + ((item - levelrawscore[levelindex].min) * levelscorediff) / rawscorediff)),
-      level: levels[levelindex].name
+      level: levels[levelindex].level
     })
   }
   return result
@@ -464,13 +464,18 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
         type: 'system',
         scorereportconfigId: scorereportconfigid,
         config: item.config,
+        student: [],
         studentVisible: true,
         classTeacherVisible: true,
         jointVisibleAccount: [],
         schoolVisibleAccount: [],
         classVisibleAccount: [],
-        status: 'pending'
+        status: 'pending',
+        updateTime: -1
       })
+    }
+    if (scorereportconfig.status == 'processing') {
+      return
     }
     if (scorereportconfig) {
       scorereportconfigid = scorereportconfig.scorereportconfigId
@@ -498,16 +503,18 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
       type: 'system'
     }).toArray()
     const scorereport = getScoreReport(subject, classes, marklog, item.config)
-    await db.collection('scorereport').deleteMany({
-      scorereportconfigId: scorereportconfigid
-    })
-    await db.collection('scorereportconfig').updateOne({
-      scorereportconfigId: scorereportconfigid
-    }, {
-      $set: {
-        student: []
-      }
-    })
+    if (scorereportconfig == 'finished') {
+      await db.collection('scorereport').deleteMany({
+        scorereportconfigId: scorereportconfigid
+      })
+      await db.collection('scorereportconfig').updateOne({
+        scorereportconfigId: scorereportconfigid
+      }, {
+        $set: {
+          student: []
+        }
+      })
+    }
     await db.collection('scorereport').insertOne({
       scorereportconfigId: scorereportconfigid,
       type: 'joint',
@@ -582,16 +589,18 @@ async function generateSingleSubjectScoreReport(exam, subject, scorereportconfig
     type: 'system'
   }).toArray()
   const scorereport = getScoreReport(subject, classes, marklog, scorereportconfig.config)
-  await db.collection('scorereport').deleteMany({
-    scorereportconfigId: scorereportconfig.scorereportconfigId
-  })
-  await db.collection('scorereportconfig').updateOne({
-    scorereportconfigId: scorereportconfig.scorereportconfigId
-  }, {
-    $set: {
-      student: []
-    }
-  })
+  if (scorereportconfig.status == 'finished') {
+    await db.collection('scorereport').deleteMany({
+      scorereportconfigId: scorereportconfig.scorereportconfigId
+    })
+    await db.collection('scorereportconfig').updateOne({
+      scorereportconfigId: scorereportconfig.scorereportconfigId
+    }, {
+      $set: {
+        student: []
+      }
+    })
+  }
   await db.collection('scorereport').insertOne({
     scorereportconfigId: scorereportconfig.scorereportconfigId,
     type: 'joint',

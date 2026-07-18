@@ -3,6 +3,7 @@ document.title = '智能阅卷系统 - 考试管理 - 成绩报告配置'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { decode } from '../util/code'
+import { readFile } from '../util/file'
 import request from '../util/request'
 import time from '../util/time'
 const route = useRoute()
@@ -43,7 +44,8 @@ async function get() {
   data.value = res.data.map(item => {
     return {
       ...item,
-      updateTime: time(item.updateTime)
+      updateTime: time(item.updateTime),
+      updateTimeSeen: item.updateTime == -1 ? false : true
     }
   })
 }
@@ -69,8 +71,53 @@ async function generateScorereportconfig(id) {
   })
   get()
 }
-function updateScorereportconfig(info) {
-  router.push('/updatescorereportconfig?info=' + encode(info))
+async function newScorereportconfig() {
+  const content = await readFile()
+  let info
+  try {
+    info = JSON.parse(content)
+    info.id = param.value.examId
+  } catch {
+    TinyModal.message({
+      message: '文件内容非法',
+      status: 'warning'
+    })
+  }
+  if (info) {
+    await request({
+      apiPath: '/newScorereportconfig',
+      body: info
+    })
+    TinyModal.message({
+      message: '新增成功',
+      status: 'success'
+    })
+    get()
+  }
+}
+async function updateScorereportconfig(id) {
+  const content = await readFile()
+  let info
+  try {
+    info = JSON.parse(content)
+    info.id = id
+  } catch {
+    TinyModal.message({
+      message: '文件内容非法',
+      status: 'warning'
+    })
+  }
+  if (info) {
+    await request({
+      apiPath: '/updateScorereportconfig',
+      body: info
+    })
+    TinyModal.message({
+      message: '修改成功',
+      status: 'success'
+    })
+    get()
+  }
 }
 async function deleteScorereportconfig(id) {
   await request({
@@ -93,7 +140,10 @@ async function deleteScorereportconfig(id) {
       <tiny-breadcrumb-item :to="{ path: '/processingexam' }" label="考试管理"></tiny-breadcrumb-item>
       <tiny-breadcrumb-item :to="{ path: '/scorereportconfig' }" label="成绩报告配置"></tiny-breadcrumb-item>
     </tiny-breadcrumb>
-    <div><tiny-button type="info" @click="get">刷新</tiny-button></div>
+    <div class="sp">
+      <tiny-button type="success" @click="newScorereportconfig">选择配置文件新增</tiny-button>
+      <tiny-button type="info" @click="get">刷新</tiny-button>
+    </div>
     <div v-for="item in data" class="kuang">
       <div class="cz">
         <div class="spacebetween">
@@ -106,12 +156,12 @@ async function deleteScorereportconfig(id) {
               <div class="large-bold-text">{{ item.name }}</div>
               <tiny-tag type="info">自定义</tiny-tag>
             </div>
-            <div v-if="item.status != 'pending'">最近生成时间：{{ item.updateTime }}</div>
+            <div v-if="item.updateTimeSeen == true">最近生成时间：{{ item.updateTime }}</div>
           </div>
           <div class="sp">
             <tiny-button type="success" :disabled="item.status == 'processing'"
               @click="generateScorereportconfig(item.scorereportconfigId)">生成</tiny-button>
-            <tiny-button type="info" @click="updateScorereportconfig(item)">修改</tiny-button>
+            <tiny-button type="info" @click="updateScorereportconfig(item.scorereportconfigId)">选择配置文件修改</tiny-button>
             <tiny-popconfirm v-if="item.type == 'custom'" title="提示" message="删除成功后无法恢复，确定删除？" type="warning"
               trigger="hover" @confirm="deleteScorereportconfig(item.scorereportconfigId)">
               <template #reference>
