@@ -294,7 +294,8 @@ exports.main = async (event, configfilepath) => {
         classTeacherVisible: requestdata.classTeacherVisible,
         jointVisibleAccount: requestdata.jointVisibleAccount,
         schoolVisibleAccount: requestdata.schoolVisibleAccount,
-        classVisibleAccount: requestdata.classVisibleAccount
+        classVisibleAccount: requestdata.classVisibleAccount,
+        status: 'pending'
       })
     }
     return {

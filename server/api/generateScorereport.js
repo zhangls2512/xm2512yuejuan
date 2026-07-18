@@ -31,6 +31,13 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
+    if (scorereportconfigres.status == 'processing') {
+      return {
+        errCode: 400,
+        errMsg: '成绩报告生成中',
+        errFix: '无修复建议'
+      }
+    }
     const examgetres = await db.collection('exam').findOne({
       examId: scorereportconfigres.examId
     })
@@ -74,6 +81,13 @@ exports.main = async (event, configfilepath) => {
         return {
           errCode: 400,
           errMsg: '科目不存在',
+          errFix: '无修复建议'
+        }
+      }
+      if (examsubjectgetres.markStatus != 'end') {
+        return {
+          errCode: 400,
+          errMsg: '阅卷未结束',
           errFix: '无修复建议'
         }
       }

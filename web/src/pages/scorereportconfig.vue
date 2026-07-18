@@ -4,6 +4,7 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { decode } from '../util/code'
 import request from '../util/request'
+import time from '../util/time'
 const route = useRoute()
 const info = route.query.info
 const param = ref({})
@@ -39,7 +40,12 @@ async function get() {
     message: '获取数据成功',
     status: 'success'
   })
-  data.value = res.data
+  data.value = res.data.map(item => {
+    return {
+      ...item,
+      updateTime: time(item.updateTime)
+    }
+  })
 }
 get()
 async function currentpageChange(t) {
@@ -48,6 +54,19 @@ async function currentpageChange(t) {
 }
 async function pagesizeChange(t) {
   pagesize.value = t
+  get()
+}
+async function generateScorereportconfig(id) {
+  await request({
+    apiPath: '/generateScorereport',
+    body: {
+      id: id
+    }
+  })
+  TinyModal.message({
+    message: '操作成功。正在后台生成，请耐心等待',
+    status: 'success'
+  })
   get()
 }
 function updateScorereportconfig(info) {
@@ -74,18 +93,24 @@ async function deleteScorereportconfig(id) {
       <tiny-breadcrumb-item :to="{ path: '/processingexam' }" label="考试管理"></tiny-breadcrumb-item>
       <tiny-breadcrumb-item :to="{ path: '/scorereportconfig' }" label="成绩报告配置"></tiny-breadcrumb-item>
     </tiny-breadcrumb>
+    <div><tiny-button type="info" @click="get">刷新</tiny-button></div>
     <div v-for="item in data" class="kuang">
       <div class="cz">
         <div class="spacebetween">
-          <div v-if="item.type == 'system'" class="sp">
-            <div class="large-bold-text">系统默认</div>
-            <tiny-tag type="info">系统</tiny-tag>
-          </div>
-          <div v-if="item.type == 'custom'" class="sp">
-            <div class="large-bold-text">{{ item.name }}</div>
-            <tiny-tag type="info">自定义</tiny-tag>
+          <div class="cz">
+            <div v-if="item.type == 'system'" class="sp">
+              <div class="large-bold-text">系统默认</div>
+              <tiny-tag type="info">系统</tiny-tag>
+            </div>
+            <div v-if="item.type == 'custom'" class="sp">
+              <div class="large-bold-text">{{ item.name }}</div>
+              <tiny-tag type="info">自定义</tiny-tag>
+            </div>
+            <div v-if="item.status != 'pending'">最近生成时间：{{ item.updateTime }}</div>
           </div>
           <div class="sp">
+            <tiny-button type="success" :disabled="item.status == 'processing'"
+              @click="generateScorereportconfig(item.scorereportconfigId)">生成</tiny-button>
             <tiny-button type="info" @click="updateScorereportconfig(item)">修改</tiny-button>
             <tiny-popconfirm v-if="item.type == 'custom'" title="提示" message="删除成功后无法恢复，确定删除？" type="warning"
               trigger="hover" @confirm="deleteScorereportconfig(item.scorereportconfigId)">

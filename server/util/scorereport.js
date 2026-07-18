@@ -448,21 +448,6 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
       })
     })
   }
-  let classes = []
-  if (!exam.schoolId) {
-    classes = await db.collection('class').find({}).toArray()
-  }
-  if (exam.schoolId) {
-    classes = await db.collection('class').find({
-      schoolId: exam.schoolId
-    }).toArray()
-  }
-  classes = classes.filter(item => subject.class.includes(item.classId))
-  const marklog = await db.collection('marklog').find({
-    examId: exam.examId,
-    subject: subject.name,
-    type: 'system'
-  }).toArray()
   for (let i = 0; i < subjects.length; i++) {
     const item = subjects[i]
     let scorereportconfigid = ''
@@ -483,12 +468,35 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
         classTeacherVisible: true,
         jointVisibleAccount: [],
         schoolVisibleAccount: [],
-        classVisibleAccount: []
+        classVisibleAccount: [],
+        status: 'pending'
       })
     }
     if (scorereportconfig) {
       scorereportconfigid = scorereportconfig.scorereportconfigId
     }
+    await db.collection('scorereportconfig').updateOne({
+      scorereportconfigId: scorereportconfigid
+    }, {
+      $set: {
+        status: 'processing'
+      }
+    })
+    let classes = []
+    if (!exam.schoolId) {
+      classes = await db.collection('class').find({}).toArray()
+    }
+    if (exam.schoolId) {
+      classes = await db.collection('class').find({
+        schoolId: exam.schoolId
+      }).toArray()
+    }
+    classes = classes.filter(item => subject.class.includes(item.classId))
+    const marklog = await db.collection('marklog').find({
+      examId: exam.examId,
+      subject: subject.name,
+      type: 'system'
+    }).toArray()
     const scorereport = getScoreReport(subject, classes, marklog, item.config)
     await db.collection('scorereport').deleteMany({
       scorereportconfigId: scorereportconfigid
@@ -539,10 +547,25 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
         scoreStandardDeviation: classitem.scoreStandardDeviation
       })
     }
+    await db.collection('scorereportconfig').updateOne({
+      scorereportconfigId: scorereportconfigid
+    }, {
+      $set: {
+        status: 'finished',
+        updateTime: Date.now()
+      }
+    })
   }
 }
 async function generateSingleSubjectScoreReport(exam, subject, scorereportconfig, configfilepath) {
   const db = await (require('./db').database(configfilepath))
+  await db.collection('scorereportconfig').updateOne({
+    scorereportconfigId: scorereportconfig.scorereportconfigId
+  }, {
+    $set: {
+      status: 'processing'
+    }
+  })
   let classes = []
   if (!exam.schoolId) {
     classes = await db.collection('class').find({}).toArray()
@@ -608,6 +631,14 @@ async function generateSingleSubjectScoreReport(exam, subject, scorereportconfig
       scoreStandardDeviation: classitem.scoreStandardDeviation
     })
   }
+  await db.collection('scorereportconfig').updateOne({
+    scorereportconfigId: scorereportconfig.scorereportconfigId
+  }, {
+    $set: {
+      status: 'finished',
+      updateTime: Date.now()
+    }
+  })
 }
 module.exports = {
   generateDefaultScoreReport,
