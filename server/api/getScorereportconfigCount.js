@@ -57,14 +57,7 @@ exports.main = async (event, configfilepath) => {
     }
     const examsubjectgetres = await db.collection('examsubject').findOne({
       examId: requestdata.id,
-      $or: [
-        {
-          name: requestdata.subject
-        },
-        {
-          subSubject: requestdata.subject
-        }
-      ]
+      name: requestdata.subject
     })
     if (requestdata.subject != '多学科') {
       if (!examsubjectgetres) {
@@ -94,7 +87,9 @@ exports.main = async (event, configfilepath) => {
     }
     const count = await db.collection('scorereportconfig').countDocuments({
       examId: requestdata.id,
-      subject: requestdata.subject
+      subject: {
+        $in: [requestdata.subject].concat(examsubjectgetres.subSubject)
+      }
     })
     return {
       errCode: 0,

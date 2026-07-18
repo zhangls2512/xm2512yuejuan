@@ -156,6 +156,7 @@ async function deleteScorereportconfig(id) {
               <div class="large-bold-text">{{ item.name }}</div>
               <tiny-tag type="info">自定义</tiny-tag>
             </div>
+            <div>科目：{{ item.subject }}</div>
             <div v-if="item.updateTimeSeen == true">最近生成时间：{{ item.updateTime }}</div>
           </div>
           <div class="sp">

@@ -474,10 +474,10 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
         updateTime: -1
       })
     }
-    if (scorereportconfig.status == 'processing') {
-      return
-    }
     if (scorereportconfig) {
+      if (scorereportconfig.status == 'processing') {
+        return
+      }
       scorereportconfigid = scorereportconfig.scorereportconfigId
     }
     await db.collection('scorereportconfig').updateOne({
@@ -515,44 +515,46 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
         }
       })
     }
-    await db.collection('scorereport').insertOne({
-      scorereportconfigId: scorereportconfigid,
-      type: 'joint',
-      question: scorereport.joint.question,
-      student: scorereport.joint.student,
-      averageScore: scorereport.joint.averageScore,
-      scoreStandardDeviation: scorereport.joint.scoreStandardDeviation
-    })
-    await db.collection('scorereportconfig').updateOne({
-      scorereportconfigId: scorereportconfigid
-    }, {
-      $set: {
-        student: scorereport.joint.student.map(item => item.studentAccount)
+    if (scorereport.joint.student.length > 0) {
+      await db.collection('scorereport').insertOne({
+        scorereportconfigId: scorereportconfigid,
+        type: 'joint',
+        question: scorereport.joint.question,
+        student: scorereport.joint.student,
+        averageScore: scorereport.joint.averageScore,
+        scoreStandardDeviation: scorereport.joint.scoreStandardDeviation
+      })
+      await db.collection('scorereportconfig').updateOne({
+        scorereportconfigId: scorereportconfigid
+      }, {
+        $set: {
+          student: scorereport.joint.student.map(item => item.studentAccount)
+        }
+      })
+      for (let j = 0; j < scorereport.school.length; j++) {
+        const school = scorereport.school[j]
+        await db.collection('scorereport').insertOne({
+          scorereportconfigId: scorereportconfigid,
+          type: 'school',
+          schoolId: school.schoolId,
+          question: school.question,
+          student: school.student,
+          averageScore: school.averageScore,
+          scoreStandardDeviation: school.scoreStandardDeviation
+        })
       }
-    })
-    for (let j = 0; j < scorereport.school.length; j++) {
-      const school = scorereport.school[j]
-      await db.collection('scorereport').insertOne({
-        scorereportconfigId: scorereportconfigid,
-        type: 'school',
-        schoolId: school.schoolId,
-        question: school.question,
-        student: school.student,
-        averageScore: school.averageScore,
-        scoreStandardDeviation: school.scoreStandardDeviation
-      })
-    }
-    for (let j = 0; j < scorereport.class.length; j++) {
-      const classitem = scorereport.class[j]
-      await db.collection('scorereport').insertOne({
-        scorereportconfigId: scorereportconfigid,
-        type: 'class',
-        classId: classitem.classId,
-        question: classitem.question,
-        student: classitem.student,
-        averageScore: classitem.averageScore,
-        scoreStandardDeviation: classitem.scoreStandardDeviation
-      })
+      for (let j = 0; j < scorereport.class.length; j++) {
+        const classitem = scorereport.class[j]
+        await db.collection('scorereport').insertOne({
+          scorereportconfigId: scorereportconfigid,
+          type: 'class',
+          classId: classitem.classId,
+          question: classitem.question,
+          student: classitem.student,
+          averageScore: classitem.averageScore,
+          scoreStandardDeviation: classitem.scoreStandardDeviation
+        })
+      }
     }
     await db.collection('scorereportconfig').updateOne({
       scorereportconfigId: scorereportconfigid
@@ -601,44 +603,46 @@ async function generateSingleSubjectScoreReport(exam, subject, scorereportconfig
       }
     })
   }
-  await db.collection('scorereport').insertOne({
-    scorereportconfigId: scorereportconfig.scorereportconfigId,
-    type: 'joint',
-    question: scorereport.joint.question,
-    student: scorereport.joint.student,
-    averageScore: scorereport.joint.averageScore,
-    scoreStandardDeviation: scorereport.joint.scoreStandardDeviation
-  })
-  await db.collection('scorereportconfig').updateOne({
-    scorereportconfigId: scorereportconfig.scorereportconfigId
-  }, {
-    $set: {
-      student: scorereport.joint.student.map(item => item.studentAccount)
+  if (scorereport.joint.student.length > 0) {
+    await db.collection('scorereport').insertOne({
+      scorereportconfigId: scorereportconfig.scorereportconfigId,
+      type: 'joint',
+      question: scorereport.joint.question,
+      student: scorereport.joint.student,
+      averageScore: scorereport.joint.averageScore,
+      scoreStandardDeviation: scorereport.joint.scoreStandardDeviation
+    })
+    await db.collection('scorereportconfig').updateOne({
+      scorereportconfigId: scorereportconfig.scorereportconfigId
+    }, {
+      $set: {
+        student: scorereport.joint.student.map(item => item.studentAccount)
+      }
+    })
+    for (let j = 0; j < scorereport.school.length; j++) {
+      const school = scorereport.school[j]
+      await db.collection('scorereport').insertOne({
+        scorereportconfigId: scorereportconfig.scorereportconfigId,
+        type: 'school',
+        schoolId: school.schoolId,
+        question: school.question,
+        student: school.student,
+        averageScore: school.averageScore,
+        scoreStandardDeviation: school.scoreStandardDeviation
+      })
     }
-  })
-  for (let j = 0; j < scorereport.school.length; j++) {
-    const school = scorereport.school[j]
-    await db.collection('scorereport').insertOne({
-      scorereportconfigId: scorereportconfig.scorereportconfigId,
-      type: 'school',
-      schoolId: school.schoolId,
-      question: school.question,
-      student: school.student,
-      averageScore: school.averageScore,
-      scoreStandardDeviation: school.scoreStandardDeviation
-    })
-  }
-  for (let j = 0; j < scorereport.class.length; j++) {
-    const classitem = scorereport.class[j]
-    await db.collection('scorereport').insertOne({
-      scorereportconfigId: scorereportconfig.scorereportconfigId,
-      type: 'class',
-      classId: classitem.classId,
-      question: classitem.question,
-      student: classitem.student,
-      averageScore: classitem.averageScore,
-      scoreStandardDeviation: classitem.scoreStandardDeviation
-    })
+    for (let j = 0; j < scorereport.class.length; j++) {
+      const classitem = scorereport.class[j]
+      await db.collection('scorereport').insertOne({
+        scorereportconfigId: scorereportconfig.scorereportconfigId,
+        type: 'class',
+        classId: classitem.classId,
+        question: classitem.question,
+        student: classitem.student,
+        averageScore: classitem.averageScore,
+        scoreStandardDeviation: classitem.scoreStandardDeviation
+      })
+    }
   }
   await db.collection('scorereportconfig').updateOne({
     scorereportconfigId: scorereportconfig.scorereportconfigId

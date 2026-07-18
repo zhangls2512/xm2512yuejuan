@@ -65,14 +65,7 @@ exports.main = async (event, configfilepath) => {
     }
     const examsubjectgetres = await db.collection('examsubject').findOne({
       examId: requestdata.id,
-      $or: [
-        {
-          name: requestdata.subject
-        },
-        {
-          subSubject: requestdata.subject
-        }
-      ]
+      name: requestdata.subject
     })
     if (requestdata.subject != '多学科') {
       if (!examsubjectgetres) {
@@ -102,12 +95,13 @@ exports.main = async (event, configfilepath) => {
     }
     const data = await db.collection('scorereportconfig').find({
       examId: requestdata.id,
-      subject: requestdata.subject
+      subject: {
+        $in: [requestdata.subject].concat(examsubjectgetres.subSubject)
+      }
     }, {
       projection: {
         _id: false,
-        examId: false,
-        subject: false
+        examId: false
       }
     }).sort({
       time: -1
