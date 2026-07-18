@@ -99,14 +99,8 @@ function start(configfilepath) {
           if (readConfig(configfilepath, 'saveErrorLog')) {
             fs.writeFileSync(readConfig(configfilepath, 'logRootPath') + '/error-' + timestamp + '.log', err.stack)
           }
-          response.setHeader('Content-Type', 'application/json;charset=utf-8')
-          response.setHeader('Strict-Transport-Security', 'max-age=31536000')
-          response.writeHead(200)
-          response.end(JSON.stringify({
-            errCode: 500,
-            errMsg: '内部错误',
-            errFix: '联系客服'
-          }))
+          response.writeHead(500)
+          response.end()
         }
       })
       request.on('error', () => {

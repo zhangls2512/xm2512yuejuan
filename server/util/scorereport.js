@@ -501,6 +501,13 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
       averageScore: scorereport.joint.averageScore,
       scoreStandardDeviation: scorereport.joint.scoreStandardDeviation
     })
+    await db.collection('scorereportconfig').updateOne({
+      scorereportconfigId: scorereportconfigid
+    }, {
+      $set: {
+        student: scorereport.joint.student.map(item => item.studentAccount)
+      }
+    })
     for (let j = 0; j < scorereport.school.length; j++) {
       const school = scorereport.school[j]
       await db.collection('scorereport').insertOne({
