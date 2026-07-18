@@ -9,21 +9,6 @@ exports.main = async (event, configfilepath) => {
       errFix: '传递有效的id参数'
     }
   }
-  if (typeof (requestdata.subject) != 'string' || !requestdata.subject) {
-    return {
-      errCode: 400,
-      errMsg: '请求参数错误',
-      errFix: '传递有效的subject参数'
-    }
-  }
-  let skip = 0
-  let limit = 10
-  if (Number.isInteger(requestdata.skip) && requestdata.skip >= 0) {
-    skip = requestdata.skip
-  }
-  if (Number.isInteger(requestdata.limit) && requestdata.limit > 0 && requestdata.limit <= 20) {
-    limit = requestdata.limit
-  }
   const res = await require('../util/authcheck').main(event.headers, configfilepath)
   if (res.errCode != 0) {
     return res
@@ -36,8 +21,18 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
+    const scorereportconfigres = await db.collection('scorereportconfig').findOne({
+      scorereportconfigId: requestdata.id
+    })
+    if (!scorereportconfigres) {
+      return {
+        errCode: 400,
+        errMsg: '成绩报告不存在',
+        errFix: '无修复建议'
+      }
+    }
     const examgetres = await db.collection('exam').findOne({
-      examId: requestdata.id
+      examId: scorereportconfigres.examId
     })
     if (!examgetres) {
       return {
@@ -46,7 +41,7 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    if (requestdata.subject == '多学科') {
+    if (scorereportconfigres.subject == '多学科') {
       const admin = examgetres.admin.find(item => item.account == account.account)
       if (!admin && (account.type != 'admin' || account.schoolId != examgetres.schoolId)) {
         return {
@@ -63,18 +58,18 @@ exports.main = async (event, configfilepath) => {
         }
       }
     }
-    const examsubjectgetres = await db.collection('examsubject').findOne({
-      examId: requestdata.id,
-      $or: [
-        {
-          name: requestdata.subject
-        },
-        {
-          subSubject: requestdata.subject
-        }
-      ]
-    })
-    if (requestdata.subject != '多学科') {
+    if (scorereportconfigres.subject != '多学科') {
+      const examsubjectgetres = await db.collection('examsubject').findOne({
+        examId: scorereportconfigres.examId,
+        $or: [
+          {
+            name: scorereportconfigres.subject
+          },
+          {
+            subSubject: scorereportconfigres.subject
+          }
+        ]
+      })
       if (!examsubjectgetres) {
         return {
           errCode: 400,
@@ -99,23 +94,11 @@ exports.main = async (event, configfilepath) => {
           }
         }
       }
+      require('../util/scorereport').generateSingleSubjectScoreReport(examgetres, examsubjectgetres, scorereportconfigres, configfilepath)
     }
-    const data = await db.collection('scorereportconfig').find({
-      examId: requestdata.id,
-      subject: requestdata.subject
-    }, {
-      projection: {
-        _id: false,
-        examId: false,
-        subject: false
-      }
-    }).sort({
-      time: -1
-    }).skip(skip).limit(limit).toArray()
     return {
       errCode: 0,
-      errMsg: '成功',
-      data: data
+      errMsg: '成功'
     }
   }
 }

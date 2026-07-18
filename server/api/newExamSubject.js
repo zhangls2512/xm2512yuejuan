@@ -91,10 +91,10 @@ exports.main = async (event, configfilepath) => {
         }
         if (examgetres.schoolId) {
           validclass = await db.collection('class').find({
-            schoolId: account.schoolId
+            schoolId: examgetres.schoolId
           }).toArray()
         }
-        validclass = validadmins.map(item => item.classId)
+        validclass = validclass.map(item => item.classId)
         if (checkres.data.class.some(item => !validclass.includes(item))) {
           return {
             errCode: 400,
@@ -114,7 +114,7 @@ exports.main = async (event, configfilepath) => {
         }
         if (examgetres.schoolId) {
           validadmins = await db.collection('account').find({
-            schoolId: account.schoolId,
+            schoolId: examgetres.schoolId,
             type: {
               $ne: 'student'
             }

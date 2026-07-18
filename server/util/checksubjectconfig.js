@@ -279,7 +279,7 @@ function checkSubjectConfig(requestdata, olddata) {
       extra: questionitem.extra,
       stepScore: questionitem.stepScore
     }
-    const totalscore = getTotalScoreFromQuestionName(requestdata, questionitem.name, true)
+    const totalscore = getTotalScoreFromQuestionName(requestdata, questionitem.name)
     if (typeof (questionitem.arbitrateScoreDiff) != 'number' || questionitem.arbitrateScoreDiff <= 0 || questionitem.arbitrateScoreDiff >= totalscore) {
       return {
         errCode: 400,
@@ -341,6 +341,13 @@ function checkSubjectConfig(requestdata, olddata) {
   }
   if (result.subSubject.length > 1) {
     for (let i = 0; i < result.subSubject.length; i++) {
+      if (result.subSubject[i] == result.name) {
+        return {
+          errCode: 400,
+          errMsg: '请求参数错误',
+          errFix: '存在子科目与主科目相同'
+        }
+      }
       if (!result.subSubject[i]) {
         return {
           errCode: 400,
@@ -730,20 +737,8 @@ function checkArrEqual(a, b) {
   const sb = b.sort()
   return sa.every((item, index) => item == sb[index])
 }
-function getTotalScoreFromQuestionName(result, name, subject) {
-  if (!subject) {
-    const questionitem = result.objectiveQuestion.find(item => item.name == name)
-    const scorearr = [...new Set(questionitem.correctOptionCountRule.map(item => item.score).concat(questionitem.specialOptionGroupRule.map(item => item.score)))]
-    return Math.max(...scorearr)
-  }
-  if (subject) {
-    const stepscore = result.subjectiveQuestion.find(item => item.name == name).stepScore
-    let score = 0
-    stepscore.forEach(item => {
-      score += item[0]
-    })
-    return score
-  }
+function getTotalScoreFromQuestionName(result, name) {
+  return result.subjectiveQuestion.find(item => item.name == name).stepScore.map(item => item[0]).reduce((sum, num) => sum + num, 0)
 }
 function isCoordValid(coord) {
   return Array.isArray(coord) && coord.length == 4 && coord.every(item => Number.isInteger(item) && item >= 0) && coord[2] > coord[0] && coord[3] > coord[1]
@@ -753,6 +748,5 @@ function isXyValid(xy) {
 }
 module.exports = {
   checkSubjectConfig,
-  getTotalScoreFromQuestionName,
   isXyValid
 }

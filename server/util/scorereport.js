@@ -258,8 +258,8 @@ function getScoreReport(subject, classes, marklog, config) {
     }
   })
   jointmap.student = Object.values(jointmap.student)
-  if (config.fuScoreRules.length > 0) {
-    const ff = generateGradedReport(jointmap.student.map(item => item.totalScoreWithoutExtra), config.fuScoreRules)
+  if (config.fuScoreRule.length > 0) {
+    const ff = generateGradedReport(jointmap.student.map(item => item.totalScoreWithoutExtra), config.fuScoreRule)
     const ffmap = {}
     ff.forEach(i => {
       ffmap[i.rawScore] = {
@@ -272,7 +272,7 @@ function getScoreReport(subject, classes, marklog, config) {
       item.level = ffmap[item.totalScoreWithoutExtra].level
     })
   }
-  const sortkey = config.fuScoreRules.length > 0 ? 'fuScore' : 'totalScoreWithoutExtra'
+  const sortkey = config.fuScoreRule.length > 0 ? 'fuScore' : 'totalScoreWithoutExtra'
   jointmap.student.sort((a, b) => b[sortkey] - a[sortkey])
   jointmap.student.forEach((item, index) => {
     if (index > 0 && item[sortkey] == jointmap.student[index - 1][sortkey]) {
@@ -286,7 +286,7 @@ function getScoreReport(subject, classes, marklog, config) {
       item.totalScoreWithoutExtra = fixtwo(item.totalScoreWithoutExtra * config.scoreTimes)
     })
   }
-  const jointstudentscorearr = jointmap.student.map(item => config.fuScoreRules.length > 0 ? item.fuScore : item.totalScoreWithoutExtra)
+  const jointstudentscorearr = jointmap.student.map(item => config.fuScoreRule.length > 0 ? item.fuScore : item.totalScoreWithoutExtra)
   jointmap.averageScore = average(jointstudentscorearr)
   jointmap.scoreStandardDeviation = standarddeviation(jointstudentscorearr)
   jointmap.question = Object.entries(jointmap.question).map(q => {
@@ -339,7 +339,7 @@ function getScoreReport(subject, classes, marklog, config) {
       }
     })
     schoolmap[schoolid].student = clonestudent
-    const schoolstudentscorearr = schoolmap[schoolid].student.map(item => config.fuScoreRules.length > 0 ? item.fuScore : item.totalScoreWithoutExtra)
+    const schoolstudentscorearr = schoolmap[schoolid].student.map(item => config.fuScoreRule.length > 0 ? item.fuScore : item.totalScoreWithoutExtra)
     schoolmap[schoolid].averageScore = average(schoolstudentscorearr)
     schoolmap[schoolid].scoreStandardDeviation = standarddeviation(schoolstudentscorearr)
     schoolmap[schoolid].question = Object.entries(schoolmap[schoolid].question).map(q => {
@@ -385,7 +385,7 @@ function getScoreReport(subject, classes, marklog, config) {
       }
     })
     classmap[classid].student = clonestudent
-    const classstudentscorearr = classmap[classid].student.map(item => config.fuScoreRules.length > 0 ? item.fuScore : item.totalScoreWithoutExtra)
+    const classstudentscorearr = classmap[classid].student.map(item => config.fuScoreRule.length > 0 ? item.fuScore : item.totalScoreWithoutExtra)
     classmap[classid].averageScore = average(classstudentscorearr)
     classmap[classid].scoreStandardDeviation = standarddeviation(classstudentscorearr)
     classmap[classid].question = Object.entries(classmap[classid].question).map(q => {
@@ -433,7 +433,7 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
     config: {
       scoreTimes: 1,
       scoringQuestionNames: subject.objectiveQuestion.map(item => item.name).concat(subject.subjectiveQuestion.map(item => item.name)),
-      fuScoreRules: []
+      fuScoreRule: []
     }
   })
   if (subject.subSubject.length > 0) {
@@ -443,7 +443,7 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
         config: {
           scoreTimes: 1,
           scoringQuestionNames: subject.objectiveQuestion.filter(i => i.subject == item).map(item => item.name).concat(subject.subjectiveQuestion.filter(i => i.subject == item).map(item => item.name)),
-          fuScoreRules: []
+          fuScoreRule: []
         }
       })
     })
@@ -493,6 +493,13 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
     await db.collection('scorereport').deleteMany({
       scorereportconfigId: scorereportconfigid
     })
+    await db.collection('scorereportconfig').updateOne({
+      scorereportconfigId: scorereportconfigid
+    }, {
+      $set: {
+        student: []
+      }
+    })
     await db.collection('scorereport').insertOne({
       scorereportconfigId: scorereportconfigid,
       type: 'joint',
@@ -534,6 +541,75 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
     }
   }
 }
+async function generateSingleSubjectScoreReport(exam, subject, scorereportconfig, configfilepath) {
+  const db = await (require('./db').database(configfilepath))
+  let classes = []
+  if (!exam.schoolId) {
+    classes = await db.collection('class').find({}).toArray()
+  }
+  if (exam.schoolId) {
+    classes = await db.collection('class').find({
+      schoolId: exam.schoolId
+    }).toArray()
+  }
+  classes = classes.filter(item => subject.class.includes(item.classId))
+  const marklog = await db.collection('marklog').find({
+    examId: exam.examId,
+    subject: subject.name,
+    type: 'system'
+  }).toArray()
+  const scorereport = getScoreReport(subject, classes, marklog, scorereportconfig.config)
+  await db.collection('scorereport').deleteMany({
+    scorereportconfigId: scorereportconfig.scorereportconfigId
+  })
+  await db.collection('scorereportconfig').updateOne({
+    scorereportconfigId: scorereportconfig.scorereportconfigId
+  }, {
+    $set: {
+      student: []
+    }
+  })
+  await db.collection('scorereport').insertOne({
+    scorereportconfigId: scorereportconfig.scorereportconfigId,
+    type: 'joint',
+    question: scorereport.joint.question,
+    student: scorereport.joint.student,
+    averageScore: scorereport.joint.averageScore,
+    scoreStandardDeviation: scorereport.joint.scoreStandardDeviation
+  })
+  await db.collection('scorereportconfig').updateOne({
+    scorereportconfigId: scorereportconfig.scorereportconfigId
+  }, {
+    $set: {
+      student: scorereport.joint.student.map(item => item.studentAccount)
+    }
+  })
+  for (let j = 0; j < scorereport.school.length; j++) {
+    const school = scorereport.school[j]
+    await db.collection('scorereport').insertOne({
+      scorereportconfigId: scorereportconfig.scorereportconfigId,
+      type: 'school',
+      schoolId: school.schoolId,
+      question: school.question,
+      student: school.student,
+      averageScore: school.averageScore,
+      scoreStandardDeviation: school.scoreStandardDeviation
+    })
+  }
+  for (let j = 0; j < scorereport.class.length; j++) {
+    const classitem = scorereport.class[j]
+    await db.collection('scorereport').insertOne({
+      scorereportconfigId: scorereportconfig.scorereportconfigId,
+      type: 'class',
+      classId: classitem.classId,
+      question: classitem.question,
+      student: classitem.student,
+      averageScore: classitem.averageScore,
+      scoreStandardDeviation: classitem.scoreStandardDeviation
+    })
+  }
+}
 module.exports = {
-  generateDefaultScoreReport
+  generateDefaultScoreReport,
+  generateSingleSubjectScoreReport
 }

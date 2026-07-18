@@ -57,7 +57,14 @@ exports.main = async (event, configfilepath) => {
     }
     const examsubjectgetres = await db.collection('examsubject').findOne({
       examId: requestdata.id,
-      name: requestdata.subject
+      $or: [
+        {
+          name: requestdata.subject
+        },
+        {
+          subSubject: requestdata.subject
+        }
+      ]
     })
     if (requestdata.subject != '多学科') {
       if (!examsubjectgetres) {

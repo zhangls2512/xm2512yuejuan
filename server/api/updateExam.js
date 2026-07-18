@@ -114,7 +114,7 @@ exports.main = async (event, configfilepath) => {
       }
       if (examgetres.schoolId) {
         validadmins = await db.collection('account').find({
-          schoolId: account.schoolId,
+          schoolId: examgetres.schoolId,
           type: {
             $ne: 'student'
           }
