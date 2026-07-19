@@ -59,6 +59,7 @@ exports.main = async (event, configfilepath) => {
       examId: requestdata.id,
       name: requestdata.subject
     })
+    let count = 0
     if (requestdata.subject != '多学科') {
       if (!examsubjectgetres) {
         return {
@@ -84,13 +85,19 @@ exports.main = async (event, configfilepath) => {
           }
         }
       }
+      count = await db.collection('scorereportconfig').countDocuments({
+        examId: requestdata.id,
+        subject: {
+          $in: [requestdata.subject].concat(examsubjectgetres.subSubject)
+        }
+      })
     }
-    const count = await db.collection('scorereportconfig').countDocuments({
-      examId: requestdata.id,
-      subject: {
-        $in: [requestdata.subject].concat(examsubjectgetres.subSubject)
-      }
-    })
+    if (requestdata.subject == '多学科') {
+      count = await db.collection('scorereportconfig').countDocuments({
+        examId: requestdata.id,
+        subject: '多学科'
+      })
+    }
     return {
       errCode: 0,
       errMsg: '成功',

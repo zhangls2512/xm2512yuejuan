@@ -67,6 +67,7 @@ exports.main = async (event, configfilepath) => {
       examId: requestdata.id,
       name: requestdata.subject
     })
+    let data = []
     if (requestdata.subject != '多学科') {
       if (!examsubjectgetres) {
         return {
@@ -92,20 +93,35 @@ exports.main = async (event, configfilepath) => {
           }
         }
       }
+      data = await db.collection('scorereportconfig').find({
+        examId: requestdata.id,
+        subject: {
+          $in: [requestdata.subject].concat(examsubjectgetres.subSubject)
+        }
+      }, {
+        projection: {
+          _id: false,
+          examId: false,
+          student: false
+        }
+      }).sort({
+        updateTime: -1
+      }).skip(skip).limit(limit).toArray()
     }
-    const data = await db.collection('scorereportconfig').find({
-      examId: requestdata.id,
-      subject: {
-        $in: [requestdata.subject].concat(examsubjectgetres.subSubject)
-      }
-    }, {
-      projection: {
-        _id: false,
-        examId: false
-      }
-    }).sort({
-      time: -1
-    }).skip(skip).limit(limit).toArray()
+    if (requestdata.subject == '多学科') {
+      data = await db.collection('scorereportconfig').find({
+        examId: requestdata.id,
+        subject: '多学科'
+      }, {
+        projection: {
+          _id: false,
+          examId: false,
+          student: false
+        }
+      }).sort({
+        updateTime: -1
+      }).skip(skip).limit(limit).toArray()
+    }
     return {
       errCode: 0,
       errMsg: '成功',
