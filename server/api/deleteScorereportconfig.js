@@ -31,6 +31,13 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
+    if (scorereportconfigres.status == 'processing') {
+      return {
+        errCode: 400,
+        errMsg: '成绩报告生成中',
+        errFix: '无修复建议'
+      }
+    }
     if (scorereportconfigres.type == 'system') {
       return {
         errCode: 400,

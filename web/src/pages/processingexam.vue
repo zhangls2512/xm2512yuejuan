@@ -143,7 +143,7 @@ async function updateMarkStatus(id, subject, markstatus) {
         }
         if (markstatus == 'end') {
           TinyModal.message({
-            message: '操作成功。成绩报告正在后台生成，请耐心等待',
+            message: '操作成功',
             status: 'success'
           })
         }
@@ -258,26 +258,24 @@ async function endExam(id) {
         <div v-for="subject in item.subject" class="cz">
           <div class="spacebetween">
             <div class="wide-sp">
-              <div style="width:300px">【{{ subject.name }}】</div>
-              <div style="width:400px">
-                <div v-if="admin == true" class="sp">
-                  <div v-if="subject.markStatus != 'end'" class="clickwz"
-                    @click="updateSubject(item.examId, subject.name)">○
-                    编辑配置</div>
-                  <div v-if="subject.markStatus == 'end'" class="disabledwz">☑ 编辑配置</div>
-                  <div class="disabledwz">····</div>
-                  <div v-if="subject.markStatus == 'paused'" class="clickwz"
-                    @click="updateMarkStatus(item.examId, subject.name, 'processing')">○ 开始阅卷</div>
-                  <div v-if="subject.markStatus == 'processing'" class="clickwz"
-                    @click="updateMarkStatus(item.examId, subject.name, 'paused')">○ 暂停阅卷
-                  </div>
-                  <div v-if="subject.markStatus == 'processing'" class="disabledwz">····</div>
-                  <div v-if="subject.markStatus == 'processing'" class="clickwz"
-                    @click="updateMarkStatus(item.examId, subject.name, 'end')">○ 结束阅卷
-                  </div>
-                  <div v-if="subject.markStatus == 'end'" class="clickwz"
-                    @click="updateMarkStatus(item.examId, subject.name, 'paused')">○ 重新阅卷</div>
+              <div style="width:150px">【{{ subject.name }}】</div>
+              <div v-if="admin == true" class="sp" style="width:400px">
+                <div v-if="subject.markStatus != 'end'" class="clickwz"
+                  @click="updateSubject(item.examId, subject.name)">○
+                  编辑配置</div>
+                <div v-if="subject.markStatus == 'end'" class="disabledwz">☑ 编辑配置</div>
+                <div class="disabledwz">····</div>
+                <div v-if="subject.markStatus == 'paused'" class="clickwz"
+                  @click="updateMarkStatus(item.examId, subject.name, 'processing')">○ 开始阅卷</div>
+                <div v-if="subject.markStatus == 'processing'" class="clickwz"
+                  @click="updateMarkStatus(item.examId, subject.name, 'paused')">○ 暂停阅卷
                 </div>
+                <div v-if="subject.markStatus == 'processing'" class="disabledwz">····</div>
+                <div v-if="subject.markStatus == 'processing'" class="clickwz"
+                  @click="updateMarkStatus(item.examId, subject.name, 'end')">○ 结束阅卷
+                </div>
+                <div v-if="subject.markStatus == 'end'" class="clickwz"
+                  @click="updateMarkStatus(item.examId, subject.name, 'paused')">○ 重新阅卷</div>
               </div>
               <div class="sp">
                 <div v-if="subject.markStatus == 'end'" class="footer-text">阅卷已结束。</div>

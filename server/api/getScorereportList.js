@@ -23,6 +23,7 @@ exports.main = async (event, configfilepath) => {
       }
     }
     let data = []
+    const confignamemap = {}
     if (account.type == 'student') {
       const idres = await db.collection('scorereportconfig').find({
         studentVisible: true,
@@ -31,6 +32,9 @@ exports.main = async (event, configfilepath) => {
       }).sort({
         updateTime: -1
       }).skip(skip).limit(limit).toArray()
+      idres.forEach(item => {
+        confignamemap[item.scorereportconfigId] = item.name
+      })
       data = await db.collection('scorereport').find({
         scorereportconfigId: {
           $in: idres.map(item => item.scorereportconfigId)
@@ -87,6 +91,9 @@ exports.main = async (event, configfilepath) => {
         }).sort({
           updateTime: -1
         }).skip(skip).limit(limit).toArray()
+        idres.forEach(item => {
+          confignamemap[item.scorereportconfigId] = item.name
+        })
         data = await db.collection('scorereport').find({
           scorereportconfigId: {
             $in: idres.map(item => item.scorereportconfigId)
@@ -109,6 +116,9 @@ exports.main = async (event, configfilepath) => {
         }).sort({
           updateTime: -1
         }).skip(skip).limit(limit).toArray()
+        idres.forEach(item => {
+          confignamemap[item.scorereportconfigId] = item.name
+        })
         data = await db.collection('scorereport').find({
           scorereportconfigId: {
             $in: idres.map(item => item.scorereportconfigId)
@@ -162,6 +172,9 @@ exports.main = async (event, configfilepath) => {
             updateTime: -1
           }).skip(skip).limit(limit).toArray()
         }
+        idres.forEach(item => {
+          confignamemap[item.scorereportconfigId] = item.name
+        })
         data = await db.collection('scorereport').find({
           scorereportconfigId: {
             $in: idres.map(item => item.scorereportconfigId)
@@ -189,6 +202,7 @@ exports.main = async (event, configfilepath) => {
     await Promise.all(promises)
     data.forEach(item => {
       item.examName = exammap[item.examId]
+      item.scorereportconfigName = confignamemap[item.scorereportconfigId]
     })
     return {
       errCode: 0,

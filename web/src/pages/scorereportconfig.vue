@@ -66,7 +66,7 @@ async function generateScorereportconfig(id) {
     }
   })
   TinyModal.message({
-    message: '操作成功。正在后台生成，请耐心等待',
+    message: '操作成功',
     status: 'success'
   })
   get()
@@ -148,18 +148,15 @@ async function deleteScorereportconfig(id) {
       <div class="cz">
         <div class="spacebetween">
           <div class="cz">
-            <div v-if="item.type == 'system'" class="sp">
-              <div class="large-bold-text">系统默认</div>
-              <tiny-tag type="info">系统</tiny-tag>
-            </div>
-            <div v-if="item.type == 'custom'" class="sp">
+            <div class="sp">
               <div class="large-bold-text">{{ item.name }}</div>
-              <tiny-tag type="info">自定义</tiny-tag>
+              <tiny-tag v-if="item.type == 'system'" type="info">系统</tiny-tag>
+              <tiny-tag v-if="item.type == 'custom'" type="info">自定义</tiny-tag>
             </div>
             <div>科目：{{ item.subject }}</div>
             <div v-if="item.updateTimeSeen == true">最近生成时间：{{ item.updateTime }}</div>
           </div>
-          <div class="sp">
+          <div v-if="item.status != 'processing'" class="sp">
             <tiny-button type="success" :disabled="item.status == 'processing'"
               @click="generateScorereportconfig(item.scorereportconfigId)">生成</tiny-button>
             <tiny-button type="info" @click="updateScorereportconfig(item.scorereportconfigId)">选择配置文件修改</tiny-button>
@@ -170,6 +167,7 @@ async function deleteScorereportconfig(id) {
               </template>
             </tiny-popconfirm>
           </div>
+          <div v-if="item.status == 'processing'"><tiny-tag type="warning">生成中</tiny-tag></div>
         </div>
       </div>
     </div>

@@ -193,7 +193,7 @@ async function mark(id) {
       <tiny-breadcrumb-item :to="{ path: '/dealquestion' }" label="处理问题卷"></tiny-breadcrumb-item>
     </tiny-breadcrumb>
     <div class="spacebetween">
-      <div class="cz" style="width:55%;height:100%">
+      <div class="cz" style="width:50%;height:100%">
         <div class="spacebetween">
           <div class="sp">
             <div class="large-bold-text">{{ data.examName }}</div>
@@ -222,8 +222,8 @@ async function mark(id) {
           <img v-if="item == ''" src="/errorimage.png"></img>
         </div>
       </div>
-      <div class="sp" style="width:40%;height:100%">
-        <div class="cz" style="width:50%;height:100%">
+      <div class="sp" style="width:45%;height:100%">
+        <div v-if="markloglist.length > 0" class="cz" style="height:100%">
           <div v-for="item, index in markloglist" class="cz">
             <div class="bold-text">{{ item.questionName }}</div>
             <div v-if="item.stepScore.length == 1">
@@ -245,7 +245,7 @@ async function mark(id) {
               <tiny-switch v-model="marklist[index].typicalMistake"></tiny-switch>
             </div>
           </div>
-          <tiny-button v-if="markloglist.length > 0" type="success" @click="submit">提交</tiny-button>
+          <tiny-button type="success" @click="submit">提交</tiny-button>
           <div v-if="questionreason != ''" class="sp">
             <div class="bold-text">原因</div>
             <div>{{ questionreason }}</div>
@@ -255,7 +255,7 @@ async function mark(id) {
             <div style="flex:1">{{ studentaccount }}</div>
           </div>
         </div>
-        <div class="cz" style="width:50%;height:100%">
+        <div class="cz" style="height:100%">
           <div class="sp">
             <div class="large-bold-text">列表</div>
             <tiny-button type="info" @click="get">刷新</tiny-button>

@@ -5,13 +5,14 @@ function average(arr) {
   if (arr.length == 0) {
     return 0
   }
-  return fixtwo((arr.reduce((a, b) => a + b, 0) / arr.length))
+  return fixtwo(sum(arr) / arr.length)
 }
 function standarddeviation(arr) {
   if (arr.length == 0) {
     return 0
   }
-  return fixtwo(Math.sqrt(arr.reduce((s, x) => s + (x - average(arr)) ** 2, 0) / arr.length))
+  const averagescore = average(arr)
+  return fixtwo(Math.sqrt(arr.reduce((s, x) => s + (x - averagescore) ** 2, 0) / arr.length))
 }
 function fixtwo(num) {
   return Number(num.toFixed(2))
@@ -154,6 +155,7 @@ function getScoreReport(subject, classes, marklog, config) {
         if (questioninfo.objective) {
           jointmap.question[r.questionName] = {
             option: Array.from({ length: questioninfo.rule.option.length }, () => []),
+            optionName: questioninfo.rule.option,
             scorelist: []
           }
         }
@@ -197,6 +199,7 @@ function getScoreReport(subject, classes, marklog, config) {
           if (questioninfo.objective) {
             schoolmap[studentinfo.schoolId].question[r.questionName] = {
               option: Array.from({ length: questioninfo.rule.option.length }, () => []),
+              optionName: questioninfo.rule.option,
               scorelist: []
             }
           }
@@ -232,6 +235,7 @@ function getScoreReport(subject, classes, marklog, config) {
           if (questioninfo.objective) {
             classmap[classid].question[r.questionName] = {
               option: Array.from({ length: questioninfo.rule.option.length }, () => []),
+              optionName: questioninfo.rule.option,
               scorelist: []
             }
           }
@@ -297,6 +301,7 @@ function getScoreReport(subject, classes, marklog, config) {
       return {
         questionName: q[0],
         option: q[1].option,
+        optionName: q[1].optionName,
         averageScore: averagescore,
         scoringRate: scoringrate,
         scoreStandardDeviation: scorestandarddeviation
@@ -350,6 +355,7 @@ function getScoreReport(subject, classes, marklog, config) {
         return {
           questionName: q[0],
           option: q[1].option,
+          optionName: q[1].optionName,
           averageScore: averagescore,
           scoringRate: scoringrate,
           scoreStandardDeviation: scorestandarddeviation
@@ -396,6 +402,7 @@ function getScoreReport(subject, classes, marklog, config) {
         return {
           questionName: q[0],
           option: q[1].option,
+          optionName: q[1].optionName,
           averageScore: averagescore,
           scoringRate: scoringrate,
           scoreStandardDeviation: scorestandarddeviation
@@ -463,6 +470,7 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
         subject: item.name,
         type: 'system',
         scorereportconfigId: scorereportconfigid,
+        name: exam.name + '（' + item.name + '）',
         config: item.config,
         student: [],
         studentVisible: true,
@@ -479,6 +487,7 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
         return
       }
       scorereportconfigid = scorereportconfig.scorereportconfigId
+      item.config = scorereportconfig.config
     }
     await db.collection('scorereportconfig').updateOne({
       scorereportconfigId: scorereportconfigid

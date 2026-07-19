@@ -294,7 +294,7 @@ async function mark(id) {
       <div v-if="type == 'arbitrate'">仲裁</div>
     </div>
     <div class="spacebetween">
-      <div class="cz" style="width:55%;height:100%">
+      <div class="cz" style="width:50%;height:100%">
         <div class="spacebetween">
           <div class="sp">
             <div class="bold-text">题组</div>
@@ -324,8 +324,8 @@ async function mark(id) {
           <img v-if="item == ''" src="/errorimage.png"></img>
         </div>
       </div>
-      <div class="sp" style="width:40%;height:100%">
-        <div class="cz" style="width:50%;height:100%">
+      <div class="sp" style="width:45%;height:100%">
+        <div v-if="markloglist.length > 0" class="cz" style="height:100%">
           <div v-for="item, index in markloglist" class="cz">
             <div class="bold-text">{{ item.questionName }}</div>
             <div v-if="item.stepScore.length == 1">
@@ -352,8 +352,8 @@ async function mark(id) {
             </div>
           </div>
           <div class="sp">
-            <tiny-button v-if="markloglist.length > 0" type="success" @click="submit">提交</tiny-button>
-            <tiny-button v-if="markloglist.length > 0" type="warning" @click="openDialog">提交问题卷</tiny-button>
+            <tiny-button type="success" @click="submit">提交</tiny-button>
+            <tiny-button type="warning" @click="openDialog">提交问题卷</tiny-button>
           </div>
           <div v-if="type == 'arbitrate' && scorehistory != ''" class="cz">
             <div class="large-bold-text">历史分数</div>
@@ -377,7 +377,7 @@ async function mark(id) {
             </div>
           </div>
         </div>
-        <div class="cz" style="width:50%;height:100%">
+        <div class="cz" style="height:100%">
           <div class="sp">
             <div class="large-bold-text">阅卷记录</div>
             <tiny-button type="info" @click="getHistoryMarklog">刷新</tiny-button>

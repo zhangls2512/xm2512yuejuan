@@ -84,7 +84,7 @@ async function tool(id) {
         <div v-for="subject in item.subject" class="cz">
           <div class="spacebetween">
             <div class="wide-sp">
-              <div style="width:300px">【{{ subject.name }}】</div>
+              <div style="width:150px">【{{ subject.name }}】</div>
               <div class="footer-text">阅卷已结束。</div>
             </div>
           </div>
