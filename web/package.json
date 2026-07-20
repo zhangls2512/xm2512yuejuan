@@ -6,7 +6,6 @@
   },
   "dependencies": {
     "@opentiny/vue": "latest",
-    "js-cookie": "latest",
     "vue": "latest",
     "vue-router": "latest"
   },

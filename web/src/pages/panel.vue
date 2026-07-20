@@ -2,13 +2,12 @@
 document.title = '智能阅卷系统'
 import { ref } from 'vue'
 import icon from '@opentiny/vue-icon'
-import cookie from 'js-cookie'
 import router from '../router'
 const tabs = ref([])
-if (!cookie.get('authorization')) {
+if (!localStorage.getItem('authorization')) {
   router.push('/login')
 }
-const exist = cookie.get('accountinfo')
+const exist = localStorage.getItem('accountinfo')
 if (exist) {
   const accountinfo = JSON.parse(exist)
   if (accountinfo.type == 'admin' && !accountinfo.schoolId) {
@@ -192,8 +191,8 @@ function tabClick(data) {
       message: '确定退出登录？',
       events: {
         confirm() {
-          cookie.remove('authorization')
-          cookie.remove('accountinfo')
+          localStorage.removeItem('authorization')
+          localStorage.removeItem('accountinfo')
           router.push('/login')
           TinyModal.message({
             message: '已退出登录',

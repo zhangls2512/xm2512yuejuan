@@ -56,14 +56,6 @@ async function pagesizeChange(t) {
         </div>
         <div>时间：{{ item.examTime }}</div>
         <div>科目：{{ item.subject }}</div>
-        <div v-if="item.admin == true" class="cz">
-          <div class="line"></div>
-          <div class="spacebetween">
-            <div>科组长</div>
-            <tiny-button type="info">工具箱</tiny-button>
-          </div>
-          <div class="line"></div>
-        </div>
       </div>
     </div>
     <tiny-pager mode="number" :current-page="currentpage" :page-size="pagesize" :page-sizes="[5, 10, 15, 20]"

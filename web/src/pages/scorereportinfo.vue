@@ -1,9 +1,9 @@
 <script setup>
 document.title = '智能阅卷系统 - 成绩报告 - 报告详情'
 import { ref } from 'vue'
-import cookie from 'js-cookie'
 import { useRoute } from 'vue-router'
 import { decode } from '../util/code'
+import request from '../util/request'
 const route = useRoute()
 const info = route.query.info
 const accountinfo = ref({})
@@ -11,8 +11,11 @@ const data = ref({})
 const tabledata = ref([])
 const columns = ref([])
 const tabname = ref('成绩单')
-const exist = cookie.get('accountinfo')
+const exist = localStorage.getItem('accountinfo')
 const fu = ref(false)
+const qadialog = ref(false)
+const qimage = ref('')
+const aimage = ref('')
 if (exist) {
   accountinfo.value = JSON.parse(exist)
 }
@@ -24,12 +27,29 @@ if (info) {
         tabledata.value = flatStudents(data.value.student)
         columns.value = buildColumns(data.value.student)
       }
-      if (data.value.subject != '多学科' && data.student.length > 0 && data.student[0].fuScore) {
+      if (data.value.subject != '多学科' && data.value.student.length > 0 && data.value.student[0].fuScore != undefined) {
         fu.value = true
       }
     }
   } catch {
   }
+}
+async function openQa(row) {
+  qadialog.value = true
+  const res = await request({
+    apiPath: '/getQuestionAndAnswer',
+    body: {
+      id: data.value.scorereportconfigId,
+      questionName: row.questionName
+    }
+  })
+  qimage.value = res.data.question
+  aimage.value = res.data.answer
+}
+function closeQa() {
+  qadialog.value = false
+  qimage.value = ''
+  aimage.value = ''
 }
 function flatStudents(students) {
   return students.map(stu => {
@@ -132,7 +152,11 @@ function formatScoringRate(a) {
         <tiny-tab-item v-if="data.subject != '多学科'" title="小题分析" name="小题分析">
           <template #default>
             <tiny-grid :data="data.question" border="true">
-              <tiny-grid-column field="questionName" title="题号" align="center"></tiny-grid-column>
+              <tiny-grid-column field="questionName" title="题号" align="center">
+                <template #default="{ row }">
+                  <div class="clickwz" @click="openQa(row)">{{ row.questionName }}</div>
+                </template>
+              </tiny-grid-column>
               <tiny-grid-column field="averageScore" title="平均分" align="center"></tiny-grid-column>
               <tiny-grid-column field="scoringRate" title="得分率" :format-text="formatScoringRate"
                 align="center"></tiny-grid-column>
@@ -186,5 +210,21 @@ function formatScoringRate(a) {
         <div>{{ data.info.level }}</div>
       </div>
     </div>
+    <tiny-dialog-box class="dialog" :visible="qadialog" title="题目" @close="closeQa">
+      <div v-if="qimage == '' || aimage == ''">未设置题目，如有疑问请联系考试管理员</div>
+      <div v-if="qimage != '' && aimage != ''" class="cz">
+        <div class="sp">
+          <div>题目</div>
+          <img :src="qimage"></img>
+        </div>
+        <div class="sp">
+          <div>答案</div>
+          <img :src="aimage"></img>
+        </div>
+      </div>
+      <template #footer>
+        <tiny-button type="info" @click="closeQa">确定</tiny-button>
+      </template>
+    </tiny-dialog-box>
   </div>
 </template>

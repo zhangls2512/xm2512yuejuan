@@ -2,7 +2,6 @@
 document.title = '智能阅卷系统 - 登录'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import cookie from 'js-cookie'
 import request from '../util/request'
 import router from '../router'
 const route = useRoute()
@@ -11,7 +10,7 @@ const password = ref('')
 function routePush() {
   router.push('/panel')
 }
-if (cookie.get('authorization')) {
+if (localStorage.getItem('authorization')) {
   routePush()
 }
 async function login() {
@@ -34,16 +33,8 @@ async function login() {
     authorization: 'Basic ' + btoa(account.value + ':' + password.value)
   })
   const expires = new Date(Date.now() + 604800000)
-  cookie.set('authorization', 'Basic ' + btoa(account.value + ':' + password.value), {
-    expires: expires,
-    secure: true,
-    sameSite: 'strict'
-  })
-  cookie.set('accountinfo', JSON.stringify(res.data), {
-    expires: expires,
-    secure: true,
-    sameSite: 'strict'
-  })
+  localStorage.setItem('authorization', 'Basic ' + btoa(account.value + ':' + password.value))
+  localStorage.setItem('accountinfo', JSON.stringify(res.data))
   routePush()
   TinyModal.message({
     message: '登录成功',

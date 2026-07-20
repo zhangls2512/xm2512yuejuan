@@ -1,7 +1,6 @@
 <script setup>
 document.title = '智能阅卷系统 - 账号信息'
 import { ref } from 'vue'
-import cookie from 'js-cookie'
 import request from '../util/request'
 import router from '../router'
 const accountinfo = ref({})
@@ -13,7 +12,7 @@ const typemap = {
   teacher: '老师',
   student: '学生'
 }
-const exist = cookie.get('accountinfo')
+const exist = localStorage.getItem('accountinfo')
 if (exist) {
   accountinfo.value = JSON.parse(exist)
   if (accountinfo.value.type != 'admin') {
@@ -64,8 +63,8 @@ async function updatePassword() {
     message: '修改成功，请重新登录',
     status: 'success'
   })
-  cookie.remove('authorization')
-  cookie.remove('accountinfo')
+  localStorage.removeItem('authorization')
+  localStorage.removeItem('accountinfo')
   router.push('/login')
 }
 </script>

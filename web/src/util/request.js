@@ -1,4 +1,3 @@
-import cookie from 'js-cookie'
 export default async function request({ apiPath, body, authorization }) {
   const loading = TinyLoading.service({
     lock: true,
@@ -10,7 +9,7 @@ export default async function request({ apiPath, body, authorization }) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': authorization ? authorization : cookie.get('authorization')
+        'Authorization': authorization ? authorization : localStorage.getItem('authorization')
       },
       body: JSON.stringify(body)
     })

@@ -1,7 +1,6 @@
 <script setup>
 document.title = '智能阅卷系统 - 考试管理 - 进行中'
 import { ref } from 'vue'
-import cookie from 'js-cookie'
 import { encode } from '../util/code'
 import { readFile, saveFile } from '../util/file'
 import request from '../util/request'
@@ -38,7 +37,7 @@ async function get() {
     return item
   })
 }
-const exist = cookie.get('accountinfo')
+const exist = localStorage.getItem('accountinfo')
 if (exist) {
   const accountinfo = JSON.parse(exist)
   if (accountinfo.type == 'admin') {

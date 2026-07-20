@@ -1,0 +1,154 @@
+'use strict'
+exports.main = async (event, configfilepath) => {
+  const { read } = require('../../util/file')
+  const { readConfig } = require('../../util/readconfig')
+  const db = await (require('../util/db').database(configfilepath))
+  const requestdata = JSON.parse(event.body)
+  if (typeof (requestdata.id) != 'string' || requestdata.id.length != 36) {
+    return {
+      errCode: 400,
+      errMsg: '请求参数错误',
+      errFix: '传递有效的id参数'
+    }
+  }
+  if (typeof (requestdata.questionName) != 'string' || !requestdata.questionName) {
+    return {
+      errCode: 400,
+      errMsg: '请求参数错误',
+      errFix: '传递有效的questionName参数'
+    }
+  }
+  const res = await require('../util/authcheck').main(event.headers, configfilepath)
+  if (res.errCode != 0) {
+    return res
+  } else {
+    const account = res.account
+    if (account.type == 'admin') {
+      return {
+        errCode: 403,
+        errMsg: '无权限',
+        errFix: '无修复建议'
+      }
+    }
+    const scorereportconfigres = await db.collection('scorereportconfig').findOne({
+      scorereportconfigId: requestdata.id,
+      status: 'finished'
+    })
+    if (!scorereportconfigres) {
+      return {
+        errCode: 400,
+        errMsg: '成绩报告配置不存在',
+        errFix: '无修复建议'
+      }
+    }
+    if (scorereportconfigres.subject == '多学科') {
+      return {
+        errCode: 400,
+        errMsg: '请求参数错误',
+        errFix: '传递有效的id参数'
+      }
+    }
+    let access = false
+    if (account.type == 'student' && scorereportconfigres.studentVisible && scorereportconfigres.student.includes(account.account)) {
+      access = true
+    }
+    if (account.type == 'teacher') {
+      if (scorereportconfigres.classTeacherVisible) {
+        access = true
+      }
+      if (scorereportconfigres.jointVisibleAccount.includes(account.account)) {
+        access = true
+      }
+      if (scorereportconfigres.schoolVisibleAccount.includes(account.account)) {
+        access = true
+      }
+      if (scorereportconfigres.classVisibleAccount.includes(account.account)) {
+        access = true
+      }
+    }
+    if (!access) {
+      return {
+        errCode: 403,
+        errMsg: '无权限',
+        errFix: '无修复建议'
+      }
+    }
+    const examsubjectgetres = await db.collection('examsubject').findOne({
+      examId: scorereportconfigres.examId,
+      $or: [
+        {
+          name: scorereportconfigres.subject
+        },
+        {
+          subSubject: scorereportconfigres.subject
+        }
+      ]
+    })
+    if (!examsubjectgetres) {
+      return {
+        errCode: 400,
+        errMsg: '科目不存在',
+        errFix: '无修复建议'
+      }
+    }
+    let questions = examsubjectgetres.objectiveQuestion.concat(examsubjectgetres.subjectiveQuestion)
+    if (examsubjectgetres.name != scorereportconfigres.subject) {
+      questions = questions.filter(item => item.subject = scorereportconfigres.subject)
+    }
+    const question = questions.find(item => item.name == requestdata.questionName)
+    if (!question) {
+      return {
+        errCode: 400,
+        errMsg: '题目不存在',
+        errFix: '无修复建议'
+      }
+    }
+    if (!question.questionId) {
+      return {
+        errCode: 0,
+        errMsg: '成功',
+        data: {
+          question: '',
+          answer: ''
+        }
+      }
+    }
+    if (question.questionId) {
+      const exam = await db.collection('exam').findOne({
+        examId: scorereportconfigres.examId
+      })
+      if (!exam) {
+        return {
+          errCode: 400,
+          errMsg: '考试不存在',
+          errFix: '无修复建议'
+        }
+      }
+      const qa = await db.collection('question').findOne({
+        questionId: question.questionId,
+        schoolId: exam.schoolId
+      })
+      if (!qa) {
+        return {
+          errCode: 0,
+          errMsg: '成功',
+          data: {
+            question: '',
+            answer: ''
+          }
+        }
+      }
+      if (qa) {
+        const dir = readConfig(configfilepath, 'dataRootPath') + '/question/' + question.questionId + '-'
+        return {
+          errCode: 0,
+          errMsg: '成功',
+          data: {
+            question: read(dir + 'question'),
+            answer: read(dir + 'answer')
+          }
+        }
+      }
+    }
+  }
+}

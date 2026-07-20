@@ -1,7 +1,6 @@
 <script setup>
 document.title = '智能阅卷系统 - 成绩报告'
 import { ref } from 'vue'
-import cookie from 'js-cookie'
 import { encode } from '../util/code'
 import request from '../util/request'
 import router from '../router'
@@ -59,7 +58,7 @@ async function get() {
     return item
   })
 }
-const exist = cookie.get('accountinfo')
+const exist = localStorage.getItem('accountinfo')
 if (exist) {
   accountinfo.value = JSON.parse(exist)
   if (accountinfo.value.type == 'student') {

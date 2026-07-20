@@ -82,6 +82,20 @@ exports.main = async (event, configfilepath) => {
         }
       }
     }
+    const scorereportconfigres = await db.collection('scorereportconfig').findOne({
+      examId: requestdata.id,
+      subject: {
+        $in: examsubjectgetres.name.concat(examsubjectgetres.subSubject)
+      },
+      student: requestdata.studentAccount
+    })
+    if (scorereportconfigres) {
+      return {
+        errCode: 400,
+        errMsg: '已生成成绩报告',
+        errFix: '无修复建议'
+      }
+    }
     const deleteres = await db.collection('answer').deleteOne({
       examId: requestdata.id,
       subject: requestdata.subject,
