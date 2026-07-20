@@ -16,6 +16,8 @@ const fu = ref(false)
 const qadialog = ref(false)
 const qimage = ref('')
 const aimage = ref('')
+const sadialog = ref(false)
+const saimage = ref([])
 if (exist) {
   accountinfo.value = JSON.parse(exist)
 }
@@ -50,6 +52,22 @@ function closeQa() {
   qadialog.value = false
   qimage.value = ''
   aimage.value = ''
+}
+async function openSa(row, stu) {
+  sadialog.value = true
+  const res = await request({
+    apiPath: '/getStudentQuestionAnswer',
+    body: {
+      id: data.value.scorereportconfigId,
+      studentAccount: stu,
+      questionName: row.questionName
+    }
+  })
+  saimage.value = res.data
+}
+function closeSa() {
+  sadialog.value = false
+  saimage.value = []
 }
 function flatStudents(students) {
   return students.map(stu => {
@@ -165,20 +183,20 @@ function formatScoringRate(a) {
                 <template #default="{ row }">
                   <div v-if="row.option != undefined" class="cz">
                     <div v-for="item, index in row.optionName" class="sp">
-                      <div v-if="index > 0" class="line"></div>
                       <div class="bold-text">{{ item }}</div>
                       <div class="cz">
                         <div v-for="i in row.option[index]">{{ i }}</div>
                       </div>
+                      <div>（{{ row.option[index].length }}人）</div>
                     </div>
                   </div>
                   <div v-if="row.score != undefined" class="cz">
-                    <div v-for="item, index in row.score" class="sp">
-                      <div v-if="index > 0" class="line"></div>
+                    <div v-for="item in row.score" class="sp">
                       <div class="bold-text">{{ item.score }}</div>
                       <div class="cz">
-                        <div v-for="i in item.student">{{ i }}</div>
+                        <div v-for="i in item.student" class="clickwz" @click="openSa(row, i)">{{ i }}</div>
                       </div>
+                      <div>（{{ item.student.length }}人）</div>
                     </div>
                   </div>
                 </template>
@@ -224,6 +242,14 @@ function formatScoringRate(a) {
       </div>
       <template #footer>
         <tiny-button type="info" @click="closeQa">确定</tiny-button>
+      </template>
+    </tiny-dialog-box>
+    <tiny-dialog-box class="dialog" :visible="sadialog" title="作答" @close="closeSa">
+      <div class="cz">
+        <img v-for="item in saimage" :src="item"></img>
+      </div>
+      <template #footer>
+        <tiny-button type="info" @click="closeSa">确定</tiny-button>
       </template>
     </tiny-dialog-box>
   </div>
