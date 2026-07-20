@@ -74,6 +74,40 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
+    let validaccounts = []
+    if (!examgetres.schoolId) {
+      validaccounts = await db.collection('account').find({
+        type: 'teacher'
+      }).toArray()
+    }
+    if (examgetres.schoolId) {
+      validaccounts = await db.collection('account').find({
+        schoolId: examgetres.schoolId,
+        type: 'teacher'
+      }).toArray()
+    }
+    validaccounts = validaccounts.map(item => item.account)
+    if (requestdata.jointVisibleAccount.some(item => !validaccounts.includes(item))) {
+      return {
+        errCode: 400,
+        errMsg: '请求参数错误',
+        errFix: '传递有效的jointVisibleAccount参数'
+      }
+    }
+    if (requestdata.schoolVisibleAccount.some(item => !validaccounts.includes(item))) {
+      return {
+        errCode: 400,
+        errMsg: '请求参数错误',
+        errFix: '传递有效的schoolVisibleAccount参数'
+      }
+    }
+    if (requestdata.classVisibleAccount.some(item => !validaccounts.includes(item))) {
+      return {
+        errCode: 400,
+        errMsg: '请求参数错误',
+        errFix: '传递有效的classVisibleAccount参数'
+      }
+    }
     if (requestdata.subject == '多学科') {
       const admin = examgetres.admin.find(item => item.account == account.account)
       if (!admin && (account.type != 'admin' || account.schoolId != examgetres.schoolId)) {
@@ -90,6 +124,56 @@ exports.main = async (event, configfilepath) => {
           errFix: '无修复建议'
         }
       }
+      if (!Array.isArray(requestdata.scorereportconfigIdArray) || requestdata.scorereportconfigIdArray.length == 0 || !requestdata.scorereportconfigIdArray.every(item => typeof (item) == 'string' && item.length == 36)) {
+        return {
+          errCode: 400,
+          errMsg: '请求参数错误',
+          errFix: '传递有效的scorereportconfigIdArray参数'
+        }
+      }
+      const subjects = []
+      for (let i = 0; i < requestdata.scorereportconfigIdArray.length; i++) {
+        const item = requestdata.scorereportconfigIdArray[i]
+        const scoreconfig = await db.collection('scorereportconfig').findOne({
+          scorereportconfigId: item,
+          examId: examgetres.examId,
+          subject: {
+            $ne: '多学科'
+          },
+          status: 'finished'
+        })
+        if (!scoreconfig) {
+          return {
+            errCode: 400,
+            errMsg: '请求参数错误',
+            errFix: '传递有效的scorereportconfigIdArray参数'
+          }
+        }
+        if (subjects.includes(scoreconfig.subject)) {
+          return {
+            errCode: 400,
+            errMsg: '请求参数错误',
+            errFix: '传递有效的scorereportconfigIdArray参数'
+          }
+        }
+        subjects.push(scoreconfig.subject)
+      }
+      await db.collection('scorereportconfig').insertOne({
+        examId: requestdata.id,
+        subject: requestdata.subject,
+        name: requestdata.name,
+        type: 'custom',
+        scorereportconfigId: crypto.randomUUID(),
+        scorereportconfigIdArray: requestdata.scorereportconfigIdArray,
+        student: [],
+        studentVisible: false,
+        classTeacherVisible: requestdata.classTeacherVisible,
+        jointVisibleAccount: requestdata.jointVisibleAccount,
+        schoolVisibleAccount: requestdata.schoolVisibleAccount,
+        classVisibleAccount: requestdata.classVisibleAccount,
+        status: 'pending',
+        updateTime: -1
+      })
     }
     if (requestdata.subject != '多学科') {
       const config = {
@@ -247,40 +331,6 @@ exports.main = async (event, configfilepath) => {
             errMsg: '无权限',
             errFix: '无修复建议'
           }
-        }
-      }
-      let validaccounts = []
-      if (!examgetres.schoolId) {
-        validaccounts = await db.collection('account').find({
-          type: 'teacher'
-        }).toArray()
-      }
-      if (examgetres.schoolId) {
-        validaccounts = await db.collection('account').find({
-          schoolId: examgetres.schoolId,
-          type: 'teacher'
-        }).toArray()
-      }
-      validaccounts = validaccounts.map(item => item.account)
-      if (requestdata.jointVisibleAccount.some(item => !validaccounts.includes(item))) {
-        return {
-          errCode: 400,
-          errMsg: '请求参数错误',
-          errFix: '传递有效的jointVisibleAccount参数'
-        }
-      }
-      if (requestdata.schoolVisibleAccount.some(item => !validaccounts.includes(item))) {
-        return {
-          errCode: 400,
-          errMsg: '请求参数错误',
-          errFix: '传递有效的schoolVisibleAccount参数'
-        }
-      }
-      if (requestdata.classVisibleAccount.some(item => !validaccounts.includes(item))) {
-        return {
-          errCode: 400,
-          errMsg: '请求参数错误',
-          errFix: '传递有效的classVisibleAccount参数'
         }
       }
       await db.collection('scorereportconfig').insertOne({

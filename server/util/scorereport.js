@@ -431,6 +431,184 @@ function getScoreReport(subject, classes, marklog, config) {
     class: classreports
   }
 }
+function getMultipleSubjectScoreReport(input) {
+  const jointmap = {
+    student: {}
+  }
+  const schoolmap = {}
+  const classmap = {}
+  input.forEach(item => {
+    if (item.type == 'joint') {
+      item.student.forEach(stu => {
+        const studentaccount = stu.studentAccount
+        delete stu.studentAccount
+        if (!jointmap.student[studentaccount]) {
+          jointmap.student[studentaccount] = {
+            studentAccount: studentaccount,
+            subject: [
+              {
+                name: '多学科',
+                totalScoreWithExtra: 0,
+                totalScoreWithoutExtra: 0,
+                extraTotalScore: 0
+              }
+            ]
+          }
+        }
+        jointmap.student[studentaccount].subject[0].totalScoreWithExtra += stu.totalScoreWithExtra
+        if (typeof (stu.fuScore) == 'undefined') {
+          jointmap.student[studentaccount].subject[0].totalScoreWithoutExtra += stu.totalScoreWithoutExtra
+        }
+        if (typeof (stu.fuScore) == 'number') {
+          jointmap.student[studentaccount].subject[0].totalScoreWithoutExtra += stu.fuScore
+        }
+        jointmap.student[studentaccount].subject[0].extraTotalScore += stu.extraTotalScore
+        jointmap.student[studentaccount].subject.push({
+          name: item.subject,
+          ...stu
+        })
+      })
+    }
+    if (item.type == 'school') {
+      if (!schoolmap[item.schoolId]) {
+        schoolmap[item.schoolId] = {
+          schoolId: item.schoolId,
+          student: {}
+        }
+      }
+      item.student.forEach(stu => {
+        const studentaccount = stu.studentAccount
+        delete stu.studentAccount
+        if (!schoolmap[item.schoolId].student[studentaccount]) {
+          schoolmap[item.schoolId].student[studentaccount] = {
+            studentAccount: studentaccount,
+            subject: [
+              {
+                name: '多学科',
+                totalScoreWithExtra: 0,
+                totalScoreWithoutExtra: 0,
+                extraTotalScore: 0
+              }
+            ]
+          }
+        }
+        schoolmap[item.schoolId].student[studentaccount].subject[0].totalScoreWithExtra += stu.totalScoreWithExtra
+        if (typeof (stu.fuScore) == 'undefined') {
+          schoolmap[item.schoolId].student[studentaccount].subject[0].totalScoreWithoutExtra += stu.totalScoreWithoutExtra
+        }
+        if (typeof (stu.fuScore) == 'number') {
+          schoolmap[item.schoolId].student[studentaccount].subject[0].totalScoreWithoutExtra += stu.fuScore
+        }
+        schoolmap[item.schoolId].student[studentaccount].subject[0].extraTotalScore += stu.extraTotalScore
+        schoolmap[item.schoolId].student[studentaccount].subject.push({
+          name: item.subject,
+          ...stu
+        })
+      })
+    }
+    if (item.type == 'class') {
+      if (!classmap[item.classId]) {
+        classmap[item.classId] = {
+          classId: item.classId,
+          student: {}
+        }
+      }
+      item.student.forEach(stu => {
+        const studentaccount = stu.studentAccount
+        delete stu.studentAccount
+        if (!classmap[item.classId].student[studentaccount]) {
+          classmap[item.classId].student[studentaccount] = {
+            studentAccount: studentaccount,
+            subject: [
+              {
+                name: '多学科',
+                totalScoreWithExtra: 0,
+                totalScoreWithoutExtra: 0,
+                extraTotalScore: 0
+              }
+            ]
+          }
+        }
+        classmap[item.classId].student[studentaccount].subject[0].totalScoreWithExtra += stu.totalScoreWithExtra
+        if (typeof (stu.fuScore) == 'undefined') {
+          classmap[item.classId].student[studentaccount].subject[0].totalScoreWithoutExtra += stu.totalScoreWithoutExtra
+        }
+        if (typeof (stu.fuScore) == 'number') {
+          classmap[item.classId].student[studentaccount].subject[0].totalScoreWithoutExtra += stu.fuScore
+        }
+        classmap[item.classId].student[studentaccount].subject[0].extraTotalScore += stu.extraTotalScore
+        classmap[item.classId].student[studentaccount].subject.push({
+          name: item.subject,
+          ...stu
+        })
+      })
+    }
+  })
+  jointmap.student = Object.values(jointmap.student)
+  jointmap.student.sort((a, b) => b.subject[0].totalScoreWithoutExtra - a.subject[0].totalScoreWithoutExtra)
+  const jointrankmap = {}
+  jointmap.student.forEach((item, index) => {
+    if (index > 0 && item.subject[0].totalScoreWithoutExtra == jointmap.student[index - 1].subject[0].totalScoreWithoutExtra) {
+      jointmap.student[index].subject[0].jointRank = jointmap.student[index - 1].subject[0].jointRank
+      jointrankmap[item.studentAccount] = jointmap.student[index - 1].subject[0].jointRank
+    } else {
+      jointmap.student[index].subject[0].jointRank = index + 1
+      jointrankmap[item.studentAccount] = index + 1
+    }
+  })
+  const jointstudentscorearr = jointmap.student.map(item => item.subject[0].totalScoreWithoutExtra)
+  jointmap.averageScore = average(jointstudentscorearr)
+  jointmap.scoreStandardDeviation = standarddeviation(jointstudentscorearr)
+  Object.keys(schoolmap).forEach(schoolid => {
+    schoolmap[schoolid].student = Object.values(schoolmap[schoolid].student)
+    schoolmap[schoolid].student.sort((a, b) => b.subject[0].totalScoreWithoutExtra - a.subject[0].totalScoreWithoutExtra)
+  })
+  const schoolrankmap = {}
+  Object.keys(schoolmap).forEach(schoolid => {
+    const clonestudent = schoolmap[schoolid].student.map(s => s)
+    clonestudent.forEach((item, index) => {
+      item.subject[0].jointRank = jointrankmap[item.studentAccount]
+      if (index > 0 && item.subject[0].totalScoreWithoutExtra === clonestudent[index - 1].subject[0].totalScoreWithoutExtra) {
+        item.subject[0].schoolRank = clonestudent[index - 1].subject[0].schoolRank
+        schoolrankmap[item.studentAccount] = clonestudent[index - 1].subject[0].schoolRank
+      } else {
+        item.subject[0].schoolRank = index + 1
+        schoolrankmap[item.studentAccount] = index + 1
+      }
+    })
+    schoolmap[schoolid].student = clonestudent
+    const schoolstudentscorearr = schoolmap[schoolid].student.map(item => item.subject[0].totalScoreWithoutExtra)
+    schoolmap[schoolid].averageScore = average(schoolstudentscorearr)
+    schoolmap[schoolid].scoreStandardDeviation = standarddeviation(schoolstudentscorearr)
+  })
+  const schoolreports = Object.values(schoolmap)
+  Object.keys(classmap).forEach(classid => {
+    classmap[classid].student = Object.values(classmap[classid].student)
+    classmap[classid].student.sort((a, b) => b.subject[0].totalScoreWithoutExtra - a.subject[0].totalScoreWithoutExtra)
+  })
+  Object.keys(classmap).forEach(classid => {
+    const clonestudent = classmap[classid].student.map(s => s)
+    clonestudent.forEach((item, index) => {
+      item.subject[0].jointRank = jointrankmap[item.studentAccount]
+      item.subject[0].schoolRank = schoolrankmap[item.studentAccount]
+      if (index > 0 && item.subject[0].totalScoreWithoutExtra === clonestudent[index - 1].subject[0].totalScoreWithoutExtra) {
+        item.subject[0].classRank = clonestudent[index - 1].subject[0].classRank
+      } else {
+        item.subject[0].classRank = index + 1
+      }
+    })
+    classmap[classid].student = clonestudent
+    const classstudentscorearr = classmap[classid].student.map(item => item.subject[0].totalScoreWithoutExtra)
+    classmap[classid].averageScore = average(classstudentscorearr)
+    classmap[classid].scoreStandardDeviation = standarddeviation(classstudentscorearr)
+  })
+  const classreports = Object.values(classmap)
+  return {
+    joint: jointmap,
+    school: schoolreports,
+    class: classreports
+  }
+}
 async function generateDefaultScoreReport(exam, subject, configfilepath) {
   const crypto = require('crypto')
   const db = await (require('./db').database(configfilepath))
@@ -680,7 +858,91 @@ async function generateSingleSubjectScoreReport(exam, subject, scorereportconfig
     }
   })
 }
+async function generateMultipleSubjectScoreReport(exam, scorereportconfig, configfilepath) {
+  const db = await (require('./db').database(configfilepath))
+  await db.collection('scorereportconfig').updateOne({
+    scorereportconfigId: scorereportconfig.scorereportconfigId
+  }, {
+    $set: {
+      status: 'processing'
+    }
+  })
+  const scorereportres = await db.collection('scorereport').find({
+    scorereportconfigId: {
+      $in: scorereportconfig.scorereportconfigIdArray
+    }
+  }).toArray()
+  const scorereport = getMultipleSubjectScoreReport(scorereportres)
+  if (scorereportconfig.status == 'finished') {
+    await db.collection('scorereport').deleteMany({
+      scorereportconfigId: scorereportconfig.scorereportconfigId
+    })
+    await db.collection('scorereportconfig').updateOne({
+      scorereportconfigId: scorereportconfig.scorereportconfigId
+    }, {
+      $set: {
+        student: []
+      }
+    })
+  }
+  if (scorereport.joint.student.length > 0) {
+    await db.collection('scorereport').insertOne({
+      scorereportconfigId: scorereportconfig.scorereportconfigId,
+      examId: exam.examId,
+      subject: '多学科',
+      createTime: Date.now(),
+      type: 'joint',
+      student: scorereport.joint.student,
+      averageScore: scorereport.joint.averageScore,
+      scoreStandardDeviation: scorereport.joint.scoreStandardDeviation
+    })
+    await db.collection('scorereportconfig').updateOne({
+      scorereportconfigId: scorereportconfig.scorereportconfigId
+    }, {
+      $set: {
+        student: scorereport.joint.student.map(item => item.studentAccount)
+      }
+    })
+    for (let j = 0; j < scorereport.school.length; j++) {
+      const school = scorereport.school[j]
+      await db.collection('scorereport').insertOne({
+        scorereportconfigId: scorereportconfig.scorereportconfigId,
+        examId: exam.examId,
+        subject: '多学科',
+        createTime: Date.now(),
+        type: 'school',
+        schoolId: school.schoolId,
+        student: school.student,
+        averageScore: school.averageScore,
+        scoreStandardDeviation: school.scoreStandardDeviation
+      })
+    }
+    for (let j = 0; j < scorereport.class.length; j++) {
+      const classitem = scorereport.class[j]
+      await db.collection('scorereport').insertOne({
+        scorereportconfigId: scorereportconfig.scorereportconfigId,
+        examId: exam.examId,
+        subject: '多学科',
+        createTime: Date.now(),
+        type: 'class',
+        classId: classitem.classId,
+        student: classitem.student,
+        averageScore: classitem.averageScore,
+        scoreStandardDeviation: classitem.scoreStandardDeviation
+      })
+    }
+  }
+  await db.collection('scorereportconfig').updateOne({
+    scorereportconfigId: scorereportconfig.scorereportconfigId
+  }, {
+    $set: {
+      status: 'finished',
+      updateTime: Date.now()
+    }
+  })
+}
 module.exports = {
   generateDefaultScoreReport,
-  generateSingleSubjectScoreReport
+  generateSingleSubjectScoreReport,
+  generateMultipleSubjectScoreReport
 }

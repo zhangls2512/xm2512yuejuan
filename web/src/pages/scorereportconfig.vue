@@ -45,7 +45,8 @@ async function get() {
     return {
       ...item,
       updateTime: time(item.updateTime),
-      updateTimeSeen: item.updateTime == -1 ? false : true
+      updateTimeSeen: item.updateTime == -1 ? false : true,
+      idArray: item.subject == '多学科' ? item.scorereportconfigIdArray.join('、') : ''
     }
   })
 }
@@ -57,6 +58,13 @@ async function currentpageChange(t) {
 async function pagesizeChange(t) {
   pagesize.value = t
   get()
+}
+async function copy(value) {
+  await navigator.clipboard.writeText(value)
+  TinyModal.message({
+    message: '内容已复制',
+    status: 'success'
+  })
 }
 async function generateScorereportconfig(id) {
   await request({
@@ -83,6 +91,13 @@ async function newScorereportconfig() {
       status: 'warning'
     })
   }
+  if (param.value.subject == '多学科' && info.subject != '多学科') {
+    TinyModal.message({
+      message: '文件内容非法',
+      status: 'warning'
+    })
+    return
+  }
   if (info) {
     await request({
       apiPath: '/newScorereportconfig',
@@ -106,6 +121,13 @@ async function updateScorereportconfig(id) {
       message: '文件内容非法',
       status: 'warning'
     })
+  }
+  if (param.value.subject == '多学科' && info.subject != '多学科') {
+    TinyModal.message({
+      message: '文件内容非法',
+      status: 'warning'
+    })
+    return
   }
   if (info) {
     await request({
@@ -154,7 +176,9 @@ async function deleteScorereportconfig(id) {
               <tiny-tag v-if="item.type == 'custom'" type="info">自定义</tiny-tag>
             </div>
             <div>科目：{{ item.subject }}</div>
+            <div v-if="item.subject == '多学科'">合并成绩报告配置ID：{{ item.idArray }}</div>
             <div v-if="item.updateTimeSeen == true">最近生成时间：{{ item.updateTime }}</div>
+            <div style="cursor:pointer" @click="copy(item.scorereportconfigId)">ID：{{ item.scorereportconfigId }}</div>
           </div>
           <div v-if="item.status != 'processing'" class="sp">
             <tiny-button type="success" :disabled="item.status == 'processing'"

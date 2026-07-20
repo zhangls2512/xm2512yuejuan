@@ -64,6 +64,7 @@ exports.main = async (event, configfilepath) => {
           errFix: '无修复建议'
         }
       }
+      require('../util/scorereport').generateMultipleSubjectScoreReport(examgetres, scorereportconfigres, configfilepath)
     }
     if (scorereportconfigres.subject != '多学科') {
       const examsubjectgetres = await db.collection('examsubject').findOne({
