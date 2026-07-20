@@ -139,7 +139,7 @@ exports.main = async (event, configfilepath) => {
       if (answer) {
         const volume = examsubjectres.volume.find(item => item.name == answer.answer.volume)
         if (volume) {
-          const pages = volume.pages
+          const pages = volume.page
           for (let i = 0; i < pages.length; i++) {
             const coord = pages[i].find(item => item.markGroupName == markgroup.name)
             if (coord && coord.coord) {

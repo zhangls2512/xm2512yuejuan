@@ -2,6 +2,7 @@
 exports.main = async (event, configfilepath) => {
   const crypto = require('crypto')
   const { write } = require('../../util/file')
+  const { getAnswerIndex } = require('../util/ismarked')
   const { readConfig } = require('../../util/readconfig')
   const db = await (require('../util/db').database(configfilepath))
   const requestdata = JSON.parse(event.body)
@@ -204,14 +205,24 @@ exports.main = async (event, configfilepath) => {
       const alloptionalquestionname = volume.optionalQuestion.map(item => item.name).flat()
       const selectquestionname = result.optionalQuestion.flat()
       const finalquestionname = allquestionname.filter(item => !alloptionalquestionname.includes(item)).concat(selectquestionname)
-      const promisesa = result.objectiveQuestion.map(async (item) => {
+      const allobjectivequestionname = []
+      volume.page.forEach(item => {
+        item.forEach(i => {
+          if (i.objectiveQuestionName) {
+            allobjectivequestionname.push(i.objectiveQuestionName)
+          }
+        })
+      })
+      const pageimgs = result.page.map(item => item.image)
+      const promisesa = allobjectivequestionname.map(async (item) => {
+        const answer = await getAnswerIndex(volume.page, item, pageimgs)
         await db.collection('marklog').insertOne({
           examId: requestdata.id,
           subject: requestdata.subject,
           studentAccount: requestdata.studentAccount,
-          questionName: item.name,
+          questionName: item,
           type: 'system',
-          answer: [] //待开发客观题填涂识别
+          answer: answer
         })
       })
       const promisesb = finalquestionname.map(async (item) => {

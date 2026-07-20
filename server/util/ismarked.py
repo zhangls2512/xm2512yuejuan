@@ -12,5 +12,5 @@ img = cv2.imdecode(
     np.frombuffer(base64.b64decode(data["img"].split(",", 1)[1]), np.uint8),
     cv2.IMREAD_COLOR,
 )
-roi = img[data["y1"] : data["y2"] + 1, data["x1"] : data["x2"] + 1]
+roi = img[data["y1"] : data["y2"], data["x1"] : data["x2"]]
 sys.stdout.write("true" if is_marked(roi) else "false")

@@ -85,7 +85,7 @@ exports.main = async (event, configfilepath) => {
     const scorereportconfigres = await db.collection('scorereportconfig').findOne({
       examId: requestdata.id,
       subject: {
-        $in: examsubjectgetres.name.concat(examsubjectgetres.subSubject)
+        $in: [examsubjectgetres.name].concat(examsubjectgetres.subSubject)
       },
       student: requestdata.studentAccount
     })
