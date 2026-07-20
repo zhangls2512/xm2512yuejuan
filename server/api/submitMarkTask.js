@@ -170,7 +170,7 @@ exports.main = async (event, configfilepath) => {
           }
         ]
         pairs.sort((a, b) => {
-          if (a.diff !== b.diff) {
+          if (a.diff != b.diff) {
             return a.diff - b.diff
           }
           return b.sum - a.sum

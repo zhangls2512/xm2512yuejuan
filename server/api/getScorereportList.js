@@ -42,8 +42,7 @@ exports.main = async (event, configfilepath) => {
         type: 'joint'
       }, {
         projection: {
-          _id: false,
-          type: false
+          _id: false
         }
       }).sort({
         createTime: -1
@@ -55,8 +54,8 @@ exports.main = async (event, configfilepath) => {
         return {
           scorereportconfigId: item.scorereportconfigId,
           examId: item.examId,
-          examName: item.examName,
           subject: item.subject,
+          createTime: item.createTime,
           info: student
         }
       })
@@ -101,8 +100,7 @@ exports.main = async (event, configfilepath) => {
           type: 'joint'
         }, {
           projection: {
-            _id: false,
-            type: false
+            _id: false
           }
         }).sort({
           createTime: -1
@@ -128,7 +126,6 @@ exports.main = async (event, configfilepath) => {
         }, {
           projection: {
             _id: false,
-            type: false,
             schoolId: false
           }
         }).sort({
@@ -184,7 +181,6 @@ exports.main = async (event, configfilepath) => {
         }, {
           projection: {
             _id: false,
-            type: false,
             classId: false
           }
         }).sort({
@@ -197,11 +193,12 @@ exports.main = async (event, configfilepath) => {
       const examgetres = await db.collection('exam').findOne({
         examId: item
       })
-      exammap[item] = examgetres ? examgetres.name : '未知'
+      exammap[item] = examgetres ? examgetres : '未知'
     })
     await Promise.all(promises)
     data.forEach(item => {
-      item.examName = exammap[item.examId]
+      item.examName = exammap[item.examId].name
+      item.examType = exammap[item.examId].type
       item.scorereportconfigName = confignamemap[item.scorereportconfigId]
     })
     return {

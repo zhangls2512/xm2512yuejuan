@@ -331,16 +331,19 @@ function getScoreReport(subject, classes, marklog, config) {
       classmap[classid].student.push(item)
     })
   })
+  const schoolrankmap = {}
   Object.keys(schoolmap).forEach(schoolid => {
     const clonestudent = schoolmap[schoolid].student.map(s => ({
       ...s,
       schoolRank: undefined
     }))
     clonestudent.forEach((item, index) => {
-      if (index > 0 && item[sortkey] === clonestudent[index - 1][sortkey]) {
+      if (index > 0 && item[sortkey] == clonestudent[index - 1][sortkey]) {
         item.schoolRank = clonestudent[index - 1].schoolRank
+        schoolrankmap[item.studentAccount] = clonestudent[index - 1].schoolRank
       } else {
         item.schoolRank = index + 1
+        schoolrankmap[item.studentAccount] = index + 1
       }
     })
     schoolmap[schoolid].student = clonestudent
@@ -384,7 +387,8 @@ function getScoreReport(subject, classes, marklog, config) {
       classRank: undefined
     }))
     clonestudent.forEach((item, index) => {
-      if (index > 0 && item[sortkey] === clonestudent[index - 1][sortkey]) {
+      item.schoolRank = schoolrankmap[item.studentAccount]
+      if (index > 0 && item[sortkey] == clonestudent[index - 1][sortkey]) {
         item.classRank = clonestudent[index - 1].classRank
       } else {
         item.classRank = index + 1
@@ -568,7 +572,7 @@ function getMultipleSubjectScoreReport(input) {
     const clonestudent = schoolmap[schoolid].student.map(s => s)
     clonestudent.forEach((item, index) => {
       item.subject[0].jointRank = jointrankmap[item.studentAccount]
-      if (index > 0 && item.subject[0].totalScoreWithoutExtra === clonestudent[index - 1].subject[0].totalScoreWithoutExtra) {
+      if (index > 0 && item.subject[0].totalScoreWithoutExtra == clonestudent[index - 1].subject[0].totalScoreWithoutExtra) {
         item.subject[0].schoolRank = clonestudent[index - 1].subject[0].schoolRank
         schoolrankmap[item.studentAccount] = clonestudent[index - 1].subject[0].schoolRank
       } else {
@@ -591,7 +595,7 @@ function getMultipleSubjectScoreReport(input) {
     clonestudent.forEach((item, index) => {
       item.subject[0].jointRank = jointrankmap[item.studentAccount]
       item.subject[0].schoolRank = schoolrankmap[item.studentAccount]
-      if (index > 0 && item.subject[0].totalScoreWithoutExtra === clonestudent[index - 1].subject[0].totalScoreWithoutExtra) {
+      if (index > 0 && item.subject[0].totalScoreWithoutExtra == clonestudent[index - 1].subject[0].totalScoreWithoutExtra) {
         item.subject[0].classRank = clonestudent[index - 1].subject[0].classRank
       } else {
         item.subject[0].classRank = index + 1
