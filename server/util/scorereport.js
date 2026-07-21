@@ -710,7 +710,7 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
       await db.collection('scorereport').insertOne({
         scorereportconfigId: scorereportconfigid,
         examId: exam.examId,
-        subject: subject.name,
+        subject: item.name,
         createTime: Date.now(),
         type: 'joint',
         question: scorereport.joint.question,
@@ -730,7 +730,7 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
         await db.collection('scorereport').insertOne({
           scorereportconfigId: scorereportconfigid,
           examId: exam.examId,
-          subject: subject.name,
+          subject: item.name,
           createTime: Date.now(),
           type: 'school',
           schoolId: school.schoolId,
@@ -745,7 +745,7 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
         await db.collection('scorereport').insertOne({
           scorereportconfigId: scorereportconfigid,
           examId: exam.examId,
-          subject: subject.name,
+          subject: item.name,
           createTime: Date.now(),
           type: 'class',
           classId: classitem.classId,
@@ -807,7 +807,7 @@ async function generateSingleSubjectScoreReport(exam, subject, scorereportconfig
     await db.collection('scorereport').insertOne({
       scorereportconfigId: scorereportconfig.scorereportconfigId,
       examId: exam.examId,
-      subject: subject.name,
+      subject: scorereportconfig.subject,
       createTime: Date.now(),
       type: 'joint',
       question: scorereport.joint.question,
@@ -827,7 +827,7 @@ async function generateSingleSubjectScoreReport(exam, subject, scorereportconfig
       await db.collection('scorereport').insertOne({
         scorereportconfigId: scorereportconfig.scorereportconfigId,
         examId: exam.examId,
-        subject: subject.name,
+        subject: scorereportconfig.subject,
         createTime: Date.now(),
         type: 'school',
         schoolId: school.schoolId,
@@ -842,7 +842,7 @@ async function generateSingleSubjectScoreReport(exam, subject, scorereportconfig
       await db.collection('scorereport').insertOne({
         scorereportconfigId: scorereportconfig.scorereportconfigId,
         examId: exam.examId,
-        subject: subject.name,
+        subject: scorereportconfig.subject,
         createTime: Date.now(),
         type: 'class',
         classId: classitem.classId,
