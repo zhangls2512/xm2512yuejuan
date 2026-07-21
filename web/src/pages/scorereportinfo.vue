@@ -276,11 +276,11 @@ function formatScoringRate(a) {
     <tiny-dialog-box class="dialog" :visible="qadialog" title="题目" @close="closeQa">
       <div v-if="qimage == '' || aimage == ''">未设置题目，如有疑问请联系考试管理员</div>
       <div v-if="qimage != '' && aimage != ''" class="cz">
-        <div class="sp">
+        <div class="sp" style="flex:1">
           <div>题目</div>
           <img :src="qimage"></img>
         </div>
-        <div class="sp">
+        <div class="sp" style="flex:1">
           <div>答案</div>
           <img :src="aimage"></img>
         </div>

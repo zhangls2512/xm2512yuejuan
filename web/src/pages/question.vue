@@ -57,6 +57,13 @@ async function get() {
     })
     return
   }
+  if (knowledgepoint.value.length == 0) {
+    TinyModal.message({
+      message: '请新增知识点',
+      status: 'warning'
+    })
+    return
+  }
   const countres = await request({
     apiPath: '/getQuestionCount',
     body: {
@@ -161,7 +168,7 @@ async function deleteQuestion(id) {
               </tiny-tooltip>
             </div>
             <img :src="item.question"></img>
-            <div class="sp">
+            <div class="sp" style="flex:1">
               <div class="bold-text">答案</div>
               <img :src="item.answer"></img>
             </div>

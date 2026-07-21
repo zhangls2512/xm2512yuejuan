@@ -89,6 +89,13 @@ async function updateQuestion() {
     })
     return
   }
+  if (knowledgepoint.value.length == 0) {
+    TinyModal.message({
+      message: '请新增知识点',
+      status: 'warning'
+    })
+    return
+  }
   const res = await request({
     apiPath: '/updateQuestion',
     body: {

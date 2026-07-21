@@ -53,7 +53,7 @@ exports.main = async (event, configfilepath) => {
       errFix: '传递有效的grade参数'
     }
   }
-  if (!Array.isArray(requestdata.knowledgePoint) || !requestdata.knowledgePoint.every(item => typeof (item) == 'string' && item)) {
+  if (!Array.isArray(requestdata.knowledgePoint) || requestdata.knowledgePoint.length == 0 || !requestdata.knowledgePoint.every(item => typeof (item) == 'string' && item)) {
     return {
       errCode: 400,
       errMsg: '请求参数错误',
