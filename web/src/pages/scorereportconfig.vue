@@ -110,6 +110,19 @@ async function newScorereportconfig() {
     get()
   }
 }
+async function updateStudentVisible(id) {
+  await request({
+    apiPath: '/updateScorereportconfigStudentVisible',
+    body: {
+      id: id
+    }
+  })
+  TinyModal.message({
+    message: '操作成功',
+    status: 'success'
+  })
+  get()
+}
 async function updateScorereportconfig(id) {
   const content = await readFile()
   let info
@@ -179,6 +192,8 @@ async function deleteScorereportconfig(id) {
             <div v-if="item.subject == '多学科'">合并成绩报告配置ID：{{ item.idArray }}</div>
             <div v-if="item.updateTimeSeen == true">最近生成时间：{{ item.updateTime }}</div>
             <div style="cursor:pointer" @click="copy(item.scorereportconfigId)">ID：{{ item.scorereportconfigId }}</div>
+            <tiny-checkbox v-model="item.studentVisible"
+              @change="updateStudentVisible(item.scorereportconfigId)">学生可查看</tiny-checkbox>
           </div>
           <div v-if="item.status != 'processing'" class="sp">
             <tiny-button type="success" :disabled="item.status == 'processing'"

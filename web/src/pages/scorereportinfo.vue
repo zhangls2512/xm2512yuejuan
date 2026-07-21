@@ -18,6 +18,7 @@ const qimage = ref('')
 const aimage = ref('')
 const sadialog = ref(false)
 const saimage = ref([])
+const answerlist = ref([])
 if (exist) {
   accountinfo.value = JSON.parse(exist)
 }
@@ -33,8 +34,20 @@ if (info) {
         fu.value = true
       }
     }
+    if (accountinfo.value.type == 'student' && data.value.subject != '多学科') {
+      getAnswerList()
+    }
   } catch {
   }
+}
+async function getAnswerList(row) {
+  const res = await request({
+    apiPath: '/getStudentAnswerList',
+    body: {
+      id: data.value.scorereportconfigId
+    }
+  })
+  answerlist.value = res.data
 }
 async function openQa(row) {
   qadialog.value = true
@@ -206,27 +219,59 @@ function formatScoringRate(a) {
         </tiny-tab-item>
       </tiny-tabs>
     </div>
-    <div v-if="accountinfo.type == 'student'" class="cz">
-      <div class="sp">
-        <div class="bold-text">分数（含附加题）</div>
-        <div>{{ data.info.totalScoreWithExtra }}</div>
+    <div v-if="accountinfo.type == 'student'">
+      <div v-if="data.subject != '多学科'" class="cz">
+        <div class="sp">
+          <div class="bold-text">分数（含附加题）</div>
+          <div>{{ data.info.totalScoreWithExtra }}</div>
+        </div>
+        <div class="sp">
+          <div class="bold-text">分数（不含附加题）</div>
+          <div>{{ data.info.totalScoreWithoutExtra }}</div>
+        </div>
+        <div class="sp">
+          <div class="bold-text">附加题分数</div>
+          <div>{{ data.info.extraTotalScore }}</div>
+        </div>
+        <div v-if="data.info.fuScore != undefined" class="sp">
+          <div class="bold-text">赋分</div>
+          <div>{{ data.info.fuScore }}</div>
+        </div>
+        <div v-if="data.info.level != undefined" class="sp">
+          <div class="bold-text">赋分等级</div>
+          <div>{{ data.info.level }}</div>
+        </div>
+        <div class="bold-text">小题作答情况</div>
+        <tiny-grid :data="answerlist" border="true">
+          <tiny-grid-column field="questionName" title="题号" align="center">
+            <template #default="{ row }">
+              <div class="clickwz" @click="openQa(row)">{{ row.questionName }}</div>
+            </template>
+          </tiny-grid-column>
+          <tiny-grid-column title="作答" align="center">
+            <template #default="{ row }">
+              <div v-if="row.correctAnswer != ''">{{ row.answer }}</div>
+              <div v-if="row.correctAnswer == ''" class="clickwz" @click="openSa(row, '')">查看</div>
+            </template>
+          </tiny-grid-column>
+          <tiny-grid-column title="答案" align="center">
+            <template #default="{ row }">
+              <div v-if="row.correctAnswer != ''">{{ row.correctAnswer }}</div>
+              <div v-if="row.correctAnswer == ''" class="clickwz" @click="openQa(row)">查看</div>
+            </template>
+          </tiny-grid-column>
+          <tiny-grid-column field="score" title="得分" align="center"></tiny-grid-column>
+          <tiny-grid-column field="totalScore" title="总分" align="center"></tiny-grid-column>
+        </tiny-grid>
       </div>
-      <div class="sp">
-        <div class="bold-text">分数（不含附加题）</div>
-        <div>{{ data.info.totalScoreWithoutExtra }}</div>
-      </div>
-      <div class="sp">
-        <div class="bold-text">附加题分数</div>
-        <div>{{ data.info.extraTotalScore }}</div>
-      </div>
-      <div v-if="data.info.fuScore != undefined" class="sp">
-        <div class="bold-text">赋分</div>
-        <div>{{ data.info.fuScore }}</div>
-      </div>
-      <div v-if="data.info.level != undefined" class="sp">
-        <div class="bold-text">赋分等级</div>
-        <div>{{ data.info.level }}</div>
-      </div>
+      <tiny-grid v-if="data.subject == '多学科'" :data="data.info.subject" border="true">
+        <tiny-grid-column field="name" title="科目" align="center"></tiny-grid-column>
+        <tiny-grid-column field="totalScoreWithExtra" title="分数（含附）" align="center"></tiny-grid-column>
+        <tiny-grid-column field="totalScoreWithoutExtra" title="分数（不含附）" align="center"></tiny-grid-column>
+        <tiny-grid-column field="extraTotalScore" title="附分" align="center"></tiny-grid-column>
+        <tiny-grid-column field="fuScore" title="赋分" align="center"></tiny-grid-column>
+        <tiny-grid-column field="level" title="等级" align="center"></tiny-grid-column>
+      </tiny-grid>
     </div>
     <tiny-dialog-box class="dialog" :visible="qadialog" title="题目" @close="closeQa">
       <div v-if="qimage == '' || aimage == ''">未设置题目，如有疑问请联系考试管理员</div>

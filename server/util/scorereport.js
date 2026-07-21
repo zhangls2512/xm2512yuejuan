@@ -694,7 +694,7 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
       type: 'system'
     }).toArray()
     const scorereport = getScoreReport(subject, classes, marklog, item.config)
-    if (scorereportconfig == 'finished') {
+    if (scorereportconfig.status == 'finished') {
       await db.collection('scorereport').deleteMany({
         scorereportconfigId: scorereportconfigid
       })
@@ -948,5 +948,7 @@ async function generateMultipleSubjectScoreReport(exam, scorereportconfig, confi
 module.exports = {
   generateDefaultScoreReport,
   generateSingleSubjectScoreReport,
-  generateMultipleSubjectScoreReport
+  generateMultipleSubjectScoreReport,
+  calcObjectiveScore,
+  sum
 }

@@ -50,7 +50,14 @@ exports.main = async (event, configfilepath) => {
       data = data.map(item => {
         const student = item.student.find(i => i.studentAccount == account.account)
         delete student.studentAccount
-        delete student.jointRank
+        if (item.subject != '多学科') {
+          delete student.jointRank
+        }
+        if (item.subject == '多学科') {
+          student.subject.forEach(subject => {
+            delete subject.jointRank
+          })
+        }
         return {
           scorereportconfigId: item.scorereportconfigId,
           examId: item.examId,

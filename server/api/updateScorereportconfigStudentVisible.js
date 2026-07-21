@@ -102,16 +102,6 @@ exports.main = async (event, configfilepath) => {
         studentVisible: !scorereportconfigres.studentVisible
       }
     })
-    if (!scorereportconfigres.studentVisible) {
-      await db.collection('scorereportconfig').updateMany({
-        examId: scorereportconfigres.examId,
-        subject: scorereportconfigres.subject
-      }, {
-        $set: {
-          studentVisible: false
-        }
-      })
-    }
     return {
       errCode: 0,
       errMsg: '成功'
