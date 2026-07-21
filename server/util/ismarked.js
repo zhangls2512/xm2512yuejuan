@@ -1,14 +1,14 @@
 const { spawn } = require('child_process')
 const path = require('path')
-function isMarked(base64img, coord) {
+function isMarked(page, coord) {
   return new Promise((resolve, reject) => {
     const py = spawn('python', [path.join(__dirname, 'ismarked.py')])
     py.stdin.write(JSON.stringify({
-      img: base64img,
-      x1: coord[0],
-      y1: coord[1],
-      x2: coord[2],
-      y2: coord[3]
+      img: page.image,
+      x1: page.originCoord[0] + coord[0],
+      y1: page.originCoord[1] + coord[1],
+      x2: page.originCoord[0] + coord[2],
+      y2: page.originCoord[1] + coord[3]
     }))
     py.stdin.end()
     let out = ''
@@ -16,7 +16,7 @@ function isMarked(base64img, coord) {
     py.stdout.on('end', () => resolve(out == 'true' ? true : false))
   })
 }
-async function getAnswerIndex(page, questionname, base64imgs) {
+async function getAnswerIndex(page, questionname, pages) {
   let coord = []
   let pageindex = 0
   page.forEach((item, index) => {
@@ -33,7 +33,7 @@ async function getAnswerIndex(page, questionname, base64imgs) {
   if (coord.length > 0) {
     const result = []
     for (let i = 0; i < coord.length; i++) {
-      const ismarked = await isMarked(base64imgs[pageindex], coord[i])
+      const ismarked = await isMarked(pages[pageindex], coord[i])
       if (ismarked) {
         result.push(i)
       }

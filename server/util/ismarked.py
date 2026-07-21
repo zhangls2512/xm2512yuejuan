@@ -4,7 +4,8 @@ import sys, json, base64, cv2, numpy as np
 def is_marked(roi):
     g = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
     _, b = cv2.threshold(g, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-    return np.count_nonzero(b) / b.size >= 0.6
+    ratio = cv2.countNonZero(b) / b.size
+    return ratio >= 0.6
 
 
 data = json.loads(sys.stdin.read())

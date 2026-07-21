@@ -1,5 +1,5 @@
 const sharp = require('sharp')
-async function cropImage(image, coord) {
+async function cropImage(image, coord, origincoord) {
   try {
     const imagebase64 = image.split(',')[1]
     const inputbuffer = Buffer.from(imagebase64, 'base64')
@@ -8,8 +8,8 @@ async function cropImage(image, coord) {
     const width = coord[2] - coord[0]
     const height = coord[3] - coord[1]
     const outputbuffer = await task.extract({
-      left: coord[0],
-      top: coord[1],
+      left: origincoord[0] + coord[0],
+      top: origincoord[1] + coord[1],
       width: width,
       height: height
     }).toBuffer()

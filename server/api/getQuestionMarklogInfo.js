@@ -114,7 +114,7 @@ exports.main = async (event, configfilepath) => {
             const coord = pages[i].find(item => item.markGroupName == markgroup.name)
             if (coord && coord.coord) {
               for (let j = 0; j < coord.coord.length; j++) {
-                const cropimagebase64 = await cropImage(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + marklogres.examId + '/' + marklogres.subject + '/answer/' + marklogres.studentAccount + '/' + i), coord.coord[j])
+                const cropimagebase64 = await cropImage(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + marklogres.examId + '/' + marklogres.subject + '/answer/' + marklogres.studentAccount + '/' + i), coord.coord[j], answer.answer.pageOriginCoord[i])
                 result.answerImage.push(cropimagebase64)
               }
             }

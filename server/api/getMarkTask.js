@@ -363,7 +363,7 @@ exports.main = async (event, configfilepath) => {
                 const coord = pages[i].find(item => item.markGroupName == requestdata.name)
                 if (coord && coord.coord) {
                   for (let j = 0; j < coord.coord.length; j++) {
-                    const cropimagebase64 = await cropImage(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/answer/' + marklog.studentAccount + '/' + i), coord.coord[j])
+                    const cropimagebase64 = await cropImage(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/answer/' + marklog.studentAccount + '/' + i), coord.coord[j], answer.answer.pageOriginCoord[i])
                     result.answerImage.push(cropimagebase64)
                   }
                 }
@@ -478,7 +478,7 @@ exports.main = async (event, configfilepath) => {
                 const coord = pages[i].find(item => item.markGroupName == requestdata.name)
                 if (coord && coord.coord) {
                   for (let j = 0; j < coord.coord.length; j++) {
-                    const cropimagebase64 = await cropImage(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/answer/' + marklog.studentAccount + '/' + i), coord.coord[j])
+                    const cropimagebase64 = await cropImage(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/answer/' + marklog.studentAccount + '/' + i), coord.coord[j], answer.answer.pageOriginCoord[i])
                     result.answerImage.push(cropimagebase64)
                   }
                 }
@@ -606,7 +606,7 @@ exports.main = async (event, configfilepath) => {
               const coord = pages[i].find(item => item.markGroupName == requestdata.name)
               if (coord && coord.coord) {
                 for (let j = 0; j < coord.coord.length; j++) {
-                  const cropimagebase64 = await cropImage(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/answer/' + marklog.studentAccount + '/' + i), coord.coord[j])
+                  const cropimagebase64 = await cropImage(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/answer/' + marklog.studentAccount + '/' + i), coord.coord[j], answer.answer.pageOriginCoord[i])
                   result.answerImage.push(cropimagebase64)
                 }
               }

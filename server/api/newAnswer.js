@@ -213,9 +213,8 @@ exports.main = async (event, configfilepath) => {
           }
         })
       })
-      const pageimgs = result.page.map(item => item.image)
       const promisesa = allobjectivequestionname.map(async (item) => {
-        const answer = await getAnswerIndex(volume.page, item, pageimgs)
+        const answer = await getAnswerIndex(volume.page, item, result.page)
         await db.collection('marklog').insertOne({
           examId: requestdata.id,
           subject: requestdata.subject,
