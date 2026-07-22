@@ -4,6 +4,7 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { decode } from '../util/code'
 import request from '../util/request'
+import AnswerImageCanvas from './answerimage.vue'
 const route = useRoute()
 const info = route.query.info
 const accountinfo = ref({})
@@ -19,6 +20,8 @@ const aimage = ref('')
 const sadialog = ref(false)
 const saimage = ref([])
 const answerlist = ref([])
+const aadialog = ref(false)
+const answerimage = ref({})
 if (exist) {
   accountinfo.value = JSON.parse(exist)
 }
@@ -50,7 +53,6 @@ async function getAnswerList(row) {
   answerlist.value = res.data
 }
 async function openQa(row) {
-  qadialog.value = true
   const res = await request({
     apiPath: '/getQuestionAndAnswer',
     body: {
@@ -60,6 +62,7 @@ async function openQa(row) {
   })
   qimage.value = res.data.question
   aimage.value = res.data.answer
+  qadialog.value = true
 }
 function closeQa() {
   qadialog.value = false
@@ -67,7 +70,6 @@ function closeQa() {
   aimage.value = ''
 }
 async function openSa(row, stu) {
-  sadialog.value = true
   const res = await request({
     apiPath: '/getStudentQuestionAnswer',
     body: {
@@ -77,10 +79,26 @@ async function openSa(row, stu) {
     }
   })
   saimage.value = res.data
+  sadialog.value = true
 }
 function closeSa() {
   sadialog.value = false
   saimage.value = []
+}
+async function openAa(stu) {
+  const res = await request({
+    apiPath: '/getStudentAnswerImage',
+    body: {
+      id: data.value.scorereportconfigId,
+      studentAccount: stu
+    }
+  })
+  answerimage.value = res.data
+  aadialog.value = true
+}
+function closeAa() {
+  aadialog.value = false
+  answerimage.value = {}
 }
 function flatStudents(students) {
   return students.map(stu => {
@@ -166,7 +184,11 @@ function formatScoringRate(a) {
               border="true"></tiny-grid>
             <tiny-grid v-if="data.subject != '多学科'" :data="data.student" border="true">
               <tiny-grid-column type="index" title="序号" align="center"></tiny-grid-column>
-              <tiny-grid-column field="studentAccount" title="学生ID" align="center"></tiny-grid-column>
+              <tiny-grid-column title="学生ID" align="center">
+                <template #default="{ row }">
+                  <div class="clickwz" @click="openAa(row.studentAccount)">{{ row.studentAccount }}</div>
+                </template>
+              </tiny-grid-column>
               <tiny-grid-column field="totalScoreWithExtra" title="分数（含附）" align="center"></tiny-grid-column>
               <tiny-grid-column field="totalScoreWithoutExtra" title="分数（不含附）" align="center"></tiny-grid-column>
               <tiny-grid-column field="extraTotalScore" title="附分" align="center"></tiny-grid-column>
@@ -241,6 +263,7 @@ function formatScoringRate(a) {
           <div class="bold-text">赋分等级</div>
           <div>{{ data.info.level }}</div>
         </div>
+        <div><tiny-button type="info" @click="openAa">查看原卷</tiny-button></div>
         <div class="bold-text">小题作答情况</div>
         <tiny-grid :data="answerlist" border="true">
           <tiny-grid-column field="questionName" title="题号" align="center">
@@ -295,6 +318,26 @@ function formatScoringRate(a) {
       </div>
       <template #footer>
         <tiny-button type="info" @click="closeSa">确定</tiny-button>
+      </template>
+    </tiny-dialog-box>
+    <tiny-dialog-box class="dialog" :visible="aadialog" title="原卷" @close="closeAa">
+      <div v-if="answerimage.answerOnline == false">
+        <div class="cz">
+          <div v-for="image in answerimage.image">
+            <AnswerImageCanvas :data="image"></AnswerImageCanvas>
+          </div>
+        </div>
+      </div>
+      <div v-if="answerimage.answerOnline == true">
+        <div class="cz">
+          <div v-for="image in answerimage.image" class="sp">
+            <div class="bold-text">{{ image.questionName }}</div>
+            <AnswerImageCanvas :data="image"></AnswerImageCanvas>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <tiny-button type="info" @click="closeAa">确定</tiny-button>
       </template>
     </tiny-dialog-box>
   </div>

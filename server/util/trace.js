@@ -54,7 +54,8 @@ function getScanTrace(subjectconfig, marklogarr, pagesorigincoord, volume) {
         type: 'text',
         content: ['-' + (fullscore - item.finalTotalScore)].concat(item.finalStepScore.map((s, i) => '步骤' + (i + 1) + '：' + s + '分')).join('\n'),
         coord: [pagesorigincoord[coord[0].pageindex][0] + coord[0].coord[2], pagesorigincoord[coord[0].pageindex][1] + coord[0].coord[1]],
-        position: 'righttop'
+        position: 'righttop',
+        size: 24
       })
       let imgpath = ''
       if (item.finalTotalScore == 0) {
@@ -77,9 +78,10 @@ function getScanTrace(subjectconfig, marklogarr, pagesorigincoord, volume) {
   })
   result[0].push({
     type: 'text',
-    content: '总分：' + totalscore,
+    content: String(totalscore),
     coord: [pagesorigincoord[0][0] + 10, pagesorigincoord[0][1] + 10],
-    position: 'lefttop'
+    position: 'lefttop',
+    size: 60
   })
   return result
 }
@@ -100,7 +102,8 @@ function getOnlineTrace(subjectconfig, marklogarr) {
     result[index].push({
       type: 'text',
       content: ['-' + (fullscore - item.finalTotalScore)].concat(item.finalStepScore.map((s, i) => '步骤' + (i + 1) + '：' + s + '分')).join('\n'),
-      position: 'righttop'
+      position: 'righttop',
+      size: 24
     })
     let imgpath = ''
     if (item.finalTotalScore == 0) {
