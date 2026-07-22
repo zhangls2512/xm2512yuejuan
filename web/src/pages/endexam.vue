@@ -42,6 +42,13 @@ async function pagesizeChange(t) {
   pagesize.value = t
   get()
 }
+async function copy(value) {
+  await navigator.clipboard.writeText(value)
+  TinyModal.message({
+    message: '内容已复制',
+    status: 'success'
+  })
+}
 async function restartExam(id) {
   await request({
     apiPath: '/restartExam',
@@ -58,7 +65,7 @@ async function restartExam(id) {
 async function tool(id) {
   TinyModal.message({
     message: '待开发',
-    status: 'success'
+    status: 'warning'
   })
 }
 </script>
@@ -75,6 +82,7 @@ async function tool(id) {
             </div>
             <div>时间：{{ item.time }}</div>
             <div v-if="item.subjectName != ''">科目：{{ item.subjectName }}</div>
+            <div style="cursor:pointer" @click="copy(item.examId)">ID：{{ item.examId }}</div>
           </div>
           <div class="sp">
             <tiny-button type="info" @click="tool(item.examId)">工具箱</tiny-button>

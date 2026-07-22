@@ -70,7 +70,7 @@ exports.main = async (event, configfilepath) => {
         examId: item.examId
       }).toArray()
       item.subject = examsubjectgetres.map((subject) => {
-        ['_id', 'examId', 'adminAccount', 'subSubject'].forEach(item => {
+        ['_id', 'examId', 'adminAccount', 'subSubject', 'createTime'].forEach(item => {
           delete subject[item]
         })
         return subject

@@ -53,6 +53,13 @@ async function pagesizeChange(t) {
   pagesize.value = t
   get()
 }
+async function copy(value) {
+  await navigator.clipboard.writeText(value)
+  TinyModal.message({
+    message: '内容已复制',
+    status: 'success'
+  })
+}
 function newExam() {
   router.push('/newexam')
 }
@@ -240,6 +247,7 @@ async function endExam(id) {
             </div>
             <div>时间：{{ item.time }}</div>
             <div v-if="item.subjectName != ''">科目：{{ item.subjectName }}</div>
+            <div style="cursor:pointer" @click="copy(item.examId)">ID：{{ item.examId }}</div>
           </div>
           <div class="sp">
             <tiny-button type="success" @click="newSubject(item.examId)">新增科目</tiny-button>
