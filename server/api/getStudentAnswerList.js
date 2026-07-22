@@ -72,8 +72,8 @@ exports.main = async (event, configfilepath) => {
       if (question.correctOptionIndex) {
         result.push({
           questionName: item.questionName,
-          answer: item.answer.map(i => question.option[i]).join(''),
-          correctAnswer: question.correctOptionIndex.length > 0 ? question.correctOptionIndex.map(i => question.option[i]).join('') : '无',
+          answer: item.answer.length > 0 ? item.answer.map(i => question.option[i]).join('') : '未选',
+          correctAnswer: question.correctOptionIndex.length > 0 ? question.correctOptionIndex.map(i => question.option[i]).join('') : '未选',
           score: calcObjectiveScore(question, item.answer),
           totalScore: Math.max(...[...new Set(question.correctOptionCountRule.map(item => item.score).concat(question.specialOptionGroupRule.map(item => item.score)))])
         })

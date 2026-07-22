@@ -1,5 +1,7 @@
 'use strict'
 exports.main = async (event, configfilepath) => {
+  const fs = require('fs')
+  const { readConfig } = require('../../util/readconfig')
   const db = await (require('../util/db').database(configfilepath))
   const requestdata = JSON.parse(event.body)
   if (typeof (requestdata.id) != 'string' || requestdata.id.length != 36) {
@@ -26,6 +28,9 @@ exports.main = async (event, configfilepath) => {
       questionId: requestdata.id
     })
     if (deleteres.deletedCount != 0) {
+      const dir = readConfig(configfilepath, 'dataRootPath') + '/question/'
+      fs.rmSync(dir + requestdata.id + '-question')
+      fs.rmSync(dir + requestdata.id + '-answer')
       return {
         errCode: 0,
         errMsg: '成功'
