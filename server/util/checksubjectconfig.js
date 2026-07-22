@@ -626,7 +626,7 @@ function checkSubjectConfig(requestdata, olddata) {
               }
             }
             if (!result.answerOnline) {
-              if (!Array.isArray(pageitem.coord) || !pageitem.coord.every(item => isCoordValid(item))) {
+              if (!Array.isArray(pageitem.coord) || pageitem.coord.length == 0 || !pageitem.coord.every(item => isCoordValid(item))) {
                 return {
                   errCode: 400,
                   errMsg: '请求参数错误',
