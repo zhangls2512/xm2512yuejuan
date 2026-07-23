@@ -168,7 +168,7 @@ async function deleteQuestion(id) {
               </tiny-tooltip>
             </div>
             <img :src="item.question"></img>
-            <div class="sp" style="flex:1">
+            <div class="sp">
               <div class="bold-text">答案</div>
               <img :src="item.answer"></img>
             </div>
