@@ -56,7 +56,7 @@ async function get() {
       <div>{{ data.subject }}</div>
     </div>
     <div><tiny-button type="info" @click="get">刷新</tiny-button></div>
-    <div v-if="markprogress != '' && markprogress.progress != false" class="sp">
+    <div v-if="markprogress != '' && markprogress.progress !== false" class="sp">
       <div class="bold-text">整体</div>
       <tiny-progress style="width:50%" stroke-width="12" :percentage="markprogress.progress"></tiny-progress>
       <div>{{ markprogress.finished }}/{{ markprogress.total }}</div>

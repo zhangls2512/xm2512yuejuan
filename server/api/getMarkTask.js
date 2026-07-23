@@ -161,7 +161,6 @@ exports.main = async (event, configfilepath) => {
                 questionName: {
                   $in: markgroup.questionName
                 },
-                markerAccount: account.account,
                 type: 'system',
                 firstMarkerAccount: '',
                 questionReason: ''

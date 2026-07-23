@@ -90,7 +90,7 @@ exports.main = async (event, configfilepath) => {
     return {
       errCode: 0,
       errMsg: '成功',
-      data: result
+      data: result.sort((a, b) => a.questionName.localeCompare(b.questionName))
     }
   }
 }

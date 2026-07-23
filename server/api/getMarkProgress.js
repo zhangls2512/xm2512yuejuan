@@ -84,6 +84,43 @@ exports.main = async (event, configfilepath) => {
     let totalall = 0
     if (questionname == 'all') {
       questionname = examsubjectres.subjectiveQuestion.map(item => item.name)
+      const question = examsubjectres.objectiveQuestion.map(item => item.name)
+      const item = {
+        questionName: '客观题',
+        progress: 0,
+        finished: 0,
+        total: 0,
+        detail: []
+      }
+      const a = await db.collection('marklog').countDocuments({
+        examId: requestdata.id,
+        subject: requestdata.subject,
+        questionName: {
+          $in: question
+        },
+        type: 'system',
+        finished: true
+      })
+      item.detail.push({
+        name: '已识别量',
+        count: a
+      })
+      const b = await db.collection('marklog').countDocuments({
+        examId: requestdata.id,
+        subject: requestdata.subject,
+        questionName: {
+          $in: question
+        },
+        type: 'system'
+      })
+      item.detail.push({
+        name: '总量',
+        count: b
+      })
+      item.finished = a
+      item.total = b
+      item.progress = percent(item.finished, item.total)
+      result.list.push(item)
     }
     function percent(finished, total) {
       if (finished == total) {

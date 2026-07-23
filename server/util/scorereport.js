@@ -694,7 +694,7 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
       type: 'system'
     }).toArray()
     const scorereport = getScoreReport(subject, classes, marklog, item.config)
-    if (scorereportconfig.status == 'finished') {
+    if (scorereportconfig && scorereportconfig.status == 'finished') {
       await db.collection('scorereport').deleteMany({
         scorereportconfigId: scorereportconfigid
       })

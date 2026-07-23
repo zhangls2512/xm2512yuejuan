@@ -213,19 +213,18 @@ exports.main = async (event, configfilepath) => {
           }
         })
       })
-      const promisesa = allobjectivequestionname.map(async (item) => {
-        const answer = await getAnswerIndex(volume.page, item, result.page)
-        await db.collection('marklog').insertOne({
+      await db.collection('marklog').insertMany(allobjectivequestionname.map(item => {
+        return {
           examId: requestdata.id,
           subject: requestdata.subject,
           studentAccount: requestdata.studentAccount,
           questionName: item,
           type: 'system',
-          answer: answer
-        })
-      })
-      const promisesb = finalquestionname.map(async (item) => {
-        await db.collection('marklog').insertOne({
+          answer: [],
+          finished: false
+        }
+      }).concat(finalquestionname.map(item => {
+        return {
           examId: requestdata.id,
           subject: requestdata.subject,
           studentAccount: requestdata.studentAccount,
@@ -248,10 +247,23 @@ exports.main = async (event, configfilepath) => {
           minScoreDiff: 0,
           finalStepScore: [],
           finalTotalScore: 0
+        }
+      })))
+      allobjectivequestionname.forEach(async (item) => {
+        const answer = await getAnswerIndex(volume.page, item, result.page)
+        await db.collection('marklog').updateOne({
+          examId: requestdata.id,
+          subject: requestdata.subject,
+          studentAccount: requestdata.studentAccount,
+          questionName: item,
+          type: 'system'
+        }, {
+          $set: {
+            answer: answer,
+            finished: true
+          }
         })
       })
-      await Promise.all(promisesa)
-      await Promise.all(promisesb)
       return {
         errCode: 0,
         errMsg: '成功'
@@ -397,18 +409,18 @@ exports.main = async (event, configfilepath) => {
       const alloptionalquestionname = data.volume[0].optionalQuestion.map(item => item.name).flat()
       const selectquestionname = result.optionalQuestion.flat()
       const finalquestionname = allquestionname.filter(item => !alloptionalquestionname.includes(item)).concat(selectquestionname)
-      const promisesa = result.objectiveQuestion.map(async (item) => {
-        await db.collection('marklog').insertOne({
+      await db.collection('marklog').insertMany(result.objectiveQuestion.map(item => {
+        return {
           examId: requestdata.id,
           subject: requestdata.subject,
           studentAccount: account.account,
           questionName: item.name,
           type: 'system',
-          answer: item.answer
-        })
-      })
-      const promisesb = finalquestionname.map(async (item) => {
-        await db.collection('marklog').insertOne({
+          answer: item.answer,
+          finished: true
+        }
+      }).concat(finalquestionname.map(item => {
+        return {
           examId: requestdata.id,
           subject: requestdata.subject,
           studentAccount: account.account,
@@ -431,10 +443,8 @@ exports.main = async (event, configfilepath) => {
           minScoreDiff: 0,
           finalStepScore: [],
           finalTotalScore: 0
-        })
-      })
-      await Promise.all(promisesa)
-      await Promise.all(promisesb)
+        }
+      })))
       return {
         errCode: 0,
         errMsg: '成功'

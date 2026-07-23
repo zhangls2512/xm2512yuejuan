@@ -52,7 +52,7 @@ function getScanTrace(subjectconfig, marklogarr, pagesorigincoord, volume) {
       const fullscore = sum(question.stepScore.map(s => s[0]))
       result[coord[0].pageindex].push({
         type: 'text',
-        content: ['-' + (fullscore - item.finalTotalScore)].concat(item.finalStepScore.map((s, i) => '步骤' + (i + 1) + '：' + s + '分')).join('\n'),
+        content: item.finalStepScore.length > 1 ? ['-' + (fullscore - item.finalTotalScore)].concat(item.finalStepScore.map((s, i) => '步骤' + (i + 1) + '：' + s + '分')).join('\n') : '-' + (fullscore - item.finalTotalScore),
         coord: [pagesorigincoord[coord[0].pageindex][0] + coord[0].coord[2], pagesorigincoord[coord[0].pageindex][1] + coord[0].coord[1]],
         position: 'righttop',
         size: 24

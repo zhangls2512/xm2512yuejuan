@@ -209,17 +209,17 @@ async function mark(id) {
           </div>
         </div>
         <div v-for="item, index in answerimage" style="display:flex;justify-content:center">
-          <div class="sp">
-            <div v-if="item != ''" style="position:relative">
-              <img :src="item"></img>
-              <img :src="traceimage[index].data" style="position:absolute;inset:0"></img>
+          <div v-if="item != ''" class="sp">
+            <div style="position:relative">
+              <tiny-image :src="item" :preview-src-list="[item]"></tiny-image>
+              <img :src="traceimage[index].data" style="position:absolute;inset:0;pointer-events:none"></img>
             </div>
             <div class="sp">
               <tiny-button type="info" @click="selectTraceimage(index)">设置留痕</tiny-button>
               <tiny-button type="danger" @click="deleteTraceimage(index)">删除留痕</tiny-button>
             </div>
           </div>
-          <img v-if="item == ''" src="/errorimage.png"></img>
+          <div v-if="item == ''" class="large-text" style="color:red">图片数据异常，可提交问题卷</div>
         </div>
       </div>
       <div class="sp" style="width:45%;height:100%">
