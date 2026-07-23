@@ -436,7 +436,7 @@ function checkSubjectConfig(requestdata, olddata) {
         }
       }
     }
-    if (typeof (questionitem.consistencyCheckPercent) != 'number' || questionitem.consistencyCheckPercent <= 0 || questionitem.consistencyCheckPercent > 1) {
+    if (typeof (questionitem.consistencyCheckPercent) != 'number' || questionitem.consistencyCheckPercent < 0 || questionitem.consistencyCheckPercent > 1) {
       return {
         errCode: 400,
         errMsg: '请求参数错误',
@@ -472,7 +472,15 @@ function checkSubjectConfig(requestdata, olddata) {
       }
     }
     const arbitrator = [...new Set(questionitem.arbitrator)]
-    if ([...new Set(tempmember.map(item => item.account).concat(arbitrator))].length < questionitem.time + 1) {
+    const allmarker = [...new Set(tempmember.map(item => item.account).concat(arbitrator))]
+    if (questionitem.time == 1 && allmarker.length == 0) {
+      return {
+        errCode: 400,
+        errMsg: '请求参数错误',
+        errFix: '传递有效的markGroup参数'
+      }
+    }
+    if (questionitem.time > 1 && (questionitem.arbitrator.length == 0 || allmarker.length < questionitem.time + 1)) {
       return {
         errCode: 400,
         errMsg: '请求参数错误',
