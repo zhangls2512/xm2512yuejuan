@@ -1,8 +1,9 @@
 const { spawn } = require('child_process')
 const path = require('path')
-function isMarked(page, coord) {
+const { readConfig } = require('../../util/readconfig')
+function isMarked(page, coord, configfilepath) {
   return new Promise((resolve, reject) => {
-    const py = spawn('python', [path.join(__dirname, 'ismarked.py')])
+    const py = spawn(readConfig(configfilepath, 'pythonVenvPath'), [path.join(__dirname, 'ismarked.py')])
     py.stdin.write(JSON.stringify({
       img: page.image,
       x1: page.originCoord[0] + coord[0],
@@ -16,7 +17,7 @@ function isMarked(page, coord) {
     py.stdout.on('end', () => resolve(out == 'true' ? true : false))
   })
 }
-async function getAnswerIndex(page, questionname, pages) {
+async function getAnswerIndex(page, questionname, pages, configfilepath) {
   let coord = []
   let pageindex = 0
   page.forEach((item, index) => {
@@ -33,7 +34,7 @@ async function getAnswerIndex(page, questionname, pages) {
   if (coord.length > 0) {
     const result = []
     for (let i = 0; i < coord.length; i++) {
-      const ismarked = await isMarked(pages[pageindex], coord[i])
+      const ismarked = await isMarked(pages[pageindex], coord[i], configfilepath)
       if (ismarked) {
         result.push(i)
       }

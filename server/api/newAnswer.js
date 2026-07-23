@@ -250,7 +250,7 @@ exports.main = async (event, configfilepath) => {
         }
       })))
       allobjectivequestionname.forEach(async (item) => {
-        const answer = await getAnswerIndex(volume.page, item, result.page)
+        const answer = await getAnswerIndex(volume.page, item, result.page, configfilepath)
         await db.collection('marklog').updateOne({
           examId: requestdata.id,
           subject: requestdata.subject,
