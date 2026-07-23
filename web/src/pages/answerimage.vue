@@ -9,16 +9,16 @@ const props = defineProps({
 const i = ref(null)
 const c = ref(null)
 function draw() {
-  const img = i.value
+  const img = i.value ? i.value : '/noimage.png'
   const canvas = c.value
   const ctx = canvas.getContext('2d')
   const w = img.naturalWidth
   const h = img.naturalHeight
-  canvas.width = w
-  canvas.height = h
+  canvas.width = 450
+  canvas.height = 450 / w * h
   canvas.style.width = '100%'
   canvas.style.height = 'auto'
-  ctx.drawImage(img, 0, 0)
+  ctx.drawImage(img, 0, 0, 450, canvas.height)
   props.data.trace.forEach(item => {
     if (item.type == 'image') {
       drawImage(ctx, item)
@@ -34,7 +34,7 @@ function draw() {
 function drawImage(ctx, item) {
   const [x, y] = getCoord(item)
   const img = new Image()
-  img.src = item.content
+  img.src = item.content ? item.content : '/transparent.png'
   img.onload = () => {
     const w = img.naturalWidth
     const h = img.naturalHeight

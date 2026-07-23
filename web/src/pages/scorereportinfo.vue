@@ -314,7 +314,10 @@ function formatScoringRate(a) {
     </tiny-dialog-box>
     <tiny-dialog-box class="dialog" :visible="sadialog" title="作答" @close="closeSa">
       <div class="cz">
-        <img v-for="item in saimage" :src="item"></img>
+        <div v-for="item in saimage">
+          <img v-if="item != ''" :src="item"></img>
+          <img v-if="item == ''" src="/noimage.png"></img>
+        </div>
       </div>
       <template #footer>
         <tiny-button type="info" @click="closeSa">确定</tiny-button>
