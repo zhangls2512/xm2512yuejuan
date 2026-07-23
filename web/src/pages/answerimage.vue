@@ -14,11 +14,11 @@ function draw() {
   const ctx = canvas.getContext('2d')
   const w = img.naturalWidth
   const h = img.naturalHeight
-  canvas.width = 450
-  canvas.height = 450 / w * h
+  canvas.width = w
+  canvas.height = h
   canvas.style.width = '100%'
   canvas.style.height = 'auto'
-  ctx.drawImage(img, 0, 0, 450, canvas.height)
+  ctx.drawImage(img, 0, 0)
   props.data.trace.forEach(item => {
     if (item.type == 'image') {
       drawImage(ctx, item)

@@ -74,7 +74,7 @@ exports.main = async (event, configfilepath) => {
           delete subject[item]
         })
         return subject
-      })
+      }).sort((a, b) => a.name.localeCompare(b.name))
       delete item.schoolId
     })
     await Promise.all(promises)
