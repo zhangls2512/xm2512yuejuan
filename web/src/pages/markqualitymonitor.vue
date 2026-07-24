@@ -53,8 +53,8 @@ async function getMarkConsistency(row) {
               <div class="bold-text">平均分差</div>
               <div class="bold-text">偏差率</div>
             </div>
-            <div v-for="item, index in markconsistency" class="cz">
-              <div v-if="index > 0" class="line"></div>
+            <div v-for="item in markconsistency" class="cz">
+              <div class="line"></div>
               <div class="wide-sp">
                 <div>{{ item.markerAccount }}</div>
                 <div class="cz" v-for="i in item.questions">
