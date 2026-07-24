@@ -67,7 +67,14 @@ exports.main = async (event, configfilepath) => {
     }
     const examsubjectgetres = await db.collection('examsubject').findOne({
       examId: scorereportconfigres.examId,
-      name: scorereportconfigres.subject
+      $or: [
+        {
+          name: scorereportconfigres.subject
+        },
+        {
+          subSubject: scorereportconfigres.subject
+        }
+      ]
     })
     if (!examsubjectgetres) {
       return {
