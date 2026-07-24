@@ -1,5 +1,5 @@
 const fs = require('fs')
-const https = require('http')
+const https = require('https')
 const { read, contenttype } = require('./util/file')
 const { readConfig } = require('./util/readconfig')
 async function dealRequest(event, configfilepath) {
@@ -68,14 +68,11 @@ async function dealRequest(event, configfilepath) {
 }
 function start(configfilepath) {
   try {
-    /*
-    {
+    https.createServer({
       cert: fs.readFileSync(readConfig(configfilepath, 'certPath')),
       key: fs.readFileSync(readConfig(configfilepath, 'keyPath')),
       minVersion: 'TLSv1.3'
-    },
-    */
-    https.createServer((request, response) => {
+    }, (request, response) => {
       let body = ''
       request.on('data', chunk => {
         body += chunk
@@ -108,7 +105,7 @@ function start(configfilepath) {
         response.end()
       })
     }).listen(readConfig(configfilepath, 'port'))
-    console.log('服务器启动成功，请访问：http://localhost:8080')
+    console.log('服务器启动成功，请访问：https://localhost:8080')
   } catch (err) {
     console.log('服务器启动失败')
     console.log(err.stack)

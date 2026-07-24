@@ -5,7 +5,7 @@ export default async function request({ apiPath, body, authorization }) {
     background: 'rgba(0, 0, 0, 0.5)'
   })
   try {
-    const res = await fetch('http://' + window.location.host + '/api' + apiPath, {
+    const res = await fetch('https://' + window.location.host + '/api' + apiPath, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
