@@ -356,6 +356,7 @@ exports.main = async (event, configfilepath) => {
           consistencyCheck: false
         }
         const marklog = data[0]
+        const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/answer/' + marklog.studentAccount + '/'
         if (!examsubjectres.answerOnline) {
           const answer = await db.collection('answer').findOne({
             examId: requestdata.id,
@@ -370,7 +371,7 @@ exports.main = async (event, configfilepath) => {
                 const coord = pages[i].find(item => item.markGroupName == requestdata.name)
                 if (coord && coord.coord) {
                   for (let j = 0; j < coord.coord.length; j++) {
-                    const cropimagebase64 = await cropImage(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/answer/' + marklog.studentAccount + '/' + i), coord.coord[j], answer.answer.pageOriginCoord[i])
+                    const cropimagebase64 = await cropImage(read(rootdir + i), coord.coord[j], answer.answer.pageOriginCoord[i])
                     result.answerImage.push(cropimagebase64)
                   }
                 }
@@ -379,7 +380,7 @@ exports.main = async (event, configfilepath) => {
           }
         }
         if (examsubjectres.answerOnline) {
-          result.answerImage.push(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/answer/' + marklog.studentAccount + '/' + requestdata.name))
+          result.answerImage.push(read(rootdir + requestdata.name))
         }
         if (marklog.firstMarkerAccount && marklog.secondMarkerAccount) {
           result.marklogList.push({
@@ -472,6 +473,7 @@ exports.main = async (event, configfilepath) => {
           consistencyCheck: true
         }
         const marklog = data[0]
+        const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/answer/' + marklog.studentAccount + '/'
         if (!examsubjectres.answerOnline) {
           const answer = await db.collection('answer').findOne({
             examId: requestdata.id,
@@ -486,7 +488,7 @@ exports.main = async (event, configfilepath) => {
                 const coord = pages[i].find(item => item.markGroupName == requestdata.name)
                 if (coord && coord.coord) {
                   for (let j = 0; j < coord.coord.length; j++) {
-                    const cropimagebase64 = await cropImage(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/answer/' + marklog.studentAccount + '/' + i), coord.coord[j], answer.answer.pageOriginCoord[i])
+                    const cropimagebase64 = await cropImage(read(rootdir + i), coord.coord[j], answer.answer.pageOriginCoord[i])
                     result.answerImage.push(cropimagebase64)
                   }
                 }
@@ -495,7 +497,7 @@ exports.main = async (event, configfilepath) => {
           }
         }
         if (examsubjectres.answerOnline) {
-          result.answerImage.push(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/answer/' + marklog.studentAccount + '/' + requestdata.name))
+          result.answerImage.push(read(rootdir + requestdata.name))
         }
         result.marklogList = list.map(item => {
           return {
@@ -593,6 +595,7 @@ exports.main = async (event, configfilepath) => {
         }
       }
       const marklog = data[0]
+      const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/answer/' + marklog.studentAccount + '/'
       const result = {
         answerImage: [],
         marklogList: [],
@@ -616,7 +619,7 @@ exports.main = async (event, configfilepath) => {
               const coord = pages[i].find(item => item.markGroupName == requestdata.name)
               if (coord && coord.coord) {
                 for (let j = 0; j < coord.coord.length; j++) {
-                  const cropimagebase64 = await cropImage(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/answer/' + marklog.studentAccount + '/' + i), coord.coord[j], answer.answer.pageOriginCoord[i])
+                  const cropimagebase64 = await cropImage(read(rootdir + i), coord.coord[j], answer.answer.pageOriginCoord[i])
                   result.answerImage.push(cropimagebase64)
                 }
               }
@@ -625,7 +628,7 @@ exports.main = async (event, configfilepath) => {
         }
       }
       if (examsubjectres.answerOnline) {
-        result.answerImage.push(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/answer/' + marklog.studentAccount + '/' + requestdata.name))
+        result.answerImage.push(read(rootdir + requestdata.name))
       }
       result.marklogList.push({
         id: marklog.marklogId,

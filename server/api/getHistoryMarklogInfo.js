@@ -91,6 +91,7 @@ exports.main = async (event, configfilepath) => {
       traceImage: [],
       marklogList: []
     }
+    const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + marklogres.examId + '/' + marklogres.subject
     if (!examsubjectres.answerOnline) {
       const answer = await db.collection('answer').findOne({
         examId: marklogres.examId,
@@ -105,7 +106,7 @@ exports.main = async (event, configfilepath) => {
             const coord = pages[i].find(item => item.markGroupName == markgroup.name)
             if (coord && coord.coord) {
               for (let j = 0; j < coord.coord.length; j++) {
-                const cropimagebase64 = await cropImage(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + marklogres.examId + '/' + marklogres.subject + '/answer/' + marklogres.studentAccount + '/' + i), coord.coord[j], answer.answer.pageOriginCoord[i])
+                const cropimagebase64 = await cropImage(read(rootdir + '/answer/' + marklogres.studentAccount + '/' + i), coord.coord[j], answer.answer.pageOriginCoord[i])
                 result.answerImage.push(cropimagebase64)
               }
             }
@@ -114,7 +115,7 @@ exports.main = async (event, configfilepath) => {
       }
     }
     if (examsubjectres.answerOnline) {
-      result.answerImage.push(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + marklogres.examId + '/' + marklogres.subject + '/answer/' + marklogres.studentAccount + '/' + markgroup.name))
+      result.answerImage.push(read(rootdir + '/answer/' + marklogres.studentAccount + '/' + markgroup.name))
     }
     for (let i = 0; i < result.answerImage.length; i++) {
       const answerimage = result.answerImage[i]
@@ -122,7 +123,7 @@ exports.main = async (event, configfilepath) => {
         result.traceImage.push('')
       }
       if (answerimage) {
-        result.traceImage.push(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + marklogres.examId + '/' + marklogres.subject + '/marktraceimage/' + marklogres.studentAccount + '/' + marklogres.questionName + '-' + marklogres.type + '-' + i))
+        result.traceImage.push(read(rootdir + '/marktraceimage/' + marklogres.studentAccount + '/' + marklogres.questionName + '-' + marklogres.type + '-' + i))
       }
     }
     if (marklogres.type == 'first' || marklogres.type == 'second') {

@@ -219,7 +219,7 @@ async function mark(id) {
               <tiny-button type="danger" @click="deleteTraceimage(index)">删除留痕</tiny-button>
             </div>
           </div>
-          <div v-if="item == ''" class="large-text" style="color:red">图片数据异常，可提交问题卷</div>
+          <div v-if="item == ''" class="large-text" style="color:red">图片数据异常</div>
         </div>
       </div>
       <div class="sp" style="width:45%;height:100%">

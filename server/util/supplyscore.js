@@ -93,7 +93,7 @@ function getScoreList(subjectconfig, csvstr) {
     }
     for (let k = 0; k < volume.optionalQuestion.length; k++) {
       const item = volume.optionalQuestion[k]
-      if (questionnames.filter(s => item.name.includes(s)).length != item.selectCount) {
+      if (questionnames.filter(s => item.name.includes(s)).length > item.selectCount) {
         return false
       }
     }
@@ -202,7 +202,6 @@ async function supplyScore(scorelist, subject, exam, account, configfilepath) {
               markerAccount: account,
               excellent: false,
               typicalMistake: false,
-              doubtful: false,
               type: 'update',
               stepScore: a.stepScore,
               totalScore: totalscore

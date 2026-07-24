@@ -355,7 +355,7 @@ async function mark(id) {
             <tiny-button type="warning" @click="openDialog">提交问题卷</tiny-button>
           </div>
           <div v-if="type == 'arbitrate' && scorehistory != ''" class="cz">
-            <div class="large-bold-text">历史分数</div>
+            <div class="bold-text">历史分数</div>
             <div class="sp">
               <div class="bold-text">一评</div>
               <div class="cz" style="flex:1">

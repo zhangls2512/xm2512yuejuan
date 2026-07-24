@@ -115,6 +115,7 @@ exports.main = async (event, configfilepath) => {
     }
     const markgroup = examsubjectgetres.markGroup.find(item => item.questionName.includes(requestdata.questionName))
     const result = []
+    const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + examsubjectgetres.name + '/answer/' + studentAccount + '/'
     if (!examsubjectgetres.answerOnline) {
       const answer = await db.collection('answer').findOne({
         examId: scorereportconfigres.examId,
@@ -129,7 +130,7 @@ exports.main = async (event, configfilepath) => {
             const coord = pages[i].find(item => item.markGroupName == markgroup.name)
             if (coord && coord.coord) {
               for (let j = 0; j < coord.coord.length; j++) {
-                const cropimagebase64 = await cropImage(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + examsubjectgetres.name + '/answer/' + studentAccount + '/' + i), coord.coord[j], answer.answer.pageOriginCoord[i])
+                const cropimagebase64 = await cropImage(read(rootdir + i), coord.coord[j], answer.answer.pageOriginCoord[i])
                 result.push(cropimagebase64)
               }
             }
@@ -138,7 +139,7 @@ exports.main = async (event, configfilepath) => {
       }
     }
     if (examsubjectgetres.answerOnline) {
-      result.push(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + examsubjectgetres.name + '/answer/' + studentAccount + '/' + markgroup.name))
+      result.push(read(rootdir + markgroup.name))
     }
     return {
       errCode: 0,

@@ -101,6 +101,7 @@ exports.main = async (event, configfilepath) => {
       studentAccount: marklogres.studentAccount
     }
     const markgroup = examsubjectres.markGroup.find(item => item.questionName.includes(marklogres.questionName))
+    const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + marklogres.examId + '/' + marklogres.subject
     if (!examsubjectres.answerOnline) {
       const answer = await db.collection('answer').findOne({
         examId: marklogres.examId,
@@ -115,7 +116,7 @@ exports.main = async (event, configfilepath) => {
             const coord = pages[i].find(item => item.markGroupName == markgroup.name)
             if (coord && coord.coord) {
               for (let j = 0; j < coord.coord.length; j++) {
-                const cropimagebase64 = await cropImage(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + marklogres.examId + '/' + marklogres.subject + '/answer/' + marklogres.studentAccount + '/' + i), coord.coord[j], answer.answer.pageOriginCoord[i])
+                const cropimagebase64 = await cropImage(read(rootdir + '/answer/' + marklogres.studentAccount + '/' + i), coord.coord[j], answer.answer.pageOriginCoord[i])
                 result.answerImage.push(cropimagebase64)
               }
             }
@@ -124,7 +125,7 @@ exports.main = async (event, configfilepath) => {
       }
     }
     if (examsubjectres.answerOnline) {
-      result.answerImage.push(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + marklogres.examId + '/' + marklogres.subject + '/answer/' + marklogres.studentAccount + '/' + markgroup.name))
+      result.answerImage.push(read(rootdir + '/answer/' + marklogres.studentAccount + '/' + markgroup.name))
     }
     const markres = await db.collection('marklog').findOne({
       marklogId: requestdata.id,
@@ -137,7 +138,7 @@ exports.main = async (event, configfilepath) => {
           result.traceImage.push('')
         }
         if (answerimage) {
-          result.traceImage.push(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + marklogres.examId + '/' + marklogres.subject + '/marktraceimage/' + marklogres.studentAccount + '/' + marklogres.questionName + '-question-' + i))
+          result.traceImage.push(read(rootdir + '/marktraceimage/' + marklogres.studentAccount + '/' + marklogres.questionName + '-question-' + i))
         }
       }
     }
