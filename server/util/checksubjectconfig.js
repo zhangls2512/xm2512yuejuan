@@ -102,7 +102,7 @@ function checkSubjectConfig(requestdata, olddata) {
         errFix: '传递有效的objectiveQuestion参数'
       }
     }
-    if (!Array.isArray(questionitem.option) || questionitem.option.length == 0 || !questionitem.option.every(item => typeof (item) == 'string' && item)) {
+    if (!Array.isArray(questionitem.option) || questionitem.option.length == 0 || !questionitem.option.every(item => typeof (item) == 'string' && item.length == 1)) {
       return {
         errCode: 400,
         errMsg: '请求参数错误',
@@ -280,7 +280,7 @@ function checkSubjectConfig(requestdata, olddata) {
       stepScore: questionitem.stepScore
     }
     const totalscore = getTotalScoreFromQuestionName(requestdata, questionitem.name)
-    if (typeof (questionitem.arbitrateScoreDiff) != 'number' || questionitem.arbitrateScoreDiff <= 0 || questionitem.arbitrateScoreDiff >= totalscore) {
+    if (typeof (questionitem.arbitrateScoreDiff) != 'number' || questionitem.arbitrateScoreDiff < 0 || questionitem.arbitrateScoreDiff >= totalscore) {
       return {
         errCode: 400,
         errMsg: '请求参数错误',

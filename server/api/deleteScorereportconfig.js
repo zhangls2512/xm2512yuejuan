@@ -38,13 +38,6 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    if (scorereportconfigres.type == 'system') {
-      return {
-        errCode: 400,
-        errMsg: '不支持删除系统类型',
-        errFix: '无修复建议'
-      }
-    }
     const examgetres = await db.collection('exam').findOne({
       examId: scorereportconfigres.examId
     })

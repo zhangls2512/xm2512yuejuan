@@ -199,8 +199,8 @@ async function deleteScorereportconfig(id) {
             <tiny-button type="success" :disabled="item.status == 'processing'"
               @click="generateScorereportconfig(item.scorereportconfigId)">生成</tiny-button>
             <tiny-button type="info" @click="updateScorereportconfig(item.scorereportconfigId)">选择配置文件修改</tiny-button>
-            <tiny-popconfirm v-if="item.type == 'custom'" title="提示" message="删除成功后无法恢复，确定删除？" type="warning"
-              trigger="hover" @confirm="deleteScorereportconfig(item.scorereportconfigId)">
+            <tiny-popconfirm title="提示" message="删除成功后无法恢复，确定删除？" type="warning" trigger="hover"
+              @confirm="deleteScorereportconfig(item.scorereportconfigId)">
               <template #reference>
                 <tiny-button type="danger">删除</tiny-button>
               </template>
