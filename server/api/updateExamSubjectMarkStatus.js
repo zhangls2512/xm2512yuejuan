@@ -35,23 +35,6 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const examgetres = await db.collection('exam').findOne({
-      examId: requestdata.id
-    })
-    if (!examgetres) {
-      return {
-        errCode: 400,
-        errMsg: '考试不存在',
-        errFix: '无修复建议'
-      }
-    }
-    if (examgetres.end) {
-      return {
-        errCode: 400,
-        errMsg: '考试已结束',
-        errFix: '无修复建议'
-      }
-    }
     const examsubjectgetres = await db.collection('examsubject').findOne({
       examId: requestdata.id,
       name: requestdata.name
@@ -60,6 +43,16 @@ exports.main = async (event, configfilepath) => {
       return {
         errCode: 400,
         errMsg: '科目不存在',
+        errFix: '无修复建议'
+      }
+    }
+    const examgetres = await db.collection('exam').findOne({
+      examId: requestdata.id
+    })
+    if (examgetres.end) {
+      return {
+        errCode: 400,
+        errMsg: '考试已结束',
         errFix: '无修复建议'
       }
     }

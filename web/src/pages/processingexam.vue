@@ -26,10 +26,6 @@ async function get() {
       limit: pagesize.value
     }
   })
-  TinyModal.message({
-    message: '获取数据成功',
-    status: 'success'
-  })
   data.value = res.data.map(item => {
     const date = new Date(item.time)
     item.time = [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-')
@@ -227,7 +223,7 @@ function markqualitymonitor(exam, subject) {
     examName: exam.name,
     examType: exam.type,
     examTime: exam.time,
-    subject: subject.name
+    subject: subject
   }))
 }
 function updateExam(info) {
@@ -330,6 +326,8 @@ async function endExam(id) {
                   </template>
                   <template #dropdown>
                     <tiny-dropdown-menu placement="bottom-start">
+                      <tiny-dropdown-item v-if="subject.markStatus != 'end'"
+                        @click="scorereportconfig(item.examId, subject.name)">成绩报告配置</tiny-dropdown-item>
                       <tiny-dropdown-item @click="supplyscore(item, subject)">成绩补录</tiny-dropdown-item>
                       <tiny-dropdown-item v-if="subject.markStatus == 'end'"
                         @click="updatescore(item, subject)">修改分数</tiny-dropdown-item>

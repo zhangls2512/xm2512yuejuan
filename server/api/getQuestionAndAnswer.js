@@ -80,13 +80,6 @@ exports.main = async (event, configfilepath) => {
         }
       ]
     })
-    if (!examsubjectgetres) {
-      return {
-        errCode: 400,
-        errMsg: '科目不存在',
-        errFix: '无修复建议'
-      }
-    }
     let questions = examsubjectgetres.objectiveQuestion.concat(examsubjectgetres.subjectiveQuestion)
     if (examsubjectgetres.name != scorereportconfigres.subject) {
       questions = questions.filter(item => item.subject = scorereportconfigres.subject)
@@ -95,8 +88,8 @@ exports.main = async (event, configfilepath) => {
     if (!question) {
       return {
         errCode: 400,
-        errMsg: '题目不存在',
-        errFix: '无修复建议'
+        errMsg: '请求参数错误',
+        errFix: '传递有效的questionName参数'
       }
     }
     if (!question.questionId) {
@@ -113,13 +106,6 @@ exports.main = async (event, configfilepath) => {
       const exam = await db.collection('exam').findOne({
         examId: scorereportconfigres.examId
       })
-      if (!exam) {
-        return {
-          errCode: 400,
-          errMsg: '考试不存在',
-          errFix: '无修复建议'
-        }
-      }
       const qa = await db.collection('question').findOne({
         questionId: question.questionId,
         schoolId: exam.schoolId

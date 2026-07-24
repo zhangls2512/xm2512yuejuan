@@ -49,13 +49,6 @@ exports.main = async (event, configfilepath) => {
         }
       ]
     })
-    if (!examsubjectgetres) {
-      return {
-        errCode: 400,
-        errMsg: '科目不存在',
-        errFix: '无修复建议'
-      }
-    }
     const marklogres = await db.collection('marklog').find({
       examId: scorereportconfigres.examId,
       subject: examsubjectgetres.name,

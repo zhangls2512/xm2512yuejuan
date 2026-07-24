@@ -37,16 +37,6 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const examgetres = await db.collection('exam').findOne({
-      examId: requestdata.id
-    })
-    if (!examgetres) {
-      return {
-        errCode: 400,
-        errMsg: '考试不存在',
-        errFix: '无修复建议'
-      }
-    }
     const examsubjectgetres = await db.collection('examsubject').findOne({
       examId: requestdata.id,
       name: requestdata.subject
@@ -65,6 +55,9 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
+    const examgetres = await db.collection('exam').findOne({
+      examId: requestdata.id
+    })
     if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
       const adminexist = examsubjectgetres.admin.find(item => item.account == account.account)
       if (!adminexist) {

@@ -21,7 +21,7 @@ exports.main = async (event, configfilepath) => {
     return res
   } else {
     const account = res.account
-    if (account.type != 'teacher') {
+    if (account.type == 'student') {
       return {
         errCode: 403,
         errMsg: '无权限',
@@ -50,13 +50,6 @@ exports.main = async (event, configfilepath) => {
       examId: marklogres.examId,
       name: marklogres.subject
     })
-    if (!examsubjectres) {
-      return {
-        errCode: 400,
-        errMsg: '科目不存在',
-        errFix: '无修复建议'
-      }
-    }
     if (examsubjectres.markStatus == 'end') {
       return {
         errCode: 400,
@@ -64,17 +57,31 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const markgroup = examsubjectres.markGroup.find(item => item.questionName.includes(marklogres.questionName))
-    if (!markgroup) {
-      return {
-        errCode: 400,
-        errMsg: '阅卷组不存在',
-        errFix: '无修复建议'
+    const examgetres = await db.collection('exam').findOne({
+      examId: marklogres.examId
+    })
+    let questionname
+    if (account.type == 'admin' && account.schoolId == examgetres.schoolId) {
+      questionname = 'all'
+    }
+    if (examsubjectres.admin.find(item => item.account == account.account && item.permission.includes('spotMarklog'))) {
+      questionname = 'all'
+    }
+    if (!questionname) {
+      for (let i = 0; i < examsubjectres.markGroup.length; i++) {
+        const item = examsubjectres.markGroup[i]
+        if (item.admin.find(item => item.account == account.account && item.permission.includes('spotMarklog'))) {
+          if (!questionname) {
+            questionname = []
+          }
+          questionname = questionname.concat(item.questionName)
+        }
       }
     }
+    const markgroup = examsubjectres.markGroup.find(item => item.questionName.includes(marklogres.questionName))
     const member = markgroup.member.find(item => item.account == account.account)
     const isarbitrator = markgroup.arbitrator && markgroup.arbitrator.includes(account.account)
-    if (!member && !isarbitrator) {
+    if (!member && !isarbitrator && (!questionname || (questionname != 'all' && !questionname.includes(requestdata.questionName)))) {
       return {
         errCode: 403,
         errMsg: '无权限',

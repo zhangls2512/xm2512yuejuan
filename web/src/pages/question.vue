@@ -87,10 +87,6 @@ async function get() {
       limit: pagesize.value
     }
   })
-  TinyModal.message({
-    message: '获取数据成功',
-    status: 'success'
-  })
   data.value = res.data.map(item => {
     item.knowledgepointwz = item.knowledgePoint.join('、')
     return item

@@ -69,27 +69,10 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const examgetres = await db.collection('exam').findOne({
-      examId: marklogres.examId
-    })
-    if (!examgetres) {
-      return {
-        errCode: 400,
-        errMsg: '考试不存在',
-        errFix: '无修复建议'
-      }
-    }
     const examsubjectres = await db.collection('examsubject').findOne({
       examId: marklogres.examId,
       name: marklogres.subject
     })
-    if (!examsubjectres) {
-      return {
-        errCode: 400,
-        errMsg: '科目不存在',
-        errFix: '无修复建议'
-      }
-    }
     if (examsubjectres.markStatus == 'end') {
       return {
         errCode: 400,
@@ -105,6 +88,9 @@ exports.main = async (event, configfilepath) => {
         errFix: '传递有效的stepScore参数'
       }
     }
+    const examgetres = await db.collection('exam').findOne({
+      examId: marklogres.examId
+    })
     let questionname
     if (account.type == 'admin' && account.schoolId == examgetres.schoolId) {
       questionname = 'all'

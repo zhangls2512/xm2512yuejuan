@@ -97,13 +97,6 @@ exports.main = async (event, configfilepath) => {
         }
       ]
     })
-    if (!examsubjectgetres) {
-      return {
-        errCode: 400,
-        errMsg: '科目不存在',
-        errFix: '无修复建议'
-      }
-    }
     if (!examsubjectgetres.subjectiveQuestion.map(item => item.name).includes(requestdata.questionName)) {
       return {
         errCode: 400,

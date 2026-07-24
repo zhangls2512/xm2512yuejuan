@@ -89,13 +89,6 @@ exports.main = async (event, configfilepath) => {
       examId: marklogres.examId,
       name: marklogres.subject
     })
-    if (!examsubjectres) {
-      return {
-        errCode: 400,
-        errMsg: '科目不存在',
-        errFix: '无修复建议'
-      }
-    }
     if (examsubjectres.markStatus == 'paused') {
       return {
         errCode: 400,
@@ -119,13 +112,6 @@ exports.main = async (event, configfilepath) => {
       }
     }
     const markgroup = examsubjectres.markGroup.find(item => item.questionName.includes(marklogres.questionName))
-    if (!markgroup) {
-      return {
-        errCode: 400,
-        errMsg: '阅卷组不存在',
-        errFix: '无修复建议'
-      }
-    }
     const member = markgroup.member.find(item => item.account == account.account)
     const isarbitrator = markgroup.arbitrator && markgroup.arbitrator.includes(account.account)
     if (!member && !isarbitrator) {

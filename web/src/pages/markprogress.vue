@@ -29,10 +29,6 @@ async function get() {
       subject: data.value.subject
     }
   })
-  TinyModal.message({
-    message: '获取数据成功',
-    status: 'success'
-  })
   markprogress.value = res.data
 }
 </script>

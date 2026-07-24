@@ -77,13 +77,6 @@ exports.main = async (event, configfilepath) => {
     const examgetres = await db.collection('exam').findOne({
       examId: scorereportconfigres.examId
     })
-    if (!examgetres) {
-      return {
-        errCode: 400,
-        errMsg: '考试不存在',
-        errFix: '无修复建议'
-      }
-    }
     let validaccounts = []
     if (!examgetres.schoolId) {
       validaccounts = await db.collection('account').find({
@@ -298,13 +291,6 @@ exports.main = async (event, configfilepath) => {
           }
         ]
       })
-      if (!examsubjectgetres) {
-        return {
-          errCode: 400,
-          errMsg: '科目不存在',
-          errFix: '无修复建议'
-        }
-      }
       let validquestionnames = []
       if (scorereportconfigres.subject == examsubjectgetres.name) {
         validquestionnames = examsubjectgetres.objectiveQuestion.map(item => item.name).concat(examsubjectgetres.subjectiveQuestion.map(item => item.name))

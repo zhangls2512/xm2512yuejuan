@@ -34,10 +34,6 @@ async function search() {
       studentAccount: studentaccount.value
     }
   })
-  TinyModal.message({
-    message: '获取数据成功',
-    status: 'success'
-  })
   answerimage.value = res.data.answerImage
   markloglist.value = res.data.marklog
 }
