@@ -9,7 +9,7 @@ const props = defineProps({
 const i = ref(null)
 const c = ref(null)
 function draw() {
-  const img = i.value ? i.value : '/noimage.png'
+  const img = i.value
   const canvas = c.value
   const ctx = canvas.getContext('2d')
   const w = img.naturalWidth
@@ -105,6 +105,6 @@ function getCoord(item, w = 0, h = 0) {
 </script>
 
 <template>
-  <img ref="i" :src="data.answerImage" @load="draw" style="display:none">
+  <img ref="i" :src="data.answerImage || '/noimage.png'" @load="draw" style="display:none">
   <canvas ref="c"></canvas>
 </template>

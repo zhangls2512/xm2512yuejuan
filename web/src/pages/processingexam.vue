@@ -203,6 +203,15 @@ function scorereportconfig(examid, subject) {
     subject: subject
   }))
 }
+function supplyscore(exam, subject) {
+  router.push('/supplyscore?info=' + encode({
+    examId: exam.examId,
+    examName: exam.name,
+    examType: exam.type,
+    examTime: exam.time,
+    subject: subject
+  }))
+}
 function updateExam(info) {
   router.push('/updateexam?info=' + encode(info))
 }
@@ -297,6 +306,16 @@ async function endExam(id) {
                   @click="getAnswerCsv(item, subject.name)">导出小题明细</div>
                 <div v-if="admin == true && subject.markStatus == 'end'" class="clickwz"
                   @click="scorereportconfig(item.examId, subject.name)">成绩报告配置</div>
+                <tiny-dropdown v-if="admin == true" :show-icon="false">
+                  <template #default>
+                    <div class="clickwz">更多</div>
+                  </template>
+                  <template #dropdown>
+                    <tiny-dropdown-menu placement="bottom-start">
+                      <tiny-dropdown-item @click="supplyscore(item, subject)">成绩补录</tiny-dropdown-item>
+                    </tiny-dropdown-menu>
+                  </template>
+                </tiny-dropdown>
               </div>
             </div>
             <tiny-popconfirm title="提示" message="删除成功后无法恢复，确定删除？" type="warning" trigger="hover"

@@ -113,6 +113,10 @@ const router = createRouter({
             {
               path: '/scorereportinfo',
               component: () => import('/src/pages/scorereportinfo.vue')
+            },
+            {
+              path: '/supplyscore',
+              component: () => import('/src/pages/supplyscore.vue')
             }
           ]
         }

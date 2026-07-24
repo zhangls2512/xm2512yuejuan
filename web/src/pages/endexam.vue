@@ -62,32 +62,19 @@ async function restartExam(id) {
   })
   get()
 }
-async function tool(id) {
-  TinyModal.message({
-    message: '待开发',
-    status: 'warning'
-  })
-}
 </script>
 
 <template>
   <div class="cz">
     <div v-for="item in data" class="kuang">
       <div class="cz">
-        <div class="spacebetween">
-          <div class="cz">
-            <div class="sp">
-              <div class="large-bold-text">{{ item.name }}</div>
-              <tiny-tag type="info">{{ item.type }}</tiny-tag>
-            </div>
-            <div>时间：{{ item.time }}</div>
-            <div v-if="item.subjectName != ''">科目：{{ item.subjectName }}</div>
-            <div style="cursor:pointer" @click="copy(item.examId)">ID：{{ item.examId }}</div>
-          </div>
-          <div class="sp">
-            <tiny-button type="info" @click="tool(item.examId)">工具箱</tiny-button>
-          </div>
+        <div class="sp">
+          <div class="large-bold-text">{{ item.name }}</div>
+          <tiny-tag type="info">{{ item.type }}</tiny-tag>
         </div>
+        <div>时间：{{ item.time }}</div>
+        <div v-if="item.subjectName != ''">科目：{{ item.subjectName }}</div>
+        <div style="cursor:pointer" @click="copy(item.examId)">ID：{{ item.examId }}</div>
         <div class="line"></div>
         <div v-for="subject in item.subject" class="cz">
           <div class="spacebetween">

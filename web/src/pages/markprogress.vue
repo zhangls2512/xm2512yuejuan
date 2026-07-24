@@ -1,5 +1,4 @@
 <script setup>
-document.title = '智能阅卷系统 - 班级管理 - 班级详情'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { decode } from '../util/code'
