@@ -56,6 +56,13 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
+    if (examsubjectgetres.markStatus == 'end') {
+      return {
+        errCode: 400,
+        errMsg: '阅卷已结束',
+        errFix: '无修复建议'
+      }
+    }
     if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
       const adminexist = examsubjectgetres.admin.find(item => item.account == account.account)
       if (!adminexist) {
@@ -71,13 +78,6 @@ exports.main = async (event, configfilepath) => {
           errMsg: '无权限',
           errFix: '无修复建议'
         }
-      }
-    }
-    if (examsubjectgetres.markStatus == 'end') {
-      return {
-        errCode: 400,
-        errMsg: '阅卷已结束',
-        errFix: '无修复建议'
       }
     }
     const answerres = await db.collection('answer').findOne({

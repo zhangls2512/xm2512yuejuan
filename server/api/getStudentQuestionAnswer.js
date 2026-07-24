@@ -101,7 +101,9 @@ exports.main = async (event, configfilepath) => {
       examId: scorereportconfigres.examId,
       subject: examsubjectgetres.name,
       studentAccount: studentAccount,
-      questionName: requestdata.questionName,
+      questionName: {
+        $in: scorereportconfigres.config.scoringQuestionNames
+      },
       type: 'system'
     })
     if (!marklogres) {

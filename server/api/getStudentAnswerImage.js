@@ -94,6 +94,9 @@ exports.main = async (event, configfilepath) => {
       examId: scorereportconfigres.examId,
       subject: examsubjectgetres.name,
       studentAccount: studentAccount,
+      questionName: {
+        $in: scorereportconfigres.config.scoringQuestionNames
+      },
       type: 'system'
     }).toArray()
     const result = {
@@ -112,7 +115,7 @@ exports.main = async (event, configfilepath) => {
     if (!result.answerOnline) {
       const answer = await db.collection('answer').findOne({
         examId: scorereportconfigres.examId,
-        subject: marklogres[0].subject,
+        subject: examsubjectgetres.name,
         studentAccount: studentAccount
       })
       const volume = examsubjectgetres.volume.find(item => item.name == answer.answer.volume)
@@ -153,7 +156,7 @@ exports.main = async (event, configfilepath) => {
           if (marktype) {
             const traceimage = []
             for (let i = 0; i < coordcount; i++) {
-              traceimage.push(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + marklogres[0].subject + '/marktraceimage/' + studentAccount + '/' + item.questionName + '-' + marktype + '-' + i))
+              traceimage.push(read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + examsubjectgetres.name + '/marktraceimage/' + studentAccount + '/' + item.questionName + '-' + marktype + '-' + i))
             }
             marklogarr.push({
               questionName: item.questionName,
@@ -167,7 +170,7 @@ exports.main = async (event, configfilepath) => {
       const trace = getScanTrace(examsubjectgetres, marklogarr.sort((a, b) => a.questionName.localeCompare(b.questionName)), answer.answer.pageOriginCoord, answer.answer.volume)
       volume.page.forEach((item, index) => {
         result.image.push({
-          answerImage: read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + marklogres[0].subject + '/answer/' + studentAccount + '/' + index),
+          answerImage: read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + examsubjectgetres.name + '/answer/' + studentAccount + '/' + index),
           trace: trace[index]
         })
       })
@@ -185,7 +188,7 @@ exports.main = async (event, configfilepath) => {
           })
         }
         if (marktype) {
-          const traceimage = read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + marklogres[0].subject + '/marktraceimage/' + studentAccount + '/' + item.questionName + '-' + marktype + '-0')
+          const traceimage = read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + examsubjectgetres.name + '/marktraceimage/' + studentAccount + '/' + item.questionName + '-' + marktype + '-0')
           marklogarr.push({
             questionName: item.questionName,
             finalStepScore: item.finalStepScore,
@@ -199,7 +202,7 @@ exports.main = async (event, configfilepath) => {
         const markgroup = examsubjectgetres.markGroup.find(m => m.questionName.includes(item.questionName))
         result.image.push({
           questionName: item.questionName,
-          answerImage: read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + marklogres[0].subject + '/answer/' + studentAccount + '/' + markgroup.name),
+          answerImage: read(readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + examsubjectgetres.name + '/answer/' + studentAccount + '/' + markgroup.name),
           trace: trace[index]
         })
       })
