@@ -114,6 +114,7 @@ exports.main = async (event, configfilepath) => {
             $ne: account.account
           },
           questionReason: '',
+          updateMarkerAccount: '',
           $or: markgroup.questionName.map(item => {
             return {
               questionName: item,
@@ -139,6 +140,7 @@ exports.main = async (event, configfilepath) => {
             $nin: ['', account.account]
           },
           questionReason: '',
+          updateMarkerAccount: '',
           $or: markgroup.questionName.map(item => {
             return {
               questionName: item,

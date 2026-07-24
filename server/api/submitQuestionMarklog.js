@@ -4,6 +4,7 @@ exports.main = async (event, configfilepath) => {
   const { readConfig } = require('../../util/readconfig')
   const db = await (require('../util/db').database(configfilepath))
   const { getImageInfo } = require('../util/image')
+  const { sum } = require('../util/scorereport')
   const requestdata = JSON.parse(event.body)
   if (typeof (requestdata.id) != 'string' || requestdata.id.length != 36) {
     return {
@@ -58,7 +59,8 @@ exports.main = async (event, configfilepath) => {
       questionReason: {
         $exists: true,
         $ne: ''
-      }
+      },
+      updateMarkerAccount: ''
     })
     if (!marklogres) {
       return {
@@ -222,9 +224,6 @@ exports.main = async (event, configfilepath) => {
       marklogId: requestdata.id,
       type: 'question'
     })
-    function sum(arr) {
-      return arr.reduce((sum, num) => sum + num, 0)
-    }
     if (!markres) {
       await db.collection('marklog').insertOne({
         marklogId: marklogres.marklogId,

@@ -2,6 +2,7 @@
 exports.main = async (event, configfilepath) => {
   const crypto = require('crypto')
   const db = await (require('../util/db').database(configfilepath))
+  const { checkArrNotHaveSameItem } = require('../util/checksubjectconfig')
   const requestdata = JSON.parse(event.body)
   if (typeof (requestdata.id) != 'string' || requestdata.id.length != 36) {
     return {
@@ -273,9 +274,6 @@ exports.main = async (event, configfilepath) => {
           max: ruleitem.max,
           min: ruleitem.min
         })
-      }
-      function checkArrNotHaveSameItem(arr) {
-        return [...new Set(arr)].length == arr.length
       }
       if (!checkArrNotHaveSameItem(config.fuScoreRule.map(item => item.level))) {
         return {

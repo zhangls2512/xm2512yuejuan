@@ -98,7 +98,8 @@ exports.main = async (event, configfilepath) => {
         questionReason: {
           $exists: true,
           $ne: ''
-        }
+        },
+        updateMarkerAccount: ''
       }).skip(skip).limit(limit).toArray()
     } else {
       data = await db.collection('marklog').find({
@@ -111,7 +112,8 @@ exports.main = async (event, configfilepath) => {
         questionReason: {
           $exists: true,
           $ne: ''
-        }
+        },
+        updateMarkerAccount: ''
       }).skip(skip).limit(limit).toArray()
     }
     return {

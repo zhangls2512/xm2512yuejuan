@@ -4,6 +4,7 @@ exports.main = async (event, configfilepath) => {
   const { readConfig } = require('../../util/readconfig')
   const db = await (require('../util/db').database(configfilepath))
   const { getImageInfo } = require('../util/image')
+  const { sum } = require('../util/scorereport')
   const requestdata = JSON.parse(event.body)
   if (typeof (requestdata.id) != 'string' || requestdata.id.length != 36) {
     return {
@@ -133,9 +134,6 @@ exports.main = async (event, configfilepath) => {
         errMsg: '无权限',
         errFix: '无修复建议'
       }
-    }
-    function sum(arr) {
-      return arr.reduce((sum, num) => sum + num, 0)
     }
     if (!requestdata.consistencyCheck) {
       if (marklogres.arbitrateMarkerAccount && (marklogres.arbitrateMarkerAccount != account.account || !isarbitrator)) {
@@ -578,7 +576,8 @@ exports.main = async (event, configfilepath) => {
               examId: marklogres.examId,
               subject: marklogres.subject,
               questionName: marklogres.questionName,
-              questionReason: ''
+              questionReason: '',
+              updateMarkerAccount: ''
             })
             const finishcount = await db.collection('marklog').countDocuments({
               examId: marklogres.examId,
@@ -587,7 +586,8 @@ exports.main = async (event, configfilepath) => {
               secondMarkerAccount: {
                 $ne: ''
               },
-              questionReason: ''
+              questionReason: '',
+              updateMarkerAccount: ''
             })
             const cha = Math.round(allcount * markgroup.secondMarkPercent) - finishcount
             secondyu = cha < 0 ? 0 : cha

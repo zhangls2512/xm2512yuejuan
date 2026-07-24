@@ -153,7 +153,8 @@ exports.main = async (event, configfilepath) => {
           firstMarkerAccount: {
             $ne: ''
           },
-          questionReason: ''
+          questionReason: '',
+          updateMarkerAccount: ''
         })
         itemtotalfinished += a
         totalfinished += a
@@ -166,7 +167,8 @@ exports.main = async (event, configfilepath) => {
           subject: requestdata.subject,
           questionName: questionname[i],
           type: 'system',
-          questionReason: ''
+          questionReason: '',
+          updateMarkerAccount: ''
         })
         itemtotalall += b
         totalall += b
@@ -220,7 +222,8 @@ exports.main = async (event, configfilepath) => {
           firstMarkerAccount: {
             $ne: ''
           },
-          questionReason: ''
+          questionReason: '',
+          updateMarkerAccount: ''
         })
         itemtotalfinished += a
         totalfinished += a
@@ -233,7 +236,8 @@ exports.main = async (event, configfilepath) => {
           subject: requestdata.subject,
           questionName: questionname[i],
           type: 'system',
-          questionReason: ''
+          questionReason: '',
+          updateMarkerAccount: ''
         })
         itemtotalall += b
         totalall += b
@@ -249,7 +253,8 @@ exports.main = async (event, configfilepath) => {
           secondMarkerAccount: {
             $ne: ''
           },
-          questionReason: ''
+          questionReason: '',
+          updateMarkerAccount: ''
         })
         itemtotalfinished += e
         totalfinished += e
@@ -272,6 +277,7 @@ exports.main = async (event, configfilepath) => {
             $ne: ''
           },
           questionReason: '',
+          updateMarkerAccount: '',
           minScoreDiff: {
             $gt: question.arbitrateScoreDiff
           }
@@ -294,6 +300,7 @@ exports.main = async (event, configfilepath) => {
             $ne: ''
           },
           questionReason: '',
+          updateMarkerAccount: '',
           minScoreDiff: {
             $gt: question.arbitrateScoreDiff
           }
@@ -350,7 +357,8 @@ exports.main = async (event, configfilepath) => {
           firstMarkerAccount: {
             $ne: ''
           },
-          questionReason: ''
+          questionReason: '',
+          updateMarkerAccount: ''
         })
         itemtotalfinished += a
         totalfinished += a
@@ -363,7 +371,8 @@ exports.main = async (event, configfilepath) => {
           subject: requestdata.subject,
           questionName: questionname[i],
           type: 'system',
-          questionReason: ''
+          questionReason: '',
+          updateMarkerAccount: ''
         })
         itemtotalall += b
         totalall += b
@@ -379,7 +388,8 @@ exports.main = async (event, configfilepath) => {
           secondMarkerAccount: {
             $ne: ''
           },
-          questionReason: ''
+          questionReason: '',
+          updateMarkerAccount: ''
         })
         itemtotalfinished += e
         totalfinished += e
@@ -402,6 +412,7 @@ exports.main = async (event, configfilepath) => {
             $ne: ''
           },
           questionReason: '',
+          updateMarkerAccount: '',
           minScoreDiff: {
             $gt: question.arbitrateScoreDiff
           }
@@ -428,6 +439,7 @@ exports.main = async (event, configfilepath) => {
           },
           arbitrateMarkerAccount: '',
           questionReason: '',
+          updateMarkerAccount: '',
           minScoreDiff: {
             $gt: question.arbitrateScoreDiff
           }
@@ -447,6 +459,7 @@ exports.main = async (event, configfilepath) => {
             $ne: ''
           },
           questionReason: '',
+          updateMarkerAccount: '',
           minScoreDiff: {
             $gt: question.arbitrateScoreDiff
           }
@@ -472,6 +485,7 @@ exports.main = async (event, configfilepath) => {
             $ne: ''
           },
           questionReason: '',
+          updateMarkerAccount: '',
           minScoreDiff: {
             $gt: question.arbitrateScoreDiff
           }

@@ -163,7 +163,8 @@ exports.main = async (event, configfilepath) => {
                 },
                 type: 'system',
                 firstMarkerAccount: '',
-                questionReason: ''
+                questionReason: '',
+                updateMarkerAccount: ''
               }
             },
             {
@@ -181,7 +182,8 @@ exports.main = async (event, configfilepath) => {
               questionName: {
                 $in: markgroup.questionName
               },
-              questionReason: ''
+              questionReason: '',
+              updateMarkerAccount: ''
             })
             const finishcount = await db.collection('marklog').countDocuments({
               examId: requestdata.id,
@@ -192,7 +194,8 @@ exports.main = async (event, configfilepath) => {
               secondMarkerAccount: {
                 $ne: ''
               },
-              questionReason: ''
+              questionReason: '',
+              updateMarkerAccount: ''
             })
             const cha = Math.round(allcount * markgroup.secondMarkPercent) - finishcount
             secondyu = cha < 0 ? 0 : cha
@@ -208,6 +211,7 @@ exports.main = async (event, configfilepath) => {
                       $in: markgroup.questionName
                     },
                     questionReason: '',
+                    updateMarkerAccount: '',
                     type: 'system',
                     $or: [
                       {
@@ -240,7 +244,8 @@ exports.main = async (event, configfilepath) => {
                     },
                     type: 'system',
                     firstMarkerAccount: '',
-                    questionReason: ''
+                    questionReason: '',
+                    updateMarkerAccount: ''
                   }
                 },
                 {
@@ -264,6 +269,7 @@ exports.main = async (event, configfilepath) => {
               },
               thirdMarkerAccount: '',
               questionReason: '',
+              updateMarkerAccount: '',
               $or: markgroup.questionName.map(item => {
                 return {
                   questionName: item,
@@ -286,6 +292,7 @@ exports.main = async (event, configfilepath) => {
                         },
                         type: 'system',
                         questionReason: '',
+                        updateMarkerAccount: '',
                         $or: [
                           {
                             firstMarkerAccount: ''
@@ -321,7 +328,8 @@ exports.main = async (event, configfilepath) => {
                         },
                         type: 'system',
                         firstMarkerAccount: '',
-                        questionReason: ''
+                        questionReason: '',
+                        updateMarkerAccount: ''
                       }
                     ].concat([sanping])
                   }
@@ -389,6 +397,7 @@ exports.main = async (event, configfilepath) => {
             studentAccount: marklog.studentAccount,
             type: 'system',
             questionReason: '',
+            updateMarkerAccount: '',
             $or: [
               {
                 firstMarkerAccount: ''
@@ -522,6 +531,7 @@ exports.main = async (event, configfilepath) => {
               },
               arbitrateMarkerAccount: '',
               questionReason: '',
+              updateMarkerAccount: '',
               $or: markgroup.questionName.map(item => {
                 return {
                   questionName: item,
@@ -557,6 +567,7 @@ exports.main = async (event, configfilepath) => {
               },
               arbitrateMarkerAccount: '',
               questionReason: '',
+              updateMarkerAccount: '',
               $or: markgroup.questionName.map(item => {
                 return {
                   questionName: item,

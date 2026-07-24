@@ -30,7 +30,8 @@ exports.main = async (event, configfilepath) => {
       questionReason: {
         $exists: true,
         $ne: ''
-      }
+      },
+      updateMarkerAccount: ''
     })
     if (!marklogres) {
       return {

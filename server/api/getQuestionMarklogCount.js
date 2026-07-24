@@ -90,7 +90,8 @@ exports.main = async (event, configfilepath) => {
         questionReason: {
           $exists: true,
           $ne: ''
-        }
+        },
+        updateMarkerAccount: ''
       })
     } else {
       count = await db.collection('marklog').countDocuments({
@@ -103,7 +104,8 @@ exports.main = async (event, configfilepath) => {
         questionReason: {
           $exists: true,
           $ne: ''
-        }
+        },
+        updateMarkerAccount: ''
       })
     }
     return {
