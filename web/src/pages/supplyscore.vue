@@ -20,7 +20,7 @@ async function upload() {
     apiPath: '/supplyExamSubjectScore',
     body: {
       id: data.value.examId,
-      name: data.value.subject.name,
+      subject: data.value.subject.name,
       csv: content
     }
   })

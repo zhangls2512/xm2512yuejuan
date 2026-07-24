@@ -10,11 +10,11 @@ exports.main = async (event, configfilepath) => {
       errFix: '传递有效的id参数'
     }
   }
-  if (typeof (requestdata.name) != 'string' || !requestdata.name) {
+  if (typeof (requestdata.subject) != 'string' || !requestdata.subject) {
     return {
       errCode: 400,
       errMsg: '请求参数错误',
-      errFix: '传递有效的name参数'
+      errFix: '传递有效的subject参数'
     }
   }
   if (typeof (requestdata.csv) != 'string' || !requestdata.csv) {
@@ -48,7 +48,7 @@ exports.main = async (event, configfilepath) => {
     }
     const examsubjectgetres = await db.collection('examsubject').findOne({
       examId: requestdata.id,
-      name: requestdata.name
+      name: requestdata.subject
     })
     if (!examsubjectgetres) {
       return {

@@ -19,24 +19,23 @@ exports.main = async (event, configfilepath) => {
       errFix: '传递有效的questionName参数'
     }
   }
+  if (!['excellent', 'typicalMistake'].includes(requestdata.type)) {
+    return {
+      errCode: 400,
+      errMsg: '请求参数错误',
+      errFix: '传递有效的type参数'
+    }
+  }
   const res = await require('../util/authcheck').main(event.headers, configfilepath)
   if (res.errCode != 0) {
     return res
   } else {
     const account = res.account
-    if (account.type == 'admin') {
+    if (account.type != 'teacher') {
       return {
         errCode: 403,
         errMsg: '无权限',
         errFix: '无修复建议'
-      }
-    }
-    const studentAccount = account.type == 'teacher' ? requestdata.studentAccount : account.account
-    if (typeof (studentAccount) != 'string' || studentAccount.length != 36) {
-      return {
-        errCode: 400,
-        errMsg: '请求参数错误',
-        errFix: '传递有效的studentAccount参数'
       }
     }
     const scorereportconfigres = await db.collection('scorereportconfig').findOne({
@@ -44,8 +43,7 @@ exports.main = async (event, configfilepath) => {
       status: 'finished',
       subject: {
         $ne: '多学科'
-      },
-      student: studentAccount
+      }
     })
     if (!scorereportconfigres) {
       return {
@@ -62,22 +60,17 @@ exports.main = async (event, configfilepath) => {
       }
     }
     let access = false
-    if (account.type == 'student' && scorereportconfigres.studentVisible) {
+    if (scorereportconfigres.classTeacherVisible) {
       access = true
     }
-    if (account.type == 'teacher') {
-      if (scorereportconfigres.classTeacherVisible) {
-        access = true
-      }
-      if (scorereportconfigres.jointVisibleAccount.includes(account.account)) {
-        access = true
-      }
-      if (scorereportconfigres.schoolVisibleAccount.includes(account.account)) {
-        access = true
-      }
-      if (scorereportconfigres.classVisibleAccount.includes(account.account)) {
-        access = true
-      }
+    if (scorereportconfigres.jointVisibleAccount.includes(account.account)) {
+      access = true
+    }
+    if (scorereportconfigres.schoolVisibleAccount.includes(account.account)) {
+      access = true
+    }
+    if (scorereportconfigres.classVisibleAccount.includes(account.account)) {
+      access = true
     }
     if (!access) {
       return {
@@ -111,32 +104,68 @@ exports.main = async (event, configfilepath) => {
         errFix: '传递有效的questionName参数'
       }
     }
-    const marklogres = await db.collection('marklog').findOne({
-      examId: scorereportconfigres.examId,
-      subject: examsubjectgetres.name,
-      studentAccount: studentAccount,
-      questionName: requestdata.questionName,
-      type: 'system'
-    })
+    if (examsubjectgetres.markStatus != 'end') {
+      return {
+        errCode: 400,
+        errMsg: '阅卷未结束',
+        errFix: '无修复建议'
+      }
+    }
+    let data = []
+    if (requestdata.type == 'excellent') {
+      data = await db.collection('marklog').aggregate([
+        {
+          $match: {
+            examId: scorereportconfigres.examId,
+            subject: examsubjectgetres.name,
+            questionName: requestdata.questionName,
+            excellent: true
+          }
+        },
+        {
+          $sample: {
+            size: 1
+          }
+        }
+      ]).toArray()
+    }
+    if (requestdata.type == 'typicalMistake') {
+      data = await db.collection('marklog').aggregate([
+        {
+          $match: {
+            examId: scorereportconfigres.examId,
+            subject: examsubjectgetres.name,
+            questionName: requestdata.questionName,
+            typicalMistake: true
+          }
+        },
+        {
+          $sample: {
+            size: 1
+          }
+        }
+      ]).toArray()
+    }
+    const marklogres = data[0]
     if (!marklogres) {
       return {
         errCode: 400,
-        errMsg: '作答不存在',
+        errMsg: '典型卷不存在',
         errFix: '无修复建议'
       }
     }
     const markgroup = examsubjectgetres.markGroup.find(item => item.questionName.includes(requestdata.questionName))
     const result = {
       answerImage: [],
-      stepScore: marklogres.finalStepScore,
-      totalScore: marklogres.finalTotalScore
+      stepScore: marklogres.stepScore,
+      totalScore: marklogres.totalScore
     }
-    const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + examsubjectgetres.name + '/answer/' + studentAccount + '/'
+    const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + examsubjectgetres.name + '/answer/' + marklogres.studentAccount + '/'
     if (!examsubjectgetres.answerOnline) {
       const answer = await db.collection('answer').findOne({
         examId: scorereportconfigres.examId,
         subject: examsubjectgetres.name,
-        studentAccount: studentAccount
+        studentAccount: marklogres.studentAccount
       })
       if (answer) {
         const volume = examsubjectgetres.volume.find(item => item.name == answer.answer.volume)

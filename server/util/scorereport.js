@@ -115,7 +115,8 @@ function getScoreReport(subject, classes, marklog, config) {
         objective: true,
         extra: i.extra,
         totalscore: Math.max(...[...new Set(i.correctOptionCountRule.map(item => item.score).concat(i.specialOptionGroupRule.map(item => item.score)))]),
-        rule: i
+        rule: i,
+        answer: i.correctOptionIndex.length > 0 ? i.correctOptionIndex.map(item => i.option[item]).join('') : '未选'
       }
     }
   })
@@ -145,7 +146,7 @@ function getScoreReport(subject, classes, marklog, config) {
           classId: info.classId
         }
         jointmap.student[r.studentAccount] = {
-          studentAccount: r.studentAccount,
+          account: r.studentAccount,
           totalScoreWithExtra: 0,
           totalScoreWithoutExtra: 0,
           extraTotalScore: 0
@@ -299,31 +300,32 @@ function getScoreReport(subject, classes, marklog, config) {
     const scoringrate = (averagescore / questionmap[q[0]].totalscore) * 100
     if (q[1].option) {
       return {
-        questionName: q[0],
+        name: q[0],
         option: q[1].option,
         optionName: q[1].optionName,
+        answer: questionmap[q[0]].answer,
         averageScore: averagescore,
-        scoringRate: scoringrate,
+        scoringRate: fixtwo(scoringrate),
         scoreStandardDeviation: scorestandarddeviation
       }
     }
     if (q[1].score) {
       return {
-        questionName: q[0],
+        name: q[0],
         score: Object.entries(q[1].score).map(s => {
           return {
             score: Number(s[0]),
             student: s[1]
           }
-        }),
+        }).sort((a, b) => b.score - a.score),
         averageScore: averagescore,
-        scoringRate: scoringrate,
+        scoringRate: fixtwo(scoringrate),
         scoreStandardDeviation: scorestandarddeviation
       }
     }
   })
   jointmap.student.forEach(item => {
-    const studentinfo = studentmap[item.studentAccount]
+    const studentinfo = studentmap[item.account]
     if (studentinfo.schoolId) {
       schoolmap[studentinfo.schoolId].student.push(item)
     }
@@ -340,10 +342,10 @@ function getScoreReport(subject, classes, marklog, config) {
     clonestudent.forEach((item, index) => {
       if (index > 0 && item[sortkey] == clonestudent[index - 1][sortkey]) {
         item.schoolRank = clonestudent[index - 1].schoolRank
-        schoolrankmap[item.studentAccount] = clonestudent[index - 1].schoolRank
+        schoolrankmap[item.account] = clonestudent[index - 1].schoolRank
       } else {
         item.schoolRank = index + 1
-        schoolrankmap[item.studentAccount] = index + 1
+        schoolrankmap[item.account] = index + 1
       }
     })
     schoolmap[schoolid].student = clonestudent
@@ -356,25 +358,26 @@ function getScoreReport(subject, classes, marklog, config) {
       const scoringrate = (averagescore / questionmap[q[0]].totalscore) * 100
       if (q[1].option) {
         return {
-          questionName: q[0],
+          name: q[0],
           option: q[1].option,
           optionName: q[1].optionName,
+          answer: questionmap[q[0]].answer,
           averageScore: averagescore,
-          scoringRate: scoringrate,
+          scoringRate: fixtwo(scoringrate),
           scoreStandardDeviation: scorestandarddeviation
         }
       }
       if (q[1].score) {
         return {
-          questionName: q[0],
+          name: q[0],
           score: Object.entries(q[1].score).map(s => {
             return {
               score: Number(s[0]),
               student: s[1]
             }
-          }),
+          }).sort((a, b) => b.score - a.score),
           averageScore: averagescore,
-          scoringRate: scoringrate,
+          scoringRate: fixtwo(scoringrate),
           scoreStandardDeviation: scorestandarddeviation
         }
       }
@@ -387,7 +390,7 @@ function getScoreReport(subject, classes, marklog, config) {
       classRank: undefined
     }))
     clonestudent.forEach((item, index) => {
-      item.schoolRank = schoolrankmap[item.studentAccount]
+      item.schoolRank = schoolrankmap[item.account]
       if (index > 0 && item[sortkey] == clonestudent[index - 1][sortkey]) {
         item.classRank = clonestudent[index - 1].classRank
       } else {
@@ -404,25 +407,26 @@ function getScoreReport(subject, classes, marklog, config) {
       const scoringrate = (averagescore / questionmap[q[0]].totalscore) * 100
       if (q[1].option) {
         return {
-          questionName: q[0],
+          name: q[0],
           option: q[1].option,
           optionName: q[1].optionName,
+          answer: questionmap[q[0]].answer,
           averageScore: averagescore,
-          scoringRate: scoringrate,
+          scoringRate: fixtwo(scoringrate),
           scoreStandardDeviation: scorestandarddeviation
         }
       }
       if (q[1].score) {
         return {
-          questionName: q[0],
+          name: q[0],
           score: Object.entries(q[1].score).map(s => {
             return {
               score: Number(s[0]),
               student: s[1]
             }
-          }),
+          }).sort((a, b) => b.score - a.score),
           averageScore: averagescore,
-          scoringRate: scoringrate,
+          scoringRate: fixtwo(scoringrate),
           scoreStandardDeviation: scorestandarddeviation
         }
       }
@@ -444,11 +448,11 @@ function getMultipleSubjectScoreReport(input) {
   input.forEach(item => {
     if (item.type == 'joint') {
       item.student.forEach(stu => {
-        const studentaccount = stu.studentAccount
-        delete stu.studentAccount
+        const studentaccount = stu.account
+        delete stu.account
         if (!jointmap.student[studentaccount]) {
           jointmap.student[studentaccount] = {
-            studentAccount: studentaccount,
+            account: studentaccount,
             subject: [
               {
                 name: '多学科',
@@ -481,11 +485,11 @@ function getMultipleSubjectScoreReport(input) {
         }
       }
       item.student.forEach(stu => {
-        const studentaccount = stu.studentAccount
-        delete stu.studentAccount
+        const studentaccount = stu.account
+        delete stu.account
         if (!schoolmap[item.schoolId].student[studentaccount]) {
           schoolmap[item.schoolId].student[studentaccount] = {
-            studentAccount: studentaccount,
+            account: studentaccount,
             subject: [
               {
                 name: '多学科',
@@ -518,11 +522,11 @@ function getMultipleSubjectScoreReport(input) {
         }
       }
       item.student.forEach(stu => {
-        const studentaccount = stu.studentAccount
-        delete stu.studentAccount
+        const studentaccount = stu.account
+        delete stu.account
         if (!classmap[item.classId].student[studentaccount]) {
           classmap[item.classId].student[studentaccount] = {
-            studentAccount: studentaccount,
+            account: studentaccount,
             subject: [
               {
                 name: '多学科',
@@ -554,10 +558,10 @@ function getMultipleSubjectScoreReport(input) {
   jointmap.student.forEach((item, index) => {
     if (index > 0 && item.subject[0].totalScoreWithoutExtra == jointmap.student[index - 1].subject[0].totalScoreWithoutExtra) {
       jointmap.student[index].subject[0].jointRank = jointmap.student[index - 1].subject[0].jointRank
-      jointrankmap[item.studentAccount] = jointmap.student[index - 1].subject[0].jointRank
+      jointrankmap[item.account] = jointmap.student[index - 1].subject[0].jointRank
     } else {
       jointmap.student[index].subject[0].jointRank = index + 1
-      jointrankmap[item.studentAccount] = index + 1
+      jointrankmap[item.account] = index + 1
     }
   })
   const jointstudentscorearr = jointmap.student.map(item => item.subject[0].totalScoreWithoutExtra)
@@ -571,13 +575,13 @@ function getMultipleSubjectScoreReport(input) {
   Object.keys(schoolmap).forEach(schoolid => {
     const clonestudent = schoolmap[schoolid].student.map(s => s)
     clonestudent.forEach((item, index) => {
-      item.subject[0].jointRank = jointrankmap[item.studentAccount]
+      item.subject[0].jointRank = jointrankmap[item.account]
       if (index > 0 && item.subject[0].totalScoreWithoutExtra == clonestudent[index - 1].subject[0].totalScoreWithoutExtra) {
         item.subject[0].schoolRank = clonestudent[index - 1].subject[0].schoolRank
-        schoolrankmap[item.studentAccount] = clonestudent[index - 1].subject[0].schoolRank
+        schoolrankmap[item.account] = clonestudent[index - 1].subject[0].schoolRank
       } else {
         item.subject[0].schoolRank = index + 1
-        schoolrankmap[item.studentAccount] = index + 1
+        schoolrankmap[item.account] = index + 1
       }
     })
     schoolmap[schoolid].student = clonestudent
@@ -593,8 +597,8 @@ function getMultipleSubjectScoreReport(input) {
   Object.keys(classmap).forEach(classid => {
     const clonestudent = classmap[classid].student.map(s => s)
     clonestudent.forEach((item, index) => {
-      item.subject[0].jointRank = jointrankmap[item.studentAccount]
-      item.subject[0].schoolRank = schoolrankmap[item.studentAccount]
+      item.subject[0].jointRank = jointrankmap[item.account]
+      item.subject[0].schoolRank = schoolrankmap[item.account]
       if (index > 0 && item.subject[0].totalScoreWithoutExtra == clonestudent[index - 1].subject[0].totalScoreWithoutExtra) {
         item.subject[0].classRank = clonestudent[index - 1].subject[0].classRank
       } else {
@@ -722,7 +726,7 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
         scorereportconfigId: scorereportconfigid
       }, {
         $set: {
-          student: scorereport.joint.student.map(item => item.studentAccount)
+          student: scorereport.joint.student.map(item => item.account)
         }
       })
       for (let j = 0; j < scorereport.school.length; j++) {
@@ -819,7 +823,7 @@ async function generateSingleSubjectScoreReport(exam, subject, scorereportconfig
       scorereportconfigId: scorereportconfig.scorereportconfigId
     }, {
       $set: {
-        student: scorereport.joint.student.map(item => item.studentAccount)
+        student: scorereport.joint.student.map(item => item.account)
       }
     })
     for (let j = 0; j < scorereport.school.length; j++) {
@@ -904,7 +908,7 @@ async function generateMultipleSubjectScoreReport(exam, scorereportconfig, confi
       scorereportconfigId: scorereportconfig.scorereportconfigId
     }, {
       $set: {
-        student: scorereport.joint.student.map(item => item.studentAccount)
+        student: scorereport.joint.student.map(item => item.account)
       }
     })
     for (let j = 0; j < scorereport.school.length; j++) {

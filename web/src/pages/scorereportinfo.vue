@@ -18,7 +18,7 @@ const qadialog = ref(false)
 const qimage = ref('')
 const aimage = ref('')
 const sadialog = ref(false)
-const saimage = ref([])
+const answer = ref({})
 const answerlist = ref([])
 const aadialog = ref(false)
 const answerimage = ref({})
@@ -57,7 +57,7 @@ async function openQa(row) {
     apiPath: '/getQuestionAndAnswer',
     body: {
       id: data.value.scorereportconfigId,
-      questionName: row.questionName
+      questionName: row.name
     }
   })
   qimage.value = res.data.question
@@ -75,15 +75,27 @@ async function openSa(row, stu) {
     body: {
       id: data.value.scorereportconfigId,
       studentAccount: stu,
-      questionName: row.questionName
+      questionName: row.name
     }
   })
-  saimage.value = res.data
+  answer.value = res.data
+  sadialog.value = true
+}
+async function openSab(row, type) {
+  const res = await request({
+    apiPath: '/getTypicalMarklog',
+    body: {
+      id: data.value.scorereportconfigId,
+      questionName: row.name,
+      type: type
+    }
+  })
+  answer.value = res.data
   sadialog.value = true
 }
 function closeSa() {
   sadialog.value = false
-  saimage.value = []
+  answer.value = {}
 }
 async function openAa(stu) {
   const res = await request({
@@ -103,7 +115,7 @@ function closeAa() {
 function flatStudents(students) {
   return students.map(stu => {
     const row = {
-      studentAccount: stu.studentAccount
+      account: stu.account
     }
     stu.subject.forEach(sub => {
       const prefix = sub.name
@@ -145,7 +157,7 @@ function buildColumns(students) {
       title: '序号'
     },
     {
-      field: 'studentAccount',
+      field: 'account',
       title: '学生ID'
     },
     ...[...subjects].map(subject => ({
@@ -186,7 +198,7 @@ function formatScoringRate(a) {
               <tiny-grid-column type="index" title="序号" align="center"></tiny-grid-column>
               <tiny-grid-column title="学生ID" align="center">
                 <template #default="{ row }">
-                  <div class="clickwz" @click="openAa(row.studentAccount)">{{ row.studentAccount }}</div>
+                  <div class="clickwz" @click="openAa(row.account)">{{ row.account }}</div>
                 </template>
               </tiny-grid-column>
               <tiny-grid-column field="totalScoreWithExtra" title="分数（含附）" align="center"></tiny-grid-column>
@@ -205,9 +217,9 @@ function formatScoringRate(a) {
         <tiny-tab-item v-if="data.subject != '多学科'" title="小题分析" name="小题分析">
           <template #default>
             <tiny-grid :data="data.question" border="true">
-              <tiny-grid-column field="questionName" title="题号" align="center">
+              <tiny-grid-column field="name" title="题号" align="center">
                 <template #default="{ row }">
-                  <div class="clickwz" @click="openQa(row)">{{ row.questionName }}</div>
+                  <div class="clickwz" @click="openQa(row)">{{ row.name }}</div>
                 </template>
               </tiny-grid-column>
               <tiny-grid-column field="averageScore" title="平均分" align="center"></tiny-grid-column>
@@ -216,7 +228,7 @@ function formatScoringRate(a) {
               <tiny-grid-column field="scoreStandardDeviation" title="标准差" align="center"></tiny-grid-column>
               <tiny-grid-column title="作答详情" align="center">
                 <template #default="{ row }">
-                  <div v-if="row.option != undefined" class="cz">
+                  <div v-if="row.option" class="cz">
                     <div v-for="item, index in row.optionName" class="sp">
                       <div class="bold-text">{{ item }}</div>
                       <div class="cz">
@@ -224,14 +236,21 @@ function formatScoringRate(a) {
                       </div>
                       <div>（{{ row.option[index].length }}人）</div>
                     </div>
+                    <div>正确答案：{{ row.answer }}</div>
                   </div>
-                  <div v-if="row.score != undefined" class="cz">
+                  <div v-if="row.score" class="cz">
                     <div v-for="item in row.score" class="sp">
                       <div class="bold-text">{{ item.score }}</div>
                       <div class="cz">
                         <div v-for="i in item.student" class="clickwz" @click="openSa(row, i)">{{ i }}</div>
                       </div>
                       <div>（{{ item.student.length }}人）</div>
+                    </div>
+                    <div class="sp">
+                      <div class="bold-text" style="color:red;cursor:pointer" @click="openSab(row, 'excellent')">优秀作答
+                      </div>
+                      <div class="bold-text" style="color:brown;cursor:pointer" @click="openSab(row, 'typicalMistake')">
+                        典型错误</div>
                     </div>
                   </div>
                 </template>
@@ -314,7 +333,9 @@ function formatScoringRate(a) {
     </tiny-dialog-box>
     <tiny-dialog-box class="dialog" :visible="sadialog" title="作答" @close="closeSa">
       <div class="cz">
-        <div v-for="item in saimage">
+        <div class="bold-text" style="color:red">总分：{{ answer.totalScore }}</div>
+        <div v-for="item, index in answer.stepScore" style="color:red">步骤{{ index + 1 }}：{{ item }}分</div>
+        <div v-for="item in answer.answerImage">
           <img v-if="item != ''" :src="item"></img>
           <img v-if="item == ''" src="/noimage.png"></img>
         </div>
