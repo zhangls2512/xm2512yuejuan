@@ -117,6 +117,10 @@ const router = createRouter({
             {
               path: '/supplyscore',
               component: () => import('/src/pages/supplyscore.vue')
+            },
+            {
+              path: '/markqualitymonitor',
+              component: () => import('/src/pages/markqualitymonitor.vue')
             }
           ]
         }

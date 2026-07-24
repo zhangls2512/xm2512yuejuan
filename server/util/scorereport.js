@@ -950,5 +950,7 @@ module.exports = {
   generateSingleSubjectScoreReport,
   generateMultipleSubjectScoreReport,
   calcObjectiveScore,
-  sum
+  sum,
+  average,
+  fixtwo
 }

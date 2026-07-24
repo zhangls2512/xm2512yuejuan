@@ -212,6 +212,15 @@ function supplyscore(exam, subject) {
     subject: subject
   }))
 }
+function markqualitymonitor(exam, subject) {
+  router.push('/markqualitymonitor?info=' + encode({
+    examId: exam.examId,
+    examName: exam.name,
+    examType: exam.type,
+    examTime: exam.time,
+    subject: subject.name
+  }))
+}
 function updateExam(info) {
   router.push('/updateexam?info=' + encode(info))
 }
@@ -313,6 +322,8 @@ async function endExam(id) {
                   <template #dropdown>
                     <tiny-dropdown-menu placement="bottom-start">
                       <tiny-dropdown-item @click="supplyscore(item, subject)">成绩补录</tiny-dropdown-item>
+                      <tiny-dropdown-item v-if="subject.markStatus != 'end'"
+                        @click="markqualitymonitor(item, subject)">阅卷质量监控</tiny-dropdown-item>
                     </tiny-dropdown-menu>
                   </template>
                 </tiny-dropdown>
