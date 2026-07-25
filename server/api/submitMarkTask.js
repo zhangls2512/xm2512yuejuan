@@ -85,6 +85,13 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
+    if (marklogres.updateMarkerAccount && !requestdata.consistencyCheck) {
+      return {
+        errCode: 403,
+        errMsg: '无权限阅修改/补录卷',
+        errFix: '无修复建议'
+      }
+    }
     const examsubjectres = await db.collection('examsubject').findOne({
       examId: marklogres.examId,
       name: marklogres.subject
