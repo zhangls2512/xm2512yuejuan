@@ -3,7 +3,7 @@ document.title = '智能阅卷系统 - 更新日志'
 const data = [
   {
     versionNumber: '1.0.0',
-    releaseDate: '2026-08-01',
+    releaseDate: '2026-07-25',
     logs: [
       {
         type: 'A',

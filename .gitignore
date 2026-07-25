@@ -1,7 +1,5 @@
 node_modules
 dist
-a.crt
 a.js
 a.json
-a.key
 package-lock.json
