@@ -48,8 +48,8 @@ exports.main = async (event, configfilepath) => {
         createTime: -1
       }).skip(skip).limit(limit).toArray()
       data = data.map(item => {
-        const student = item.student.find(i => i.studentAccount == account.account)
-        delete student.studentAccount
+        const student = item.student.find(i => i.account == account.account)
+        delete student.account
         if (item.subject != '多学科') {
           delete student.jointRank
         }
