@@ -1,5 +1,6 @@
 node_modules
-dist
+/web/**/*
+!/web/dist/**
 .gitignore
 a.js
 a.json
