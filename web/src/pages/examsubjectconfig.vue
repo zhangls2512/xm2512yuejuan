@@ -1,5 +1,4 @@
 <script setup>
-document.title = '智能阅卷系统 - 考试管理 - 科目配置'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { decode } from '../util/code'
@@ -10,6 +9,7 @@ const data = ref({})
 if (info) {
   try {
     data.value = decode(info)
+    document.title = '智能阅卷系统 - ' + data.value.backname + ' - 科目配置'
     if (data.value.answerOnline) {
       data.value.startTime = time(data.value.startTime)
       data.value.endTime = time(data.value.endTime)
@@ -22,7 +22,7 @@ if (info) {
 <template>
   <div class="cz">
     <tiny-breadcrumb>
-      <tiny-breadcrumb-item :to="{ path: '/processingexam' }" label="考试管理"></tiny-breadcrumb-item>
+      <tiny-breadcrumb-item :to="{ path: data.backpath }" :label="data.backname"></tiny-breadcrumb-item>
       <tiny-breadcrumb-item :to="{ path: '/examsubjectinfo' }" label="科目配置"></tiny-breadcrumb-item>
     </tiny-breadcrumb>
     <div class="sp">

@@ -137,30 +137,28 @@ async function updateMarkStatus(id, subject, markstatus) {
             markStatus: markstatus
           }
         })
-        if (markstatus != 'end') {
-          TinyModal.message({
-            message: '操作成功',
-            status: 'success'
-          })
-        }
-        if (markstatus == 'end') {
-          TinyModal.message({
-            message: '操作成功',
-            status: 'success'
-          })
-        }
+        TinyModal.message({
+          message: '操作成功',
+          status: 'success'
+        })
         get()
       }
     }
   })
 }
 function config(info) {
-  router.push('/examsubjectconfig?info=' + encode(info))
+  router.push('/examsubjectconfig?info=' + encode({
+    ...info,
+    backpath: '/processingexam',
+    backname: '考试管理'
+  }))
 }
 function answer(id, subject) {
   router.push('/examsubjectanswer?info=' + encode({
     examId: id,
-    subject: subject
+    subject: subject,
+    backpath: '/processingexam',
+    backname: '考试管理'
   }))
 }
 function markProgress(exam, subject) {
@@ -170,7 +168,8 @@ function markProgress(exam, subject) {
     examType: exam.type,
     examTime: exam.time,
     subject: subject,
-    source: 'exam'
+    backpath: '/processingexam',
+    backname: '考试管理'
   }))
 }
 function dealQuestion(exam, subject) {
@@ -180,7 +179,8 @@ function dealQuestion(exam, subject) {
     examType: exam.type,
     examTime: exam.time,
     subject: subject,
-    source: 'exam'
+    backpath: '/processingexam',
+    backname: '考试管理'
   }))
 }
 async function getAnswerCsv(exam, subject) {
@@ -196,7 +196,9 @@ async function getAnswerCsv(exam, subject) {
 function scorereportconfig(examid, subject) {
   router.push('/scorereportconfig?info=' + encode({
     examId: examid,
-    subject: subject
+    subject: subject,
+    backpath: '/processingexam',
+    backname: '考试管理'
   }))
 }
 function supplyscore(exam, subject) {
@@ -205,7 +207,9 @@ function supplyscore(exam, subject) {
     examName: exam.name,
     examType: exam.type,
     examTime: exam.time,
-    subject: subject
+    subject: subject,
+    backpath: '/processingexam',
+    backname: '考试管理'
   }))
 }
 function updatescore(exam, subject) {
@@ -214,7 +218,9 @@ function updatescore(exam, subject) {
     examName: exam.name,
     examType: exam.type,
     examTime: exam.time,
-    subject: subject.name
+    subject: subject.name,
+    backpath: '/processingexam',
+    backname: '考试管理'
   }))
 }
 function markqualitymonitor(exam, subject) {
@@ -223,7 +229,9 @@ function markqualitymonitor(exam, subject) {
     examName: exam.name,
     examType: exam.type,
     examTime: exam.time,
-    subject: subject
+    subject: subject,
+    backpath: '/processingexam',
+    backname: '考试管理'
   }))
 }
 function updateExam(info) {
@@ -327,12 +335,12 @@ async function endExam(id) {
                   <template #dropdown>
                     <tiny-dropdown-menu placement="bottom-start">
                       <tiny-dropdown-item v-if="subject.markStatus != 'end'"
+                        @click="markqualitymonitor(item, subject)">阅卷质量监控</tiny-dropdown-item>
+                      <tiny-dropdown-item v-if="subject.markStatus != 'end'"
                         @click="scorereportconfig(item.examId, subject.name)">成绩报告配置</tiny-dropdown-item>
                       <tiny-dropdown-item @click="supplyscore(item, subject)">成绩补录</tiny-dropdown-item>
                       <tiny-dropdown-item v-if="subject.markStatus == 'end'"
                         @click="updatescore(item, subject)">修改分数</tiny-dropdown-item>
-                      <tiny-dropdown-item v-if="subject.markStatus != 'end'"
-                        @click="markqualitymonitor(item, subject)">阅卷质量监控</tiny-dropdown-item>
                     </tiny-dropdown-menu>
                   </template>
                 </tiny-dropdown>

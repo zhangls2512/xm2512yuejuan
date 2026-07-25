@@ -10,12 +10,7 @@ const markprogress = ref('')
 if (info) {
   try {
     data.value = decode(info)
-    if (data.value.source == 'exam') {
-      document.title = '智能阅卷系统 - 考试管理 - 阅卷进度'
-    }
-    if (data.value.source == 'marktask') {
-      document.title = '智能阅卷系统 - 阅卷任务 - 阅卷进度'
-    }
+    document.title = '智能阅卷系统 - ' + data.value.backname + ' - 阅卷进度'
     get()
   } catch {
   }
@@ -36,11 +31,8 @@ async function get() {
 <template>
   <div class="cz">
     <tiny-breadcrumb>
-      <tiny-breadcrumb-item v-if="data.source == 'exam'" :to="{ path: '/processingexam' }"
-        label="考试管理"></tiny-breadcrumb-item>
-      <tiny-breadcrumb-item v-if="data.source == 'marktask'" :to="{ path: '/processingmarktask' }"
-        label="阅卷任务"></tiny-breadcrumb-item>
-      <tiny-breadcrumb-item :to="{ path: '/dealquestion' }" label="阅卷进度"></tiny-breadcrumb-item>
+      <tiny-breadcrumb-item :to="{ path: data.backpath }" :label="data.backname"></tiny-breadcrumb-item>
+      <tiny-breadcrumb-item :to="{ path: '/markprogress' }" label="阅卷进度"></tiny-breadcrumb-item>
     </tiny-breadcrumb>
     <div class="sp">
       <div class="large-bold-text">{{ data.examName }}</div>

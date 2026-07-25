@@ -55,12 +55,7 @@ async function pagesizeChange(t) {
 if (info) {
   try {
     data.value = decode(info)
-    if (data.value.source == 'exam') {
-      document.title = '智能阅卷系统 - 考试管理 - 处理问题卷'
-    }
-    if (data.value.source == 'marktask') {
-      document.title = '智能阅卷系统 - 阅卷任务 - 处理问题卷'
-    }
+    document.title = '智能阅卷系统 - ' + data.value.backname + ' - 处理问题卷'
     get()
   } catch {
   }
@@ -182,10 +177,7 @@ async function mark(id) {
 <template>
   <div class="cz">
     <tiny-breadcrumb>
-      <tiny-breadcrumb-item v-if="data.source == 'exam'" :to="{ path: '/processingexam' }"
-        label="考试管理"></tiny-breadcrumb-item>
-      <tiny-breadcrumb-item v-if="data.source == 'marktask'" :to="{ path: '/processingmarktask' }"
-        label="阅卷任务"></tiny-breadcrumb-item>
+      <tiny-breadcrumb-item :to="{ path: data.backpath }" :label="data.backname"></tiny-breadcrumb-item>
       <tiny-breadcrumb-item :to="{ path: '/dealquestion' }" label="处理问题卷"></tiny-breadcrumb-item>
     </tiny-breadcrumb>
     <div class="spacebetween">

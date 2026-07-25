@@ -1,11 +1,10 @@
 <script setup>
-document.title = '智能阅卷系统 - 考试管理 - 作答记录'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { decode } from '../util/code'
 import request from '../util/request'
 import router from '../router'
-let param = {}
+const param = ref({})
 const data = ref([])
 const currentpage = ref(1)
 const pagesize = ref(10)
@@ -14,16 +13,16 @@ async function get() {
   const countres = await request({
     apiPath: '/getAnswerCount',
     body: {
-      id: param.examId,
-      subject: param.subject
+      id: param.value.examId,
+      subject: param.value.subject
     }
   })
   total.value = countres.count
   const res = await request({
     apiPath: '/getAnswerList',
     body: {
-      id: param.examId,
-      subject: param.subject,
+      id: param.value.examId,
+      subject: param.value.subject,
       skip: (currentpage.value - 1) * pagesize.value,
       limit: pagesize.value
     }
@@ -34,7 +33,8 @@ const route = useRoute()
 const info = route.query.info
 if (info) {
   try {
-    param = decode(info)
+    param.value = decode(info)
+    document.title = '智能阅卷系统 - ' + param.value.backname + ' - 作答记录'
     get()
   } catch {
   }
@@ -51,8 +51,8 @@ async function deleteAnswer(id) {
   await request({
     apiPath: '/deleteAnswer',
     body: {
-      id: param.examId,
-      subject: param.subject,
+      id: param.value.examId,
+      subject: param.value.subject,
       studentAccount: id
     }
   })
@@ -67,7 +67,7 @@ async function deleteAnswer(id) {
 <template>
   <div class="cz">
     <tiny-breadcrumb>
-      <tiny-breadcrumb-item :to="{ path: '/processingexam' }" label="考试管理"></tiny-breadcrumb-item>
+      <tiny-breadcrumb-item :to="{ path: param.backpath }" :label="param.backname"></tiny-breadcrumb-item>
       <tiny-breadcrumb-item :to="{ path: '/examsubjectanswer' }" label="作答记录"></tiny-breadcrumb-item>
     </tiny-breadcrumb>
     <tiny-grid :data="data">

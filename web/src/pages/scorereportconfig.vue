@@ -1,5 +1,4 @@
 <script setup>
-document.title = '智能阅卷系统 - 考试管理 - 成绩报告配置'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { decode } from '../util/code'
@@ -12,6 +11,7 @@ const param = ref({})
 if (info) {
   try {
     param.value = decode(info)
+    document.title = '智能阅卷系统 - ' + param.value.backname + ' - 成绩报告配置'
   } catch {
   }
 }
@@ -168,7 +168,7 @@ async function deleteScorereportconfig(id) {
 <template>
   <div class="cz">
     <tiny-breadcrumb>
-      <tiny-breadcrumb-item :to="{ path: '/processingexam' }" label="考试管理"></tiny-breadcrumb-item>
+      <tiny-breadcrumb-item :to="{ path: param.backpath }" :label="param.backname"></tiny-breadcrumb-item>
       <tiny-breadcrumb-item :to="{ path: '/scorereportconfig' }" label="成绩报告配置"></tiny-breadcrumb-item>
     </tiny-breadcrumb>
     <div class="sp">

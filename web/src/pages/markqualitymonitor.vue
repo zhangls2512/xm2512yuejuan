@@ -1,5 +1,4 @@
 <script setup>
-document.title = '智能阅卷系统 - 考试管理 - 阅卷质量监控'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { decode } from '../util/code'
@@ -15,6 +14,7 @@ const info = route.query.info
 if (info) {
   try {
     data.value = decode(info)
+    document.title = '智能阅卷系统 - ' + data.value.backname + ' - 阅卷质量监控'
     questionnamearr.value = data.value.subject.subjectiveQuestion.map(item => item.name)
     getMarkConsistency()
   } catch {
@@ -68,7 +68,7 @@ async function newQuestion() {
 <template>
   <div class="cz">
     <tiny-breadcrumb>
-      <tiny-breadcrumb-item :to="{ path: '/processingexam' }" label="考试管理"></tiny-breadcrumb-item>
+      <tiny-breadcrumb-item :to="{ path: data.backpath }" :label="data.backname"></tiny-breadcrumb-item>
       <tiny-breadcrumb-item :to="{ path: '/markqualitymonitor' }" label="阅卷质量监控"></tiny-breadcrumb-item>
     </tiny-breadcrumb>
     <div class="sp">

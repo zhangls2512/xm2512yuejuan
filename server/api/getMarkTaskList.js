@@ -55,12 +55,15 @@ exports.main = async (event, configfilepath) => {
     data.forEach(item => {
       const exam = exams.find(i => i.examId == item.examId)
       if (exam) {
+        ['_id', 'examId', 'adminAccount', 'subSubject', 'createTime'].forEach(key => {
+          delete item[key]
+        })
         const resultitem = {
           examId: exam.examId,
           examName: exam.name,
           examType: exam.type,
           examTime: exam.time,
-          subject: item.name,
+          subject: item,
           markStatus: item.markStatus,
           admin: false,
           normalMarkGroupName: [],
