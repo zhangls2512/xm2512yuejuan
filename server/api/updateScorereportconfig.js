@@ -210,7 +210,7 @@ exports.main = async (event, configfilepath) => {
       }
       for (let i = 0; i < requestdata.config.fuScoreRule.length; i++) {
         const ruleitem = requestdata.config.fuScoreRule[i]
-        if (typeof (ruleitem.level) != 'string' || !ruleitem.level) {
+        if (typeof (ruleitem.level) != 'string' || !ruleitem.level || config.fuScoreRule.find(f => f.level == ruleitem.level)) {
           return {
             errCode: 400,
             errMsg: '请求参数错误',
