@@ -37,13 +37,6 @@ exports.main = async (event, configfilepath) => {
           errFix: '传递有效的subject参数'
         }
       }
-      if (requestdata.type != 'joint' && (typeof (requestdata.id) != 'string' || requestdata.id.length != 36)) {
-        return {
-          errCode: 400,
-          errMsg: '请求参数错误',
-          errFix: '传递有效的id参数'
-        }
-      }
       if (requestdata.type == 'joint') {
         count = await db.collection('scorereportconfig').countDocuments({
           subject: requestdata.subject,
@@ -52,6 +45,14 @@ exports.main = async (event, configfilepath) => {
         })
       }
       if (requestdata.type == 'school') {
+        const schoolId = account.schoolId ? account.schoolId : requestdata.id
+        if (!schoolId) {
+          return {
+            errCode: 400,
+            errMsg: '请求参数错误',
+            errFix: '传递有效的id参数'
+          }
+        }
         const idres = await db.collection('scorereportconfig').find({
           subject: requestdata.subject,
           status: 'finished',
@@ -62,13 +63,27 @@ exports.main = async (event, configfilepath) => {
             $in: idres.map(item => item.scorereportconfigId)
           },
           type: 'school',
-          schoolId: requestdata.id
+          schoolId: schoolId
         })
       }
       if (requestdata.type == 'class') {
+        if (typeof (requestdata.id) != 'string' || requestdata.id.length != 36) {
+          return {
+            errCode: 400,
+            errMsg: '请求参数错误',
+            errFix: '传递有效的id参数'
+          }
+        }
         const classres = await db.collection('class').findOne({
           classId: requestdata.id
         })
+        if (account.schoolId && classres.schoolId != account.schoolId) {
+          return {
+            errCode: 403,
+            errMsg: '无权限',
+            errFix: '无修复建议'
+          }
+        }
         let classteacher = false
         if (classres) {
           const subject = classres.subject.find(item => item.name == requestdata.subject)

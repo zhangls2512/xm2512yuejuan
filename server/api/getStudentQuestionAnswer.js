@@ -86,6 +86,27 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
+    if (account.schoolId && scorereportconfigres.type != 'joint') {
+      if (scorereportconfigres.type == 'school' && scorereportconfigres.schoolId != account.schoolId) {
+        return {
+          errCode: 403,
+          errMsg: '无权限',
+          errFix: '无修复建议'
+        }
+      }
+      if (scorereportconfigres.type == 'class') {
+        const classres = await db.collection('class').findOne({
+          classId: scorereportconfigres.classId
+        })
+        if (classres.schoolId != account.schoolId) {
+          return {
+            errCode: 403,
+            errMsg: '无权限',
+            errFix: '无修复建议'
+          }
+        }
+      }
+    }
     const examsubjectgetres = await db.collection('examsubject').findOne({
       examId: scorereportconfigres.examId,
       $or: [

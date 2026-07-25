@@ -14,7 +14,14 @@ const id = ref('')
 const subject = ref('')
 async function get() {
   if (accountinfo.value.type != 'student') {
-    if (type.value != 'joint' && id.value.length != 36) {
+    if (type.value == 'class' && id.value.length != 36) {
+      TinyModal.message({
+        message: '请输入有效的ID',
+        status: 'warning'
+      })
+      return
+    }
+    if (type.value == 'school' && !accountinfo.value.schoolId && id.value.length != 36) {
       TinyModal.message({
         message: '请输入有效的ID',
         status: 'warning'
@@ -84,7 +91,7 @@ function info(info) {
           <tiny-radio label="class">班级</tiny-radio>
         </tiny-radio-group>
       </tiny-form-item>
-      <tiny-form-item v-if="type != 'joint'" label="ID">
+      <tiny-form-item v-if="type == 'class' || (type == 'school' && accountinfo.schoolId == '')" label="ID">
         <tiny-input v-model="id" clearable minlength="36" maxlength="36" placeholder="请输入ID"></tiny-input>
       </tiny-form-item>
       <tiny-form-item label="科目">
