@@ -7,6 +7,8 @@ const route = useRoute()
 const info = route.query.info
 const data = ref({})
 const markprogress = ref('')
+const markerprogress = ref([])
+const dialog = ref(false)
 if (info) {
   try {
     data.value = decode(info)
@@ -25,6 +27,22 @@ async function get() {
     }
   })
   markprogress.value = res.data
+}
+async function open(name) {
+  const res = await request({
+    apiPath: '/getQuestionMarkerMarkProgress',
+    body: {
+      id: data.value.examId,
+      subject: data.value.subject,
+      questionName: name
+    }
+  })
+  markerprogress.value = res.data
+  dialog.value = true
+}
+function close() {
+  dialog.value = false
+  markerprogress.value = []
 }
 </script>
 
@@ -52,7 +70,9 @@ async function get() {
     <div v-for="item, index in markprogress.list" v-if="markprogress != ''" class="cz">
       <div v-if="index > 0" class="line"></div>
       <div class="sp">
-        <div>{{ item.questionName }}</div>
+        <div v-if="item.questionName == '客观题'">客观题</div>
+        <div v-if="item.questionName != '客观题'" class="clickwz" style="cursor:pointer" @click="open(item.questionName)">
+          {{ item.questionName }}</div>
         <tiny-progress style="width:50%" stroke-width="12" :percentage="item.progress"></tiny-progress>
         <div>{{ item.finished }}/{{ item.total }}</div>
         <div class="cz" style="flex:1">
@@ -60,5 +80,17 @@ async function get() {
         </div>
       </div>
     </div>
+    <tiny-dialog-box class="dialog" :visible="dialog" title="各阅卷人已阅量" @close="close">
+      <div class="cz">
+        <div style="color:red">仅合并统计一评、二评、三评、仲裁已阅量，问题卷、修改/补录量不纳入统计。</div>
+        <tiny-grid :data="markerprogress" border="true">
+          <tiny-grid-column field="account" title="阅卷人账号" align="center"></tiny-grid-column>
+          <tiny-grid-column field="count" title="已阅量" align="center"></tiny-grid-column>
+        </tiny-grid>
+      </div>
+      <template #footer>
+        <tiny-button type="info" @click="close">确定</tiny-button>
+      </template>
+    </tiny-dialog-box>
   </div>
 </template>

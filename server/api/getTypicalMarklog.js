@@ -143,7 +143,7 @@ exports.main = async (event, configfilepath) => {
     if (!marklogres) {
       return {
         errCode: 400,
-        errMsg: '典型卷不存在',
+        errMsg: '无典型卷',
         errFix: '无修复建议'
       }
     }

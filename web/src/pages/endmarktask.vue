@@ -41,7 +41,7 @@ async function pagesizeChange(t) {
   pagesize.value = t
   get()
 }
-async function updateMarkStatus(param, markstatus) {
+async function updateMarkStatus(param) {
   TinyModal.confirm({
     status: 'info',
     title: '提示',
