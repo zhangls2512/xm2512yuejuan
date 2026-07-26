@@ -13,6 +13,7 @@ const traceimage = ref([])
 const markloglist = ref([])
 const marklist = ref([])
 const questionreason = ref('')
+const questionnewaccount = ref('')
 const studentaccount = ref('')
 const questionmarklog = ref([])
 const currentpage = ref(1)
@@ -24,6 +25,7 @@ async function get() {
   markloglist.value = []
   marklist.value = []
   questionreason.value = ''
+  questionnewaccount.value = ''
   studentaccount.value = ''
   const count = await request({
     apiPath: '/getQuestionMarklogCount',
@@ -124,6 +126,7 @@ async function mark(id) {
     }
   })
   questionreason.value = res.data.questionReason
+  questionnewaccount.value = res.data.questionNewAccount
   studentaccount.value = res.data.studentAccount
   if (res.data.traceImage.length == 0) {
     for (let i = 0; i < answerimage.value.length; i++) {
@@ -237,6 +240,10 @@ async function mark(id) {
           <div v-if="questionreason != ''" class="sp">
             <div class="bold-text">原因</div>
             <div>{{ questionreason }}</div>
+          </div>
+          <div v-if="questionnewaccount != ''" class="sp">
+            <div class="bold-text">提交者</div>
+            <div>{{ questionnewaccount }}</div>
           </div>
           <div v-if="studentaccount != ''" class="sp">
             <div class="bold-text">学生</div>

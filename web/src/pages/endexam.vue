@@ -29,7 +29,6 @@ async function get() {
   data.value = res.data.map(item => {
     const date = new Date(item.time)
     item.time = [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-')
-    item.subjectName = item.subject.map(s => s.name).join('、')
     return item
   })
 }
@@ -161,9 +160,18 @@ function markqualitymonitor(exam, subject) {
               <div class="large-bold-text">{{ item.name }}</div>
               <tiny-tag type="info">{{ item.type }}</tiny-tag>
             </div>
-            <div>时间：{{ item.time }}</div>
-            <div v-if="item.subjectName != ''">科目：{{ item.subjectName }}</div>
-            <div style="cursor:pointer" @click="copy(item.examId)">ID：{{ item.examId }}</div>
+            <div class="sp">
+              <div class="bold-text">时间</div>
+              <div>{{ item.time }}</div>
+            </div>
+            <div class="sp">
+              <div class="bold-text">科目</div>
+              <tiny-tag v-for="i in item.subject" type="info">{{ i.name }}</tiny-tag>
+            </div>
+            <div class="sp">
+              <div class="bold-text">ID</div>
+              <div class="clickwz" style="cursor:pointer" @click="copy(item.examId)">{{ item.examId }}</div>
+            </div>
           </div>
           <div class="sp">
             <tiny-button type="info" @click="scorereportconfig(item.examId, '多学科')">多学科成绩报告配置</tiny-button>

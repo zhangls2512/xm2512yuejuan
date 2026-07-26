@@ -995,9 +995,7 @@ async function generateMultipleSubjectScoreReport(exam, scorereportconfig, confi
       subject: '多学科',
       createTime: Date.now(),
       type: 'joint',
-      student: scorereport.joint.student,
-      averageScore: scorereport.joint.averageScore,
-      scoreStandardDeviation: scorereport.joint.scoreStandardDeviation
+      ...scorereport.joint
     })
     await db.collection('scorereportconfig').updateOne({
       scorereportconfigId: scorereportconfig.scorereportconfigId
@@ -1014,10 +1012,7 @@ async function generateMultipleSubjectScoreReport(exam, scorereportconfig, confi
         subject: '多学科',
         createTime: Date.now(),
         type: 'school',
-        schoolId: school.schoolId,
-        student: school.student,
-        averageScore: school.averageScore,
-        scoreStandardDeviation: school.scoreStandardDeviation
+        ...school
       })
     }
     for (let j = 0; j < scorereport.class.length; j++) {
@@ -1028,10 +1023,7 @@ async function generateMultipleSubjectScoreReport(exam, scorereportconfig, confi
         subject: '多学科',
         createTime: Date.now(),
         type: 'class',
-        classId: classitem.classId,
-        student: classitem.student,
-        averageScore: classitem.averageScore,
-        scoreStandardDeviation: classitem.scoreStandardDeviation
+        ...classitem
       })
     }
   }

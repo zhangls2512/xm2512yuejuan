@@ -189,6 +189,7 @@ async function supplyScore(scorelist, subject, exam, account, configfilepath) {
               questionMarkStepScore: [],
               updateMarkStepScore: a.stepScore,
               questionReason: '',
+              questionNewAccount: '',
               minScoreDiff: 0,
               finalStepScore: a.stepScore,
               finalTotalScore: totalscore

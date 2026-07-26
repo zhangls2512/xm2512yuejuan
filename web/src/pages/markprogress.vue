@@ -76,7 +76,10 @@ function close() {
         <tiny-progress style="width:50%" stroke-width="12" :percentage="item.progress"></tiny-progress>
         <div>{{ item.finished }}/{{ item.total }}</div>
         <div class="cz" style="flex:1">
-          <div v-for="i in item.detail">{{ i.name }}：{{ i.count }}</div>
+          <div v-for="i in item.detail" class="sp">
+            <div class="bold-text">{{ i.name }}</div>
+            <div>{{ i.count }}</div>
+          </div>
         </div>
       </div>
     </div>

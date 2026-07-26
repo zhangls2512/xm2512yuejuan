@@ -107,11 +107,18 @@ function info(info) {
           <div class="cz">
             <div class="large-bold-text">{{ item.scorereportconfigName }}</div>
             <div class="sp">
-              <div>考试：{{ item.examName }}</div>
+              <div class="bold-text">考试</div>
+              <div>{{ item.examName }}</div>
               <tiny-tag type="info">{{ item.examType }}</tiny-tag>
             </div>
-            <div>科目：{{ item.subject }}</div>
-            <div>时间：{{ item.createTime }}</div>
+            <div class="sp">
+              <div class="bold-text">科目</div>
+              <div>{{ item.subject }}</div>
+            </div>
+            <div class="sp">
+              <div class="bold-text">时间</div>
+              <div>{{ item.createTime }}</div>
+            </div>
           </div>
           <div><tiny-button type="info" @click="info(item)">查看</tiny-button></div>
         </div>

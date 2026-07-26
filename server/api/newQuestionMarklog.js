@@ -93,7 +93,8 @@ exports.main = async (event, configfilepath) => {
       type: 'system'
     }, {
       $set: {
-        questionReason: requestdata.reason
+        questionReason: requestdata.reason,
+        questionNewAccount: account.account
       }
     })
     return {

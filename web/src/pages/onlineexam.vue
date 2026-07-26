@@ -53,9 +53,18 @@ function answer(info) {
               <div class="large-bold-text">{{ item.examName }}</div>
               <tiny-tag type="info">{{ item.examType }}</tiny-tag>
             </div>
-            <div>科目：{{ item.subject }}</div>
-            <div>作答开始时间：{{ item.startTime }}</div>
-            <div>作答结束时间：{{ item.endTime }}</div>
+            <div class="sp">
+              <div class="bold-text">科目</div>
+              <div>{{ item.subject }}</div>
+            </div>
+            <div class="sp">
+              <div class="bold-text">作答开始时间</div>
+              <div>{{ item.startTime }}</div>
+            </div>
+            <div class="sp">
+              <div class="bold-text">作答结束时间</div>
+              <div>{{ item.endTime }}</div>
+            </div>
           </div>
           <div class="sp">
             <tiny-button type="success" @click="answer(item)" :disabled="item.disabled">作答</tiny-button>

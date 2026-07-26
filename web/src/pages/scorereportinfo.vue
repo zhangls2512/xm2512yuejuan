@@ -173,7 +173,8 @@ function buildColumns(students) {
       title: subject,
       children: [...fields].map(field => ({
         field: subject + '_' + field,
-        title: titlemap[field]
+        title: titlemap[field],
+        sortable: true
       }))
     }))
   ]
@@ -227,15 +228,16 @@ function formatScoringRate(a) {
                   <div class="clickwz" @click="openAa(row.account)">{{ row.account }}</div>
                 </template>
               </tiny-grid-column>
-              <tiny-grid-column field="totalScoreWithExtra" title="分数（含附）" align="center"></tiny-grid-column>
-              <tiny-grid-column field="totalScoreWithoutExtra" title="分数（不含附）" align="center"></tiny-grid-column>
-              <tiny-grid-column field="extraTotalScore" title="附分" align="center"></tiny-grid-column>
-              <tiny-grid-column v-if="fu == true" field="fuScore" title="赋分" align="center"></tiny-grid-column>
-              <tiny-grid-column v-if="fu == true" field="level" title="等级" align="center"></tiny-grid-column>
-              <tiny-grid-column field="jointRank" title="联次" align="center"></tiny-grid-column>
-              <tiny-grid-column v-if="data.type != 'joint'" field="schoolRank" title="校次"
+              <tiny-grid-column field="totalScoreWithExtra" title="分数（含附）" sortable align="center"></tiny-grid-column>
+              <tiny-grid-column field="totalScoreWithoutExtra" title="分数（不含附）" sortable
                 align="center"></tiny-grid-column>
-              <tiny-grid-column v-if="data.type == 'class'" field="classRank" title="班次"
+              <tiny-grid-column field="extraTotalScore" title="附分" sortable align="center"></tiny-grid-column>
+              <tiny-grid-column v-if="fu == true" field="fuScore" title="赋分" sortable align="center"></tiny-grid-column>
+              <tiny-grid-column v-if="fu == true" field="level" title="等级" sortable align="center"></tiny-grid-column>
+              <tiny-grid-column field="jointRank" title="联次" sortable align="center"></tiny-grid-column>
+              <tiny-grid-column v-if="data.type != 'joint'" field="schoolRank" title="校次" sortable
+                align="center"></tiny-grid-column>
+              <tiny-grid-column v-if="data.type == 'class'" field="classRank" title="班次" sortable
                 align="center"></tiny-grid-column>
             </tiny-grid>
           </template>
@@ -248,11 +250,11 @@ function formatScoringRate(a) {
                   <div class="clickwz" @click="openQa(row.name)">{{ row.name }}</div>
                 </template>
               </tiny-grid-column>
-              <tiny-grid-column field="averageScore" title="平均分" align="center"></tiny-grid-column>
-              <tiny-grid-column field="scoringRate" title="得分率" :format-text="formatScoringRate"
+              <tiny-grid-column field="averageScore" title="平均分" sortable align="center"></tiny-grid-column>
+              <tiny-grid-column field="scoringRate" title="得分率" :format-text="formatScoringRate" sortable
                 align="center"></tiny-grid-column>
-              <tiny-grid-column field="scoreStandardDeviation" title="标准差" align="center"></tiny-grid-column>
-              <tiny-grid-column field="discrimination" title="标准区分度" align="center"></tiny-grid-column>
+              <tiny-grid-column field="scoreStandardDeviation" title="标准差" sortable align="center"></tiny-grid-column>
+              <tiny-grid-column field="discrimination" title="标准区分度" sortable align="center"></tiny-grid-column>
               <tiny-grid-column title="作答详情" align="center">
                 <template #default="{ row }">
                   <div v-if="row.option" class="cz">
@@ -263,7 +265,10 @@ function formatScoringRate(a) {
                       </div>
                       <div>（{{ row.option[index].length }}人）</div>
                     </div>
-                    <div>正确答案：{{ row.answer }}</div>
+                    <div class="sp">
+                      <div class="bold-text">正确答案</div>
+                      <div>{{ row.answer }}</div>
+                    </div>
                   </div>
                   <div v-if="row.score" class="cz">
                     <div v-for="item in row.score" class="sp">
@@ -289,9 +294,9 @@ function formatScoringRate(a) {
           <template #default>
             <tiny-grid :data="data.knowledgepoint" border>
               <tiny-grid-column field="name" title="知识点名称" align="center"></tiny-grid-column>
-              <tiny-grid-column field="questionName" title="题号" :format-text="formatQuestionName"
+              <tiny-grid-column field="questionName" title="题号" :format-text="formatQuestionName" sortable
                 align="center"></tiny-grid-column>
-              <tiny-grid-column field="scoringRate" title="得分率" :format-text="formatScoringRate"
+              <tiny-grid-column field="scoringRate" title="得分率" :format-text="formatScoringRate" sortable
                 align="center"></tiny-grid-column>
             </tiny-grid>
           </template>
@@ -353,7 +358,7 @@ function formatScoringRate(a) {
                 <tiny-grid-column field="name" title="知识点名称" align="center"></tiny-grid-column>
                 <tiny-grid-column field="questionName" title="题号" :format-text="formatQuestionName"
                   align="center"></tiny-grid-column>
-                <tiny-grid-column field="scoringRate" title="得分率" :format-text="formatScoringRate"
+                <tiny-grid-column field="scoringRate" title="得分率" :format-text="formatScoringRate" sortable
                   align="center"></tiny-grid-column>
               </tiny-grid>
             </template>
@@ -362,22 +367,22 @@ function formatScoringRate(a) {
       </div>
       <tiny-grid v-if="data.subject == '多学科'" :data="data.info.subject" border>
         <tiny-grid-column field="name" title="科目" align="center"></tiny-grid-column>
-        <tiny-grid-column field="totalScoreWithExtra" title="分数（含附）" align="center"></tiny-grid-column>
-        <tiny-grid-column field="totalScoreWithoutExtra" title="分数（不含附）" align="center"></tiny-grid-column>
-        <tiny-grid-column field="extraTotalScore" title="附分" align="center"></tiny-grid-column>
-        <tiny-grid-column field="fuScore" title="赋分" align="center"></tiny-grid-column>
-        <tiny-grid-column field="level" title="等级" align="center"></tiny-grid-column>
+        <tiny-grid-column field="totalScoreWithExtra" title="分数（含附）" sortable align="center"></tiny-grid-column>
+        <tiny-grid-column field="totalScoreWithoutExtra" title="分数（不含附）" sortable align="center"></tiny-grid-column>
+        <tiny-grid-column field="extraTotalScore" title="附分" sortable align="center"></tiny-grid-column>
+        <tiny-grid-column field="fuScore" title="赋分" sortable align="center"></tiny-grid-column>
+        <tiny-grid-column field="level" title="等级" sortable align="center"></tiny-grid-column>
       </tiny-grid>
     </div>
     <tiny-dialog-box class="dialog" :visible="qadialog" title="题目" @close="closeQa">
       <div class="sp">
         <div class="bold-text">题目</div>
-        <img v-if="qa.question != ''" :src="qa.question"></img>
+        <tiny-image v-if="qa.question != ''" :src="qa.question" :preview-src-list="[qa.question]"></tiny-image>
         <img v-if="qa.question == ''" src="/noimage.png"></img>
       </div>
       <div class="sp">
         <div class="bold-text">答案</div>
-        <img v-if="qa.answer != ''" :src="qa.answer"></img>
+        <tiny-image v-if="qa.answer != ''" :src="qa.answer" :preview-src-list="[qa.answer]"></tiny-image>
         <img v-if="qa.answer == ''" src="/noimage.png"></img>
       </div>
       <div class="sp">

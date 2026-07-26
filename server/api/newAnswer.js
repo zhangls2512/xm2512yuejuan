@@ -251,6 +251,7 @@ exports.main = async (event, configfilepath) => {
           questionMarkStepScore: [],
           updateMarkStepScore: [],
           questionReason: '',
+          questionNewAccount: '',
           minScoreDiff: 0,
           finalStepScore: [],
           finalTotalScore: 0
@@ -455,6 +456,7 @@ exports.main = async (event, configfilepath) => {
           questionMarkStepScore: [],
           updateMarkStepScore: [],
           questionReason: '',
+          questionNewAccount: '',
           minScoreDiff: 0,
           finalStepScore: [],
           finalTotalScore: 0

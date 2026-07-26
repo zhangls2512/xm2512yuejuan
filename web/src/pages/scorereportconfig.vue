@@ -184,10 +184,22 @@ async function deleteScorereportconfig(id) {
               <tiny-tag v-if="item.type == 'system'" type="info">系统</tiny-tag>
               <tiny-tag v-if="item.type == 'custom'" type="info">自定义</tiny-tag>
             </div>
-            <div>科目：{{ item.subject }}</div>
-            <div v-if="item.subject == '多学科'">合并成绩报告配置ID：{{ item.idArray }}</div>
-            <div v-if="item.updateTimeSeen == true">最近生成时间：{{ item.updateTime }}</div>
-            <div style="cursor:pointer" @click="copy(item.scorereportconfigId)">ID：{{ item.scorereportconfigId }}</div>
+            <div class="sp">
+              <div class="bold-text">科目</div>
+              <div>{{ item.subject }}</div>
+            </div>
+            <div v-if="item.subject == '多学科'" class="sp">
+              <div class="bold-text">合并成绩报告配置ID</div>
+              <div>{{ item.idArray }}</div>
+            </div>
+            <div v-if="item.updateTimeSeen == true" class="sp">
+              <div class="bold-text">最近生成时间</div>
+              <div>{{ item.updateTime }}</div>
+            </div>
+            <div class="sp">
+              <div class="bold-text">ID</div>
+              <div class="clickwz" style="cursor:pointer" @click="copy(item.scorereportconfigId)">{{ item.scorereportconfigId }}</div>
+            </div>
             <tiny-checkbox v-model="item.studentVisible"
               @change="updateStudentVisible(item.scorereportconfigId)">学生可查看</tiny-checkbox>
           </div>

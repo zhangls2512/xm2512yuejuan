@@ -189,8 +189,14 @@ function markqualitymonitor(param) {
               <div class="large-bold-text">{{ item.examName }}</div>
               <tiny-tag type="info">{{ item.examType }}</tiny-tag>
             </div>
-            <div>时间：{{ item.examTime }}</div>
-            <div>科目：{{ item.subject.name }}</div>
+            <div class="sp">
+              <div class="bold-text">时间</div>
+              <div>{{ item.examTime }}</div>
+            </div>
+            <div class="sp">
+              <div class="bold-text">科目</div>
+              <div>{{ item.subject.name }}</div>
+            </div>
           </div>
           <div class="sp">
             <tiny-tag v-if="item.markStatus == 'paused'" type="warning">未开始</tiny-tag>

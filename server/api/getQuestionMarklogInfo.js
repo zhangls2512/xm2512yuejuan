@@ -84,6 +84,7 @@ exports.main = async (event, configfilepath) => {
       traceImage: [],
       marklogList: [],
       questionReason: marklogres.questionReason,
+      questionNewAccount: marklogres.questionNewAccount,
       studentAccount: marklogres.studentAccount
     }
     const markgroup = examsubjectres.markGroup.find(item => item.questionName.includes(marklogres.questionName))

@@ -93,8 +93,14 @@ async function submit() {
       <div class="large-bold-text">{{ data.examName }}</div>
       <tiny-tag type="info">{{ data.examType }}</tiny-tag>
     </div>
-    <div>科目：{{ data.subject }}</div>
-    <div>作答结束时间：{{ data.endTime }}</div>
+    <div class="sp">
+      <div class="bold-text">科目</div>
+      <div>{{ data.subject }}</div>
+    </div>
+    <div class="sp">
+      <div class="bold-text">作答结束时间</div>
+      <div>{{ data.endTime }}</div>
+    </div>
     <div v-for="(item, index) in question.objectiveQuestion" class="kuang">
       <div class="sp">
         <div>{{ item.name }}</div>

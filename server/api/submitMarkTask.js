@@ -208,16 +208,18 @@ exports.main = async (event, configfilepath) => {
         if (!marklogres.secondMarkerAccount) {
           finalstepscore = requestdata.stepScore
         }
-        if (!marklogres.thirdMarkerAccount) {
-          const firstsum = sum(requestdata.stepScore)
-          const secondsum = sum(marklogres.secondMarkStepScore)
-          minscorediff = Math.abs(secondsum - firstsum)
-          finalstepscore = average(marklogres.secondMarkStepScore, requestdata.stepScore)
-        }
-        if (marklogres.thirdMarkerAccount) {
-          const res = sanping(requestdata.stepScore, marklogres.secondMarkStepScore, marklogres.thirdMarkStepScore)
-          minscorediff = res.minscorediff
-          finalstepscore = res.finalstepscore
+        if (marklogres.secondMarkPercent) {
+          if (!marklogres.thirdMarkerAccount) {
+            const firstsum = sum(requestdata.stepScore)
+            const secondsum = sum(marklogres.secondMarkStepScore)
+            minscorediff = Math.abs(secondsum - firstsum)
+            finalstepscore = average(marklogres.secondMarkStepScore, requestdata.stepScore)
+          }
+          if (marklogres.thirdMarkerAccount) {
+            const res = sanping(requestdata.stepScore, marklogres.secondMarkStepScore, marklogres.thirdMarkStepScore)
+            minscorediff = res.minscorediff
+            finalstepscore = res.finalstepscore
+          }
         }
       }
       if (!type) {
