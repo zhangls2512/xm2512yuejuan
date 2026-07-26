@@ -31,7 +31,7 @@ async function getHistoryMarklog() {
     apiPath: '/getHistoryMarklogList',
     body: {
       id: data.value.examId,
-      subject: data.value.subject,
+      subject: data.value.subject.name,
       name: markgroupname.value,
       type: type.value,
       skip: (currentpage.value - 1) * pagesize.value,
@@ -77,7 +77,7 @@ async function get() {
     apiPath: '/getHistoryMarklogCount',
     body: {
       id: data.value.examId,
-      subject: data.value.subject,
+      subject: data.value.subject.name,
       name: markgroupname.value,
       type: type.value
     }
@@ -87,7 +87,7 @@ async function get() {
     apiPath: '/getMarkTaskQuota',
     body: {
       id: data.value.examId,
-      subject: data.value.subject,
+      subject: data.value.subject.name,
       name: markgroupname.value,
       type: type.value
     }
@@ -97,7 +97,7 @@ async function get() {
     apiPath: '/getMarkTask',
     body: {
       id: data.value.examId,
-      subject: data.value.subject,
+      subject: data.value.subject.name,
       name: markgroupname.value,
       type: type.value
     }
@@ -287,7 +287,7 @@ async function mark(id) {
       <div class="bold-text">时间</div>
       <div>{{ data.examTime }}</div>
       <div class="bold-text">科目</div>
-      <div>{{ data.subject }}</div>
+      <div>{{ data.subject.name }}</div>
       <div class="bold-text">阅卷类型</div>
       <div v-if="type == 'normal'">正常</div>
       <div v-if="type == 'arbitrate'">仲裁</div>
