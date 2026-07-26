@@ -222,6 +222,7 @@ async function newQuestion() {
     message: '提交成功',
     status: 'success'
   })
+  closeDialog()
   get()
 }
 async function mark(id) {

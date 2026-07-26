@@ -99,7 +99,8 @@ exports.main = async (event, configfilepath) => {
       marklog: []
     }
     const allmarkgroup = new Set()
-    marklogres.sort((a, b) => a.questionName.localeCompare(b.questionName)).forEach(m => {
+    const allquestionnames = examsubjectres.objectiveQuestion.map(item => item.name).concat(examsubjectres.subjectiveQuestion.map(item => item.name))
+    marklogres.sort((a, b) => allquestionnames.indexOf(a.questionName) - allquestionnames.indexOf(b.questionName)).forEach(m => {
       if (m.answer) {
         const question = examsubjectres.objectiveQuestion.find(q => q.name == m.questionName)
         result.marklog.push({

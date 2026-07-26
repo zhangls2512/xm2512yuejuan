@@ -182,7 +182,7 @@ exports.main = async (event, configfilepath) => {
           }
         }
       })
-      const trace = getScanTrace(examsubjectgetres, marklogarr.sort((a, b) => a.questionName.localeCompare(b.questionName)), answer.answer.pageOriginCoord, answer.answer.volume)
+      const trace = getScanTrace(examsubjectgetres, marklogarr, answer.answer.pageOriginCoord, answer.answer.volume)
       volume.page.forEach((item, index) => {
         result.image.push({
           answerImage: read(rootdir + '/answer/' + studentAccount + '/' + index),
@@ -212,7 +212,8 @@ exports.main = async (event, configfilepath) => {
           })
         }
       })
-      const trace = getOnlineTrace(examsubjectgetres, marklogarr.sort((a, b) => a.questionName.localeCompare(b.questionName)))
+      const allquestionnames = examsubjectgetres.subjectiveQuestion.map(item => item.name)
+      const trace = getOnlineTrace(examsubjectgetres, marklogarr.sort((a, b) => allquestionnames.indexOf(a.questionName) - allquestionnames.indexOf(b.questionName)))
       marklogarr.forEach((item, index) => {
         const markgroup = examsubjectgetres.markGroup.find(m => m.questionName.includes(item.questionName))
         result.image.push({

@@ -125,6 +125,7 @@ exports.main = async (event, configfilepath) => {
           $in: ['first', 'second']
         }
       }).toArray()
+      const allquestionnames = examsubjectres.subjectiveQuestion.map(item => item.name)
       result.marklogList = data.map(item => {
         return {
           id: item.marklogId,
@@ -135,7 +136,7 @@ exports.main = async (event, configfilepath) => {
           typicalMistake: item.typicalMistake,
           doubtful: item.doubtful
         }
-      }).sort((a, b) => a.questionName.localeCompare(b.questionName))
+      }).sort((a, b) => allquestionnames.indexOf(a.questionName) - allquestionnames.indexOf(b.questionName))
     }
     if (marklogres.type == 'third' || marklogres.type == 'arbitrate') {
       result.marklogList.push({

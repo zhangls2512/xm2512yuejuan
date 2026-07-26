@@ -78,13 +78,13 @@ function closeQa() {
   qadialog.value = false
   qa.value = {}
 }
-async function openSa(row, stu) {
+async function openSa(questionname, stu) {
   const res = await request({
     apiPath: '/getStudentQuestionAnswer',
     body: {
       id: data.value.scorereportconfigId,
       studentAccount: stu,
-      questionName: row.name
+      questionName: questionname
     }
   })
   answer.value = res.data
@@ -269,7 +269,7 @@ function formatScoringRate(a) {
                     <div v-for="item in row.score" class="sp">
                       <div class="bold-text">{{ item.score }}</div>
                       <div class="cz">
-                        <div v-for="i in item.student" class="clickwz" @click="openSa(row, i)">{{ i }}</div>
+                        <div v-for="i in item.student" class="clickwz" @click="openSa(row.name, i)">{{ i }}</div>
                       </div>
                       <div>（{{ item.student.length }}人）</div>
                     </div>
@@ -333,7 +333,7 @@ function formatScoringRate(a) {
                 <tiny-grid-column title="作答" align="center">
                   <template #default="{ row }">
                     <div v-if="row.correctAnswer != ''">{{ row.answer }}</div>
-                    <div v-if="row.correctAnswer == ''" class="clickwz" @click="openSa(row, '')">查看</div>
+                    <div v-if="row.correctAnswer == ''" class="clickwz" @click="openSa(row.questionName, '')">查看</div>
                   </template>
                 </tiny-grid-column>
                 <tiny-grid-column title="答案" align="center">

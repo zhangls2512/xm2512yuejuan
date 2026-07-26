@@ -411,13 +411,14 @@ exports.main = async (event, configfilepath) => {
               }
             ]
           }).toArray()
+          const allquestionnames = examsubjectres.subjectiveQuestion.map(item => item.name)
           result.marklogList = list.map(item => {
             return {
               id: item.marklogId,
               questionName: item.questionName,
               stepScore: examsubjectres.subjectiveQuestion.find(q => q.name == item.questionName).stepScore
             }
-          }).sort((a, b) => a.questionName.localeCompare(b.questionName))
+          }).sort((a, b) => allquestionnames.indexOf(a.questionName) - allquestionnames.indexOf(b.questionName))
         }
         return {
           errCode: 0,
@@ -499,13 +500,14 @@ exports.main = async (event, configfilepath) => {
         if (examsubjectres.answerOnline) {
           result.answerImage.push(read(rootdir + requestdata.name))
         }
+        const allquestionnames = examsubjectres.subjectiveQuestion.map(item => item.name)
         result.marklogList = list.map(item => {
           return {
             id: item.marklogId,
             questionName: item.questionName,
             stepScore: examsubjectres.subjectiveQuestion.find(q => q.name = item.questionName).stepScore
           }
-        }).sort((a, b) => a.questionName.localeCompare(b.questionName))
+        }).sort((a, b) => allquestionnames.indexOf(a.questionName) - allquestionnames.indexOf(b.questionName))
         return {
           errCode: 0,
           errMsg: '成功',

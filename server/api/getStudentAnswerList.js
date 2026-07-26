@@ -80,10 +80,11 @@ exports.main = async (event, configfilepath) => {
         })
       }
     })
+    const allquestionnames = questions.map(item => item.name)
     return {
       errCode: 0,
       errMsg: '成功',
-      data: result.sort((a, b) => a.questionName.localeCompare(b.questionName))
+      data: result.sort((a, b) => allquestionnames.indexOf(a.questionName) - allquestionnames.indexOf(b.questionName))
     }
   }
 }
