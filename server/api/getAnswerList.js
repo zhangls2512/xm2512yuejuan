@@ -73,7 +73,8 @@ exports.main = async (event, configfilepath) => {
     }, {
       projection: {
         _id: false,
-        studentAccount: true
+        studentAccount: true,
+        createTime: true
       }
     }).sort({
       createTime: -1

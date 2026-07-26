@@ -18,6 +18,9 @@ exports.main = async (event, configfilepath) => {
     })
     const count = await db.collection('examsubject').countDocuments({
       answerOnline: true,
+      endTime: {
+        $gte: Date.now()
+      },
       class: {
         $in: classids
       }

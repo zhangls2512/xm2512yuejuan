@@ -1,5 +1,5 @@
 <script setup>
-document.title = '智能阅卷系统 - 成绩报告 - 报告详情'
+document.title = '智能阅卷系统 - 成绩报告 - 成绩报告详情'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { decode } from '../util/code'
@@ -12,14 +12,15 @@ const data = ref({})
 const tabledata = ref([])
 const columns = ref([])
 const tabname = ref('成绩单')
+const tabnameb = ref('小题作答情况')
 const exist = localStorage.getItem('accountinfo')
 const fu = ref(false)
 const qadialog = ref(false)
-const qimage = ref('')
-const aimage = ref('')
+const qa = ref({})
 const sadialog = ref(false)
 const answer = ref({})
 const answerlist = ref([])
+const knowledgepointlist = ref([])
 const aadialog = ref(false)
 const answerimage = ref({})
 if (exist) {
@@ -39,6 +40,7 @@ if (info) {
     }
     if (accountinfo.value.type == 'student' && data.value.subject != '多学科') {
       getAnswerList()
+      getKnowledgepointList()
     }
   } catch {
   }
@@ -52,22 +54,29 @@ async function getAnswerList(row) {
   })
   answerlist.value = res.data
 }
-async function openQa(row) {
+async function getKnowledgepointList(row) {
+  const res = await request({
+    apiPath: '/getStudentKnowledgepointList',
+    body: {
+      id: data.value.scorereportconfigId
+    }
+  })
+  knowledgepointlist.value = res.data
+}
+async function openQa(questionname) {
   const res = await request({
     apiPath: '/getQuestionAndAnswer',
     body: {
       id: data.value.scorereportconfigId,
-      questionName: row.name
+      questionName: questionname
     }
   })
-  qimage.value = res.data.question
-  aimage.value = res.data.answer
+  qa.value = res.data
   qadialog.value = true
 }
 function closeQa() {
   qadialog.value = false
-  qimage.value = ''
-  aimage.value = ''
+  qa.value = {}
 }
 async function openSa(row, stu) {
   const res = await request({
@@ -169,6 +178,9 @@ function buildColumns(students) {
     }))
   ]
 }
+function formatQuestionName(a) {
+  return a.cellValue.join('、')
+}
 function formatScoringRate(a) {
   return a.cellValue + '%'
 }
@@ -178,8 +190,18 @@ function formatScoringRate(a) {
   <div class="cz">
     <tiny-breadcrumb>
       <tiny-breadcrumb-item :to="{ path: '/scorereport' }" label="成绩报告"></tiny-breadcrumb-item>
-      <tiny-breadcrumb-item :to="{ path: '/scorereportinfo' }" label="报告详情"></tiny-breadcrumb-item>
+      <tiny-breadcrumb-item :to="{ path: '/scorereportinfo' }" label="成绩报告详情"></tiny-breadcrumb-item>
     </tiny-breadcrumb>
+    <div class="large-bold-text">{{ data.scorereportconfigName }}</div>
+    <div class="sp">
+      <div class="bold-text">考试</div>
+      <div>{{ data.examName }}</div>
+      <tiny-tag type="info">{{ data.examType }}</tiny-tag>
+    </div>
+    <div class="sp">
+      <div class="bold-text">科目</div>
+      <div>{{ data.subject }}</div>
+    </div>
     <div v-if="accountinfo.type == 'teacher'" class="cz">
       <div class="sp">
         <div class="bold-text">平均分</div>
@@ -189,12 +211,16 @@ function formatScoringRate(a) {
         <div class="bold-text">标准差</div>
         <div>{{ data.scoreStandardDeviation }}</div>
       </div>
+      <div class="sp">
+        <div class="bold-text">原始区分度</div>
+        <div>{{ data.discrimination }}</div>
+      </div>
       <tiny-tabs v-model="tabname">
         <tiny-tab-item title="成绩单" name="成绩单">
           <template #default>
             <tiny-grid v-if="data.subject == '多学科'" :data="tabledata" :columns="columns" align="center"
-              border="true"></tiny-grid>
-            <tiny-grid v-if="data.subject != '多学科'" :data="data.student" border="true">
+              border></tiny-grid>
+            <tiny-grid v-if="data.subject != '多学科'" :data="data.student" border>
               <tiny-grid-column type="index" title="序号" align="center"></tiny-grid-column>
               <tiny-grid-column title="学生ID" align="center">
                 <template #default="{ row }">
@@ -216,16 +242,17 @@ function formatScoringRate(a) {
         </tiny-tab-item>
         <tiny-tab-item v-if="data.subject != '多学科'" title="小题分析" name="小题分析">
           <template #default>
-            <tiny-grid :data="data.question" border="true">
+            <tiny-grid :data="data.question" border>
               <tiny-grid-column field="name" title="题号" align="center">
                 <template #default="{ row }">
-                  <div class="clickwz" @click="openQa(row)">{{ row.name }}</div>
+                  <div class="clickwz" @click="openQa(row.name)">{{ row.name }}</div>
                 </template>
               </tiny-grid-column>
               <tiny-grid-column field="averageScore" title="平均分" align="center"></tiny-grid-column>
               <tiny-grid-column field="scoringRate" title="得分率" :format-text="formatScoringRate"
                 align="center"></tiny-grid-column>
               <tiny-grid-column field="scoreStandardDeviation" title="标准差" align="center"></tiny-grid-column>
+              <tiny-grid-column field="discrimination" title="标准区分度" align="center"></tiny-grid-column>
               <tiny-grid-column title="作答详情" align="center">
                 <template #default="{ row }">
                   <div v-if="row.option" class="cz">
@@ -258,6 +285,17 @@ function formatScoringRate(a) {
             </tiny-grid>
           </template>
         </tiny-tab-item>
+        <tiny-tab-item v-if="data.subject != '多学科'" title="知识点分析" name="知识点分析">
+          <template #default>
+            <tiny-grid :data="data.knowledgepoint" border>
+              <tiny-grid-column field="name" title="知识点名称" align="center"></tiny-grid-column>
+              <tiny-grid-column field="questionName" title="题号" :format-text="formatQuestionName"
+                align="center"></tiny-grid-column>
+              <tiny-grid-column field="scoringRate" title="得分率" :format-text="formatScoringRate"
+                align="center"></tiny-grid-column>
+            </tiny-grid>
+          </template>
+        </tiny-tab-item>
       </tiny-tabs>
     </div>
     <div v-if="accountinfo.type == 'student'">
@@ -283,30 +321,46 @@ function formatScoringRate(a) {
           <div>{{ data.info.level }}</div>
         </div>
         <div><tiny-button type="info" @click="openAa">查看原卷</tiny-button></div>
-        <div class="bold-text">小题作答情况</div>
-        <tiny-grid :data="answerlist" border="true">
-          <tiny-grid-column field="questionName" title="题号" align="center">
-            <template #default="{ row }">
-              <div class="clickwz" @click="openQa(row)">{{ row.questionName }}</div>
+        <tiny-tabs v-if="data.subject != '多学科'" v-model="tabnameb">
+          <tiny-tab-item title="小题作答情况" name="小题作答情况">
+            <template #default>
+              <tiny-grid :data="answerlist" border>
+                <tiny-grid-column field="questionName" title="题号" align="center">
+                  <template #default="{ row }">
+                    <div class="clickwz" @click="openQa(row.questionName)">{{ row.questionName }}</div>
+                  </template>
+                </tiny-grid-column>
+                <tiny-grid-column title="作答" align="center">
+                  <template #default="{ row }">
+                    <div v-if="row.correctAnswer != ''">{{ row.answer }}</div>
+                    <div v-if="row.correctAnswer == ''" class="clickwz" @click="openSa(row, '')">查看</div>
+                  </template>
+                </tiny-grid-column>
+                <tiny-grid-column title="答案" align="center">
+                  <template #default="{ row }">
+                    <div v-if="row.correctAnswer != ''">{{ row.correctAnswer }}</div>
+                    <div v-if="row.correctAnswer == ''" class="clickwz" @click="openQa(row.questionName)">查看</div>
+                  </template>
+                </tiny-grid-column>
+                <tiny-grid-column field="score" title="得分" align="center"></tiny-grid-column>
+                <tiny-grid-column field="totalScore" title="总分" align="center"></tiny-grid-column>
+              </tiny-grid>
             </template>
-          </tiny-grid-column>
-          <tiny-grid-column title="作答" align="center">
-            <template #default="{ row }">
-              <div v-if="row.correctAnswer != ''">{{ row.answer }}</div>
-              <div v-if="row.correctAnswer == ''" class="clickwz" @click="openSa(row, '')">查看</div>
+          </tiny-tab-item>
+          <tiny-tab-item title="知识点掌握情况" name="知识点掌握情况">
+            <template #default>
+              <tiny-grid :data="knowledgepointlist" border>
+                <tiny-grid-column field="name" title="知识点名称" align="center"></tiny-grid-column>
+                <tiny-grid-column field="questionName" title="题号" :format-text="formatQuestionName"
+                  align="center"></tiny-grid-column>
+                <tiny-grid-column field="scoringRate" title="得分率" :format-text="formatScoringRate"
+                  align="center"></tiny-grid-column>
+              </tiny-grid>
             </template>
-          </tiny-grid-column>
-          <tiny-grid-column title="答案" align="center">
-            <template #default="{ row }">
-              <div v-if="row.correctAnswer != ''">{{ row.correctAnswer }}</div>
-              <div v-if="row.correctAnswer == ''" class="clickwz" @click="openQa(row)">查看</div>
-            </template>
-          </tiny-grid-column>
-          <tiny-grid-column field="score" title="得分" align="center"></tiny-grid-column>
-          <tiny-grid-column field="totalScore" title="总分" align="center"></tiny-grid-column>
-        </tiny-grid>
+          </tiny-tab-item>
+        </tiny-tabs>
       </div>
-      <tiny-grid v-if="data.subject == '多学科'" :data="data.info.subject" border="true">
+      <tiny-grid v-if="data.subject == '多学科'" :data="data.info.subject" border>
         <tiny-grid-column field="name" title="科目" align="center"></tiny-grid-column>
         <tiny-grid-column field="totalScoreWithExtra" title="分数（含附）" align="center"></tiny-grid-column>
         <tiny-grid-column field="totalScoreWithoutExtra" title="分数（不含附）" align="center"></tiny-grid-column>
@@ -316,16 +370,23 @@ function formatScoringRate(a) {
       </tiny-grid>
     </div>
     <tiny-dialog-box class="dialog" :visible="qadialog" title="题目" @close="closeQa">
-      <div v-if="qimage == '' || aimage == ''">未设置题目，如有疑问请联系考试管理员</div>
-      <div v-if="qimage != '' && aimage != ''" class="cz">
-        <div class="sp">
-          <div>题目</div>
-          <img :src="qimage"></img>
-        </div>
-        <div class="sp">
-          <div>答案</div>
-          <img :src="aimage"></img>
-        </div>
+      <div class="sp">
+        <div class="bold-text">题目</div>
+        <img v-if="qa.question != ''" :src="qa.question"></img>
+        <img v-if="qa.question == ''" src="/noimage.png"></img>
+      </div>
+      <div class="sp">
+        <div class="bold-text">答案</div>
+        <img v-if="qa.answer != ''" :src="qa.answer"></img>
+        <img v-if="qa.answer == ''" src="/noimage.png"></img>
+      </div>
+      <div class="sp">
+        <div class="bold-text">难度</div>
+        <div>{{ qa.difficulty }}</div>
+      </div>
+      <div class="sp">
+        <div class="bold-text">知识点</div>
+        <tiny-tag v-for="item in qa.knowledgepoint" type="info">{{ item }}</tiny-tag>
       </div>
       <template #footer>
         <tiny-button type="info" @click="closeQa">确定</tiny-button>
@@ -347,6 +408,7 @@ function formatScoringRate(a) {
     <tiny-dialog-box class="dialog" :visible="aadialog" title="原卷" @close="closeAa">
       <div v-if="answerimage.answerOnline == false">
         <div class="cz">
+          <img v-if="answerimage.image.length == 0" src="/noimage.png"></img>
           <div v-for="image in answerimage.image">
             <AnswerImageCanvas :data="image"></AnswerImageCanvas>
           </div>
@@ -354,6 +416,7 @@ function formatScoringRate(a) {
       </div>
       <div v-if="answerimage.answerOnline == true">
         <div class="cz">
+          <img v-if="answerimage.image.length == 0" src="/noimage.png"></img>
           <div v-for="image in answerimage.image" class="sp">
             <div class="bold-text">{{ image.questionName }}</div>
             <AnswerImageCanvas :data="image"></AnswerImageCanvas>

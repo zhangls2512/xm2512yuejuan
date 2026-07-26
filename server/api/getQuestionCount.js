@@ -30,11 +30,11 @@ exports.main = async (event, configfilepath) => {
       errFix: '传递有效的grade参数'
     }
   }
-  if (!Array.isArray(requestdata.knowledgePoint) || requestdata.knowledgePoint.length == 0 || !requestdata.knowledgePoint.every(item => typeof (item) == 'string' && item)) {
+  if (!Array.isArray(requestdata.knowledgepoint) || requestdata.knowledgepoint.length == 0 || !requestdata.knowledgepoint.every(item => typeof (item) == 'string' && item)) {
     return {
       errCode: 400,
       errMsg: '请求参数错误',
-      errFix: '传递有效的knowledgePoint参数'
+      errFix: '传递有效的knowledgepoint参数'
     }
   }
   const res = await require('../util/authcheck').main(event.headers, configfilepath)
@@ -55,8 +55,8 @@ exports.main = async (event, configfilepath) => {
       difficulty: requestdata.difficulty,
       subject: requestdata.subject,
       grade: requestdata.grade,
-      knowledgePoint: {
-        $all: [...new Set(requestdata.knowledgePoint)]
+      knowledgepoint: {
+        $all: [...new Set(requestdata.knowledgepoint)]
       }
     })
     return {

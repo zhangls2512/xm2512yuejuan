@@ -18,15 +18,8 @@ function checkSubjectConfig(requestdata, olddata) {
     }
     result.answerOnline = requestdata.answerOnline
   }
-  if (result.answerOnline && !olddata) {
+  if (result.answerOnline) {
     if (!Number.isInteger(requestdata.startTime) || requestdata.startTime < 0) {
-      return {
-        errCode: 400,
-        errMsg: '请求参数错误',
-        errFix: '传递有效的startTime参数'
-      }
-    }
-    if (olddata && requestdata.startTime > olddata.startTime) {
       return {
         errCode: 400,
         errMsg: '请求参数错误',
@@ -40,11 +33,20 @@ function checkSubjectConfig(requestdata, olddata) {
         errFix: '传递有效的endTime参数'
       }
     }
-    if (olddata && requestdata.endTime < olddata.endTime) {
-      return {
-        errCode: 400,
-        errMsg: '请求参数错误',
-        errFix: '传递有效的endTime参数'
+    if (olddata) {
+      if (requestdata.startTime > olddata.startTime) {
+        return {
+          errCode: 400,
+          errMsg: '请求参数错误',
+          errFix: '传递有效的startTime参数'
+        }
+      }
+      if (requestdata.endTime < olddata.endTime) {
+        return {
+          errCode: 400,
+          errMsg: '请求参数错误',
+          errFix: '传递有效的endTime参数'
+        }
       }
     }
     result.startTime = requestdata.startTime
@@ -562,6 +564,7 @@ function checkSubjectConfig(requestdata, olddata) {
       }
       const objectivequestionnamearr = []
       let subjectivequestionnamearr = []
+      let allquestionnamearr = []
       for (let j = 0; j < volume.page.length; j++) {
         for (let k = 0; k < volume.page[j].length; k++) {
           const pageitem = volume.page[j][k]
@@ -626,13 +629,6 @@ function checkSubjectConfig(requestdata, olddata) {
                 errFix: '传递有效的volume参数'
               }
             }
-            if (checkArrHaveSameItem(subjectivequestionnamearr, exist.questionName)) {
-              return {
-                errCode: 400,
-                errMsg: '请求参数错误',
-                errFix: '传递有效的volume参数'
-              }
-            }
             if (!result.answerOnline) {
               if (!Array.isArray(pageitem.coord) || pageitem.coord.length == 0 || !pageitem.coord.every(item => isCoordValid(item))) {
                 return {
@@ -657,6 +653,7 @@ function checkSubjectConfig(requestdata, olddata) {
           }
         }
       }
+      allquestionnamearr = objectivequestionnamearr.concat(subjectivequestionnamearr)
       if (!Array.isArray(volume.optionalQuestion)) {
         return {
           errCode: 400,
@@ -666,7 +663,7 @@ function checkSubjectConfig(requestdata, olddata) {
       }
       for (let j = 0; j < volume.optionalQuestion.length; j++) {
         const optionalquestionitem = volume.optionalQuestion[j]
-        if (!Array.isArray(optionalquestionitem.name) || !optionalquestionitem.name.every(item => subjectivequestionnamearr.includes(item)) || optionalquestionitem.name.length < 2) {
+        if (!Array.isArray(optionalquestionitem.name) || !optionalquestionitem.name.every(item => optionalquestionitem.name.length < 2 || allquestionnamearr.includes(item))) {
           return {
             errCode: 400,
             errMsg: '请求参数错误',
@@ -727,9 +724,6 @@ function checkSubjectConfig(requestdata, olddata) {
     errMsg: '成功',
     data: result
   }
-}
-function checkArrHaveSameItem(a, b) {
-  return b.some(item => a.includes(item))
 }
 function checkArrNotHaveSameItem(arr) {
   return [...new Set(arr)].length == arr.length

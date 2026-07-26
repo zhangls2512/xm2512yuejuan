@@ -27,7 +27,7 @@ if (info) {
     difficulty.value = String(data.difficulty)
     subject.value = data.subject
     grade.value = data.grade
-    knowledgepoint.value = data.knowledgePoint
+    knowledgepoint.value = data.knowledgepoint
   } catch {
   }
 }
@@ -106,7 +106,7 @@ async function updateQuestion() {
       difficulty: Number(difficulty.value),
       subject: subject.value,
       grade: grade.value,
-      knowledgePoint: knowledgepoint.value
+      knowledgepoint: knowledgepoint.value
     }
   })
   TinyModal.message({

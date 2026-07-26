@@ -1,5 +1,5 @@
 <script setup>
-document.title = '智能阅卷系统 - 在线考试 - 作答记录'
+document.title = '智能阅卷系统 - 在线考试 - 作答'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { decode } from '../util/code'
@@ -58,33 +58,6 @@ async function selectAnswer(index) {
   answer.value.subjectiveQuestionGroup[index].answer = content
 }
 async function submit() {
-  for (let i = 0; i < answer.value.objectiveQuestion.length; i++) {
-    if (answer.value.objectiveQuestion[i].answer.length == 0) {
-      TinyModal.message({
-        message: '客观题' + question.value.objectiveQuestion[i].name + '未作答',
-        status: 'warning'
-      })
-      return
-    }
-  }
-  for (let i = 0; i < answer.value.subjectiveQuestionGroup.length; i++) {
-    if (!answer.value.subjectiveQuestionGroup[i].answer) {
-      TinyModal.message({
-        message: '主观题组' + question.value.subjectiveQuestionGroup[i].name + '未作答',
-        status: 'warning'
-      })
-      return
-    }
-  }
-  for (let i = 0; i < answer.value.optionalQuestion.length; i++) {
-    if (answer.value.optionalQuestion[i].length != question.value.optionalQuestion[i].selectCount) {
-      TinyModal.message({
-        message: '请勾选选做题号',
-        status: 'warning'
-      })
-      return
-    }
-  }
   TinyModal.confirm({
     status: 'info',
     title: '提示',
@@ -114,7 +87,7 @@ async function submit() {
   <div class="cz">
     <tiny-breadcrumb>
       <tiny-breadcrumb-item :to="{ path: '/onlineexam' }" label="在线考试"></tiny-breadcrumb-item>
-      <tiny-breadcrumb-item :to="{ path: '/answeronlineexam' }" label="作答记录"></tiny-breadcrumb-item>
+      <tiny-breadcrumb-item :to="{ path: '/answeronlineexam' }" label="作答"></tiny-breadcrumb-item>
     </tiny-breadcrumb>
     <div class="sp">
       <div class="large-bold-text">{{ data.examName }}</div>

@@ -37,6 +37,9 @@ exports.main = async (event, configfilepath) => {
       examId: requestdata.id,
       name: requestdata.subject,
       answerOnline: true,
+      endTime: {
+        $gte: Date.now()
+      },
       class: {
         $in: classids
       }

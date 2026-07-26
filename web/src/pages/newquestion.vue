@@ -86,7 +86,7 @@ async function newQuestion() {
       difficulty: Number(difficulty.value),
       subject: subject.value,
       grade: grade.value,
-      knowledgePoint: knowledgepoint.value
+      knowledgepoint: knowledgepoint.value
     }
   })
   TinyModal.message({

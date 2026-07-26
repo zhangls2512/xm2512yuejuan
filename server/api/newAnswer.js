@@ -201,19 +201,25 @@ exports.main = async (event, configfilepath) => {
         },
         createTime: Date.now()
       })
-      const allquestionname = data.subjectiveQuestion.map(item => item.name)
-      const alloptionalquestionname = volume.optionalQuestion.map(item => item.name).flat()
-      const selectquestionname = result.optionalQuestion.flat()
-      const finalquestionname = allquestionname.filter(item => !alloptionalquestionname.includes(item)).concat(selectquestionname)
       const allobjectivequestionname = []
+      let allsubjectivequestionname = []
       volume.page.forEach(item => {
         item.forEach(i => {
           if (i.objectiveQuestionName) {
             allobjectivequestionname.push(i.objectiveQuestionName)
           }
+          if (i.markGroupName) {
+            allsubjectivequestionname = allsubjectivequestionname.concat(data.markGroup.find(m => m.name == i.markGroupName).questionName)
+          }
         })
       })
-      await db.collection('marklog').insertMany(allobjectivequestionname.map(item => {
+      allsubjectivequestionname = [...new Set(allsubjectivequestionname)]
+      const allquestionname = allobjectivequestionname.concat(allsubjectivequestionname)
+      const alloptionalquestionname = volume.optionalQuestion.map(item => item.name).flat()
+      const selectquestionname = result.optionalQuestion.flat()
+      const finalquestionname = allquestionname.filter(item => !alloptionalquestionname.includes(item)).concat(selectquestionname)
+      const selectobjectivequestionname = finalquestionname.filter(item => allobjectivequestionname.includes(item))
+      const selectobjectivedocuments = selectobjectivequestionname.map(item => {
         return {
           examId: requestdata.id,
           subject: requestdata.subject,
@@ -223,7 +229,8 @@ exports.main = async (event, configfilepath) => {
           answer: [],
           finished: false
         }
-      }).concat(finalquestionname.map(item => {
+      })
+      const selectsubjectivedocuments = finalquestionname.filter(item => allsubjectivequestionname.includes(item)).map(item => {
         return {
           examId: requestdata.id,
           subject: requestdata.subject,
@@ -248,8 +255,12 @@ exports.main = async (event, configfilepath) => {
           finalStepScore: [],
           finalTotalScore: 0
         }
-      })))
-      allobjectivequestionname.forEach(async (item) => {
+      })
+      const alldocuments = selectobjectivedocuments.concat(selectsubjectivedocuments)
+      if (alldocuments.length > 0) {
+        await db.collection('marklog').insertMany(alldocuments)
+      }
+      selectobjectivequestionname.forEach(async (item) => {
         const answer = await getAnswerIndex(volume.page, item, result.page, configfilepath)
         await db.collection('marklog').updateOne({
           examId: requestdata.id,
@@ -405,21 +416,25 @@ exports.main = async (event, configfilepath) => {
         studentAccount: account.account,
         createTime: Date.now()
       })
-      const allquestionname = data.subjectiveQuestion.map(item => item.name)
+      const allobjectivequestionname = data.objectiveQuestion.map(item => item.name)
+      const allsubjectivequestionname = data.subjectiveQuestion.map(item => item.name)
+      const allquestionname = allobjectivequestionname.concat(allsubjectivequestionname)
       const alloptionalquestionname = data.volume[0].optionalQuestion.map(item => item.name).flat()
       const selectquestionname = result.optionalQuestion.flat()
       const finalquestionname = allquestionname.filter(item => !alloptionalquestionname.includes(item)).concat(selectquestionname)
-      await db.collection('marklog').insertMany(result.objectiveQuestion.map(item => {
+      const selectobjectivedocuments = finalquestionname.filter(item => allobjectivequestionname.includes(item)).map(item => {
+        const answer = result.objectiveQuestion.find(q => q.name == item)
         return {
           examId: requestdata.id,
           subject: requestdata.subject,
           studentAccount: account.account,
-          questionName: item.name,
+          questionName: item,
           type: 'system',
-          answer: item.answer,
+          answer: answer.answer,
           finished: true
         }
-      }).concat(finalquestionname.map(item => {
+      })
+      const selectsubjectivedocuments = finalquestionname.filter(item => allsubjectivequestionname.includes(item)).map(item => {
         return {
           examId: requestdata.id,
           subject: requestdata.subject,
@@ -444,7 +459,11 @@ exports.main = async (event, configfilepath) => {
           finalStepScore: [],
           finalTotalScore: 0
         }
-      })))
+      })
+      const alldocuments = selectobjectivedocuments.concat(selectsubjectivedocuments)
+      if (alldocuments.length > 0) {
+        await db.collection('marklog').insertMany(alldocuments)
+      }
       return {
         errCode: 0,
         errMsg: '成功'

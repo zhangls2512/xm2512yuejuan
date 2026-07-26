@@ -83,7 +83,7 @@ function close() {
     <tiny-dialog-box class="dialog" :visible="dialog" title="各阅卷人已阅量" @close="close">
       <div class="cz">
         <div style="color:red">仅合并统计一评、二评、三评、仲裁已阅量，问题卷、修改/补录量不纳入统计。</div>
-        <tiny-grid :data="markerprogress" border="true">
+        <tiny-grid :data="markerprogress" border>
           <tiny-grid-column field="account" title="阅卷人账号" align="center"></tiny-grid-column>
           <tiny-grid-column field="count" title="已阅量" align="center"></tiny-grid-column>
         </tiny-grid>

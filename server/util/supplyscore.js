@@ -52,7 +52,7 @@ function getScoreList(subjectconfig, csvstr) {
           }
           answers.push({
             questionName: question.name,
-            answer: item.split('').map(c => question.option.indexOf(c))
+            answer: item == '' ? [] : item.split('').map(c => question.option.indexOf(c))
           })
         } else {
           const stepscore = item.split(';').map(s => Number(s))
@@ -72,7 +72,7 @@ function getScoreList(subjectconfig, csvstr) {
     volume.page.forEach(page => {
       page.forEach(q => {
         if (q.objectiveQuestionName) {
-          allquestionnames = allquestionnames.concat([q.objectiveQuestionName])
+          allquestionnames = allquestionnames.push(q.objectiveQuestionName)
         }
         if (q.markGroupName) {
           const markgroup = subjectconfig.markGroup.find(item => item.name == q.markGroupName)

@@ -1,4 +1,5 @@
 const fs = require('fs')
+const http = require('http')
 const https = require('https')
 const { read, contenttype } = require('./util/file')
 const { readConfig } = require('./util/readconfig')
@@ -68,43 +69,82 @@ async function dealRequest(event, configfilepath) {
 }
 function start(configfilepath) {
   try {
-    https.createServer({
-      cert: fs.readFileSync(readConfig(configfilepath, 'certPath')),
-      key: fs.readFileSync(readConfig(configfilepath, 'keyPath')),
-      minVersion: 'TLSv1.3'
-    }, (request, response) => {
-      let body = ''
-      request.on('data', chunk => {
-        body += chunk
-      })
-      request.on('end', async () => {
-        const timestamp = Date.now()
-        try {
-          const event = {
-            method: request.method,
-            path: request.url,
-            headers: request.headers,
-            body: body
+    const httpport = readConfig(configfilepath, 'httpPort')
+    const httpsport = readConfig(configfilepath, 'port')
+    if (httpport) {
+      http.createServer((request, response) => {
+        let body = ''
+        request.on('data', chunk => {
+          body += chunk
+        })
+        request.on('end', async () => {
+          const timestamp = Date.now()
+          try {
+            const event = {
+              method: request.method,
+              path: request.url,
+              headers: request.headers,
+              body: body
+            }
+            const res = await dealRequest(event, configfilepath)
+            response.setHeader('Content-Type', res.contentType)
+            response.writeHead(200)
+            response.end(res.data)
+          } catch (err) {
+            console.log(err)
+            if (readConfig(configfilepath, 'saveErrorLog')) {
+              fs.writeFileSync(readConfig(configfilepath, 'logRootPath') + '/error-' + timestamp + '.log', err.stack)
+            }
+            response.writeHead(500)
+            response.end()
           }
-          const res = await dealRequest(event, configfilepath)
-          response.setHeader('Content-Type', res.contentType)
-          response.setHeader('Strict-Transport-Security', 'max-age=31536000')
-          response.writeHead(200)
-          response.end(res.data)
-        } catch (err) {
-          console.log(err)
-          if (readConfig(configfilepath, 'saveErrorLog')) {
-            fs.writeFileSync(readConfig(configfilepath, 'logRootPath') + '/error-' + timestamp + '.log', err.stack)
-          }
-          response.writeHead(500)
+        })
+        request.on('error', () => {
+          response.writeHead(400)
           response.end()
-        }
-      })
-      request.on('error', () => {
-        response.writeHead(400)
-        response.end()
-      })
-    }).listen(readConfig(configfilepath, 'port'))
+        })
+      }).listen(httpport)
+      console.log('服务器启动成功，请访问：http://localhost:' + httpport)
+    }
+    if (httpsport) {
+      https.createServer({
+        cert: fs.readFileSync(readConfig(configfilepath, 'certPath')),
+        key: fs.readFileSync(readConfig(configfilepath, 'keyPath')),
+        minVersion: 'TLSv1.3'
+      }, (request, response) => {
+        let body = ''
+        request.on('data', chunk => {
+          body += chunk
+        })
+        request.on('end', async () => {
+          const timestamp = Date.now()
+          try {
+            const event = {
+              method: request.method,
+              path: request.url,
+              headers: request.headers,
+              body: body
+            }
+            const res = await dealRequest(event, configfilepath)
+            response.setHeader('Content-Type', res.contentType)
+            response.setHeader('Strict-Transport-Security', 'max-age=31536000')
+            response.writeHead(200)
+            response.end(res.data)
+          } catch (err) {
+            console.log(err)
+            if (readConfig(configfilepath, 'saveErrorLog')) {
+              fs.writeFileSync(readConfig(configfilepath, 'logRootPath') + '/error-' + timestamp + '.log', err.stack)
+            }
+            response.writeHead(500)
+            response.end()
+          }
+        })
+        request.on('error', () => {
+          response.writeHead(400)
+          response.end()
+        })
+      }).listen(httpsport)
+    }
   } catch (err) {
     console.log(err.stack)
   }

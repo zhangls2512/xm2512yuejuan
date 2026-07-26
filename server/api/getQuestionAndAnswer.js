@@ -44,6 +44,13 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
+    if (!scorereportconfigres.config.scoringQuestionNames.includes(requestdata.questionName)) {
+      return {
+        errCode: 400,
+        errMsg: '请求参数错误',
+        errFix: '传递有效的questionName参数'
+      }
+    }
     let access = false
     if (account.type == 'student' && scorereportconfigres.studentVisible && scorereportconfigres.student.includes(account.account)) {
       access = true
@@ -101,26 +108,13 @@ exports.main = async (event, configfilepath) => {
         }
       ]
     })
-    let questions = examsubjectgetres.objectiveQuestion.concat(examsubjectgetres.subjectiveQuestion)
-    if (examsubjectgetres.name != scorereportconfigres.subject) {
-      questions = questions.filter(item => item.subject = scorereportconfigres.subject)
-    }
+    const questions = examsubjectgetres.objectiveQuestion.concat(examsubjectgetres.subjectiveQuestion)
     const question = questions.find(item => item.name == requestdata.questionName)
-    if (!question) {
-      return {
-        errCode: 400,
-        errMsg: '请求参数错误',
-        errFix: '传递有效的questionName参数'
-      }
-    }
     if (!question.questionId) {
       return {
-        errCode: 0,
-        errMsg: '成功',
-        data: {
-          question: '',
-          answer: ''
-        }
+        errCode: 400,
+        errMsg: '未绑定题目',
+        errFix: '无修复建议'
       }
     }
     if (question.questionId) {
@@ -133,12 +127,9 @@ exports.main = async (event, configfilepath) => {
       })
       if (!qa) {
         return {
-          errCode: 0,
-          errMsg: '成功',
-          data: {
-            question: '',
-            answer: ''
-          }
+          errCode: 400,
+          errMsg: '未绑定题目',
+          errFix: '无修复建议'
         }
       }
       if (qa) {
@@ -148,7 +139,9 @@ exports.main = async (event, configfilepath) => {
           errMsg: '成功',
           data: {
             question: read(dir + 'question'),
-            answer: read(dir + 'answer')
+            answer: read(dir + 'answer'),
+            difficulty: qa.difficulty,
+            knowledgepoint: qa.knowledgepoint
           }
         }
       }

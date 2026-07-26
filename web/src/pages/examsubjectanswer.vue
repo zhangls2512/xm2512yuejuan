@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { decode } from '../util/code'
 import request from '../util/request'
+import time from '../util/time'
 import router from '../router'
 const param = ref({})
 const data = ref([])
@@ -27,7 +28,12 @@ async function get() {
       limit: pagesize.value
     }
   })
-  data.value = res.data
+  data.value = res.data.map(item => {
+    return {
+      ...item,
+      createTime: time(item.createTime)
+    }
+  })
 }
 const route = useRoute()
 const info = route.query.info
@@ -72,6 +78,7 @@ async function deleteAnswer(id) {
     </tiny-breadcrumb>
     <tiny-grid :data="data">
       <tiny-grid-column field="studentAccount" title="学生账号" align="center"></tiny-grid-column>
+      <tiny-grid-column field="createTime" title="时间" align="center"></tiny-grid-column>
       <tiny-grid-column title="操作" align="center">
         <template #default="{ row }">
           <tiny-popconfirm title="提示" message="删除成功后无法恢复，确定删除？" type="warning" trigger="hover"

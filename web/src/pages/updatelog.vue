@@ -2,6 +2,32 @@
 document.title = '智能阅卷系统 - 更新日志'
 const data = [
   {
+    versionNumber: '1.1.0',
+    releaseDate: '2026-07-26',
+    logs: [
+      {
+        type: 'U',
+        content: '作答记录页面新增展示时间'
+      },
+      {
+        type: 'U',
+        content: '成绩报告详情页面新增知识点分析（对老师）、知识点掌握情况（对学生），可查看题目难度、知识点'
+      },
+      {
+        type: 'U',
+        content: '在线考试页面不展示已过作答结束时间的考试'
+      },
+      {
+        type: 'U',
+        content: '客观题支持设置为选做题'
+      },
+      {
+        type: 'F',
+        content: '修复了一些已知的问题'
+      }
+    ]
+  },
+  {
     versionNumber: '1.0.4',
     releaseDate: '2026-07-25',
     logs: [

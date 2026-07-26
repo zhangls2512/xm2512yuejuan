@@ -71,7 +71,7 @@ async function get() {
       difficulty: Number(difficulty.value),
       subject: subject.value,
       grade: grade.value,
-      knowledgePoint: knowledgepoint.value
+      knowledgepoint: knowledgepoint.value
     }
   })
   total.value = countres.count
@@ -82,15 +82,12 @@ async function get() {
       difficulty: Number(difficulty.value),
       subject: subject.value,
       grade: grade.value,
-      knowledgePoint: knowledgepoint.value,
+      knowledgepoint: knowledgepoint.value,
       skip: (currentpage.value - 1) * pagesize.value,
       limit: pagesize.value
     }
   })
-  data.value = res.data.map(item => {
-    item.knowledgepointwz = item.knowledgePoint.join('、')
-    return item
-  })
+  data.value = res.data
 }
 async function currentpageChange(t) {
   currentpage.value = t
@@ -186,7 +183,7 @@ async function deleteQuestion(id) {
             </div>
             <div class="sp">
               <div class="bold-text">知识点</div>
-              <div>{{ item.knowledgepointwz }}</div>
+              <tiny-tag v-for="i in item.knowledgepoint" type="info">{{ i }}</tiny-tag>
             </div>
           </div>
           <div class="sp">

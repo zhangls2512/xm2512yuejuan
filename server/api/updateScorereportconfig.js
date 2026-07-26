@@ -161,6 +161,13 @@ exports.main = async (event, configfilepath) => {
         }
         subjects.push(scoreconfig.subject)
       }
+      if (subjects.length < 2) {
+        return {
+          errCode: 400,
+          errMsg: '请求参数错误',
+          errFix: '传递有效的scorereportconfigIdArray参数'
+        }
+      }
       await db.collection('scorereportconfig').updateOne({
         scorereportconfigId: requestdata.id
       }, {

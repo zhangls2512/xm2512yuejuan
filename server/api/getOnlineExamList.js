@@ -27,6 +27,9 @@ exports.main = async (event, configfilepath) => {
     })
     const data = await db.collection('examsubject').find({
       answerOnline: true,
+      endTime: {
+        $gte: Date.now()
+      },
       class: {
         $in: classids
       }
