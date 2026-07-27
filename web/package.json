@@ -2,10 +2,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite build && vite preview"
+    "preview": "vite build && vite preview",
+    "release": "npm update && npm run build"
   },
   "dependencies": {
     "@opentiny/vue": "latest",
+    "@opentiny/vue-huicharts": "latest",
     "vue": "latest",
     "vue-router": "latest"
   },

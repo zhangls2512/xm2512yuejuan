@@ -259,23 +259,35 @@ exports.main = async (event, configfilepath) => {
       })
       const alldocuments = selectobjectivedocuments.concat(selectsubjectivedocuments)
       if (alldocuments.length > 0) {
-        await db.collection('marklog').insertMany(alldocuments)
-      }
-      selectobjectivequestionname.forEach(async (item) => {
-        const answer = await getAnswerIndex(volume.page, item, result.page, configfilepath)
-        await db.collection('marklog').updateOne({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          studentAccount: requestdata.studentAccount,
-          questionName: item,
-          type: 'system'
-        }, {
-          $set: {
-            answer: answer,
-            finished: true
-          }
+        await db.collection('marklog').insertMany(alldocuments, {
+          ordered: false
         })
-      })
+      }
+      async function sb(page, pages, configfilepath, questionnames) {
+        const answerlist = await getAnswerIndex(page, pages, configfilepath, questionnames)
+        const batch = answerlist.map(item => ({
+          updateOne: {
+            filter: {
+              examId: requestdata.id,
+              subject: requestdata.subject,
+              studentAccount: requestdata.studentAccount,
+              questionName: item.questionName
+            },
+            update: {
+              $set: {
+                answer: item.answer,
+                finished: true
+              }
+            }
+          }
+        }))
+        await db.collection('marklog').bulkWrite(batch, {
+          ordered: false
+        })
+      }
+      if (selectobjectivequestionname.length > 0) {
+        sb(volume.page, result.page, configfilepath, selectobjectivequestionname)
+      }
       return {
         errCode: 0,
         errMsg: '成功'
@@ -464,7 +476,9 @@ exports.main = async (event, configfilepath) => {
       })
       const alldocuments = selectobjectivedocuments.concat(selectsubjectivedocuments)
       if (alldocuments.length > 0) {
-        await db.collection('marklog').insertMany(alldocuments)
+        await db.collection('marklog').insertMany(alldocuments, {
+          ordered: false
+        })
       }
       return {
         errCode: 0,

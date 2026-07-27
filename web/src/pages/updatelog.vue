@@ -2,6 +2,24 @@
 document.title = '智能阅卷系统 - 更新日志'
 const data = [
   {
+    versionNumber: '1.1.4',
+    releaseDate: '2026-07-27',
+    logs: [
+      {
+        type: 'U',
+        content: '成绩报告列表页面支持选择学校、班级，无需输入ID'
+      },
+      {
+        type: 'U',
+        content: '成绩报告详情页面新增各学校整体统计数据（对联考）、各班级整体统计数据（对学校），老师新增可查看学生小题作答情况和知识点掌握情况'
+      },
+      {
+        type: 'F',
+        content: '修复了一些已知的问题'
+      }
+    ]
+  },
+  {
     versionNumber: '1.1.3',
     releaseDate: '2026-07-27',
     logs: [

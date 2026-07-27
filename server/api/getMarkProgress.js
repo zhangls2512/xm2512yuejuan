@@ -85,33 +85,50 @@ exports.main = async (event, configfilepath) => {
         total: 0,
         detail: []
       }
-      const a = await db.collection('marklog').countDocuments({
-        examId: requestdata.id,
-        subject: requestdata.subject,
-        questionName: {
-          $in: question
+      const statres = await db.collection('marklog').aggregate([
+        {
+          $match: {
+            examId: requestdata.id,
+            subject: requestdata.subject,
+            questionName: {
+              $in: question
+            }
+          }
         },
-        type: 'system',
-        finished: true
-      })
+        {
+          $group: {
+            _id: null,
+            total: {
+              $sum: 1
+            },
+            finished: {
+              $sum: {
+                $cond: [
+                  {
+                    $eq: ['$finished', true]
+                  },
+                  1,
+                  0
+                ]
+              }
+            }
+          }
+        }
+      ]).toArray()
+      const stat = statres[0] ?? {
+        finished: 0,
+        total: 0
+      }
       item.detail.push({
         name: '已识别量',
-        count: a
-      })
-      const b = await db.collection('marklog').countDocuments({
-        examId: requestdata.id,
-        subject: requestdata.subject,
-        questionName: {
-          $in: question
-        },
-        type: 'system'
+        count: stat.finished
       })
       item.detail.push({
         name: '总量',
-        count: b
+        count: stat.total
       })
-      item.finished = a
-      item.total = b
+      item.finished = stat.finished
+      item.total = stat.total
       item.progress = percent(item.finished, item.total)
       result.list.push(item)
     }
@@ -125,409 +142,361 @@ exports.main = async (event, configfilepath) => {
       }
       return p / 10
     }
-    for (let i = 0; i < questionname.length; i++) {
-      const question = examsubjectres.subjectiveQuestion.find(item => item.name == questionname[i])
-      const markgroup = examsubjectres.markGroup.find(item => item.questionName.includes(questionname[i]))
-      const item = {
-        questionName: questionname[i],
-        progress: 0,
-        finished: 0,
-        total: 0,
-        detail: []
+    const scorediffcase = {
+      $switch: {
+        branches: examsubjectres.subjectiveQuestion.map(item => ({
+          case: {
+            $eq: ['$questionName', item.name]
+          },
+          then: item.arbitrateScoreDiff
+        })),
+        default: 0
       }
-      let itemtotalfinished = 0
-      let itemtotalall = 0
-      if (markgroup.time == 1) {
-        const a = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          firstMarkerAccount: {
-            $ne: ''
-          },
-          questionReason: '',
-          updateMarkerAccount: ''
-        })
-        itemtotalfinished += a
-        totalfinished += a
-        item.detail.push({
-          name: '一评已阅量',
-          count: a
-        })
-        const b = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          questionReason: '',
-          updateMarkerAccount: ''
-        })
-        itemtotalall += b
-        totalall += b
-        item.detail.push({
-          name: '一评总量',
-          count: b
-        })
-        const c = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          questionMarkerAccount: {
-            $ne: ''
-          },
-          questionReason: {
-            $ne: ''
-          }
-        })
-        itemtotalfinished += c
-        totalfinished += c
-        item.detail.push({
-          name: '问题卷已处理量',
-          count: c
-        })
-        const d = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          questionReason: {
-            $ne: ''
-          }
-        })
-        itemtotalall += d
-        totalall += d
-        item.detail.push({
-          name: '问题卷总量',
-          count: d
-        })
-        item.finished = itemtotalfinished
-        item.total = itemtotalall
-        item.progress = percent(item.finished, item.total)
-      }
-      if (markgroup.time == 2) {
-        const a = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          firstMarkerAccount: {
-            $ne: ''
-          },
-          questionReason: '',
-          updateMarkerAccount: ''
-        })
-        itemtotalfinished += a
-        totalfinished += a
-        item.detail.push({
-          name: '一评已阅量',
-          count: a
-        })
-        const b = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          questionReason: '',
-          updateMarkerAccount: ''
-        })
-        itemtotalall += b
-        totalall += b
-        item.detail.push({
-          name: '一评总量',
-          count: b
-        })
-        const e = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          secondMarkerAccount: {
-            $ne: ''
-          },
-          questionReason: '',
-          updateMarkerAccount: ''
-        })
-        itemtotalfinished += e
-        totalfinished += e
-        item.detail.push({
-          name: '二评已阅量',
-          count: e
-        })
-        itemtotalall += b
-        totalall += b
-        item.detail.push({
-          name: '二评总量',
-          count: b
-        })
-        const f = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          arbitrateMarkerAccount: {
-            $ne: ''
-          },
-          questionReason: '',
-          updateMarkerAccount: '',
-          minScoreDiff: {
-            $gt: question.arbitrateScoreDiff
-          }
-        })
-        itemtotalfinished += f
-        totalfinished += f
-        item.detail.push({
-          name: '仲裁已阅量',
-          count: f
-        })
-        const g = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          firstMarkerAccount: {
-            $ne: ''
-          },
-          secondMarkerAccount: {
-            $ne: ''
-          },
-          questionReason: '',
-          updateMarkerAccount: '',
-          minScoreDiff: {
-            $gt: question.arbitrateScoreDiff
-          }
-        })
-        itemtotalall += g
-        totalall += g
-        item.detail.push({
-          name: '仲裁总量',
-          count: g
-        })
-        const c = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          questionMarkerAccount: {
-            $ne: ''
-          },
-          questionReason: {
-            $ne: ''
-          }
-        })
-        itemtotalfinished += c
-        totalfinished += c
-        item.detail.push({
-          name: '问题卷已处理量',
-          count: c
-        })
-        const d = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          questionReason: {
-            $ne: ''
-          }
-        })
-        itemtotalall += d
-        totalall += d
-        item.detail.push({
-          name: '问题卷总量',
-          count: d
-        })
-        item.finished = itemtotalfinished
-        item.total = itemtotalall
-        item.progress = percent(item.finished, item.total)
-      }
-      if (markgroup.time == 3) {
-        const a = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          firstMarkerAccount: {
-            $ne: ''
-          },
-          questionReason: '',
-          updateMarkerAccount: ''
-        })
-        itemtotalfinished += a
-        totalfinished += a
-        item.detail.push({
-          name: '一评已阅量',
-          count: a
-        })
-        const b = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          questionReason: '',
-          updateMarkerAccount: ''
-        })
-        itemtotalall += b
-        totalall += b
-        item.detail.push({
-          name: '一评总量',
-          count: b
-        })
-        const e = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          secondMarkerAccount: {
-            $ne: ''
-          },
-          questionReason: '',
-          updateMarkerAccount: ''
-        })
-        itemtotalfinished += e
-        totalfinished += e
-        item.detail.push({
-          name: '二评已阅量',
-          count: e
-        })
-        itemtotalall += b
-        totalall += b
-        item.detail.push({
-          name: '二评总量',
-          count: b
-        })
-        const h = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          thirdMarkerAccount: {
-            $ne: ''
-          },
-          questionReason: '',
-          updateMarkerAccount: '',
-          minScoreDiff: {
-            $gt: question.arbitrateScoreDiff
-          }
-        })
-        itemtotalfinished += h
-        totalfinished += h
-        item.detail.push({
-          name: '三评已阅量',
-          count: h
-        })
-        const j = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          firstMarkerAccount: {
-            $ne: ''
-          },
-          secondMarkerAccount: {
-            $ne: ''
-          },
-          thirdMarkerAccount: {
-            $ne: ''
-          },
-          arbitrateMarkerAccount: '',
-          questionReason: '',
-          updateMarkerAccount: '',
-          minScoreDiff: {
-            $gt: question.arbitrateScoreDiff
-          }
-        })
-        itemtotalall += j
-        totalall += j
-        item.detail.push({
-          name: '三评总量',
-          count: j
-        })
-        const f = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          arbitrateMarkerAccount: {
-            $ne: ''
-          },
-          questionReason: '',
-          updateMarkerAccount: '',
-          minScoreDiff: {
-            $gt: question.arbitrateScoreDiff
-          }
-        })
-        itemtotalfinished += f
-        totalfinished += f
-        item.detail.push({
-          name: '仲裁已阅量',
-          count: f
-        })
-        const g = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          firstMarkerAccount: {
-            $ne: ''
-          },
-          secondMarkerAccount: {
-            $ne: ''
-          },
-          thirdMarkerAccount: {
-            $ne: ''
-          },
-          questionReason: '',
-          updateMarkerAccount: '',
-          minScoreDiff: {
-            $gt: question.arbitrateScoreDiff
-          }
-        })
-        itemtotalall += g
-        totalall += g
-        item.detail.push({
-          name: '仲裁总量',
-          count: g
-        })
-        const c = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          questionMarkerAccount: {
-            $ne: ''
-          },
-          questionReason: {
-            $ne: ''
-          }
-        })
-        itemtotalfinished += c
-        totalfinished += c
-        item.detail.push({
-          name: '问题卷已处理量',
-          count: c
-        })
-        const d = await db.collection('marklog').countDocuments({
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          questionName: questionname[i],
-          type: 'system',
-          questionReason: {
-            $ne: ''
-          }
-        })
-        itemtotalall += d
-        totalall += d
-        item.detail.push({
-          name: '问题卷总量',
-          count: d
-        })
-        item.finished = itemtotalfinished
-        item.total = itemtotalall
-        item.progress = percent(item.finished, item.total)
-      }
-      result.list.push(item)
     }
+    const stats = await db.collection('marklog').aggregate([
+      {
+        $match: {
+          examId: requestdata.id,
+          subject: requestdata.subject,
+          type: 'system',
+          questionName: {
+            $in: questionname
+          },
+          updateMarkerAccount: ''
+        }
+      },
+      {
+        $addFields: {
+          arbitrateScoreDiff: scorediffcase
+        }
+      },
+      {
+        $group: {
+          _id: '$questionName',
+          firstFinished: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    {
+                      $eq: ['$questionReason', '']
+                    },
+                    {
+                      $ne: ['$firstMarkerAccount', '']
+                    }
+                  ]
+                },
+                1, 0
+              ]
+            }
+          },
+          firstTotal: {
+            $sum: {
+              $cond: [
+                {
+                  $eq: ['$questionReason', '']
+                },
+                1,
+                0
+              ]
+            }
+          },
+          secondFinished: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    {
+                      $eq: ['$questionReason', '']
+                    },
+                    {
+                      $ne: ['$secondMarkerAccount', '']
+                    }
+                  ]
+                },
+                1,
+                0
+              ]
+            }
+          },
+          thirdFinished: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    {
+                      $eq: ['$questionReason', '']
+                    },
+                    {
+                      $ne: ['$thirdMarkerAccount', '']
+                    }
+                  ]
+                },
+                1,
+                0
+              ]
+            }
+          },
+          thirdPending: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    {
+                      $eq: ['$questionReason', '']
+                    },
+                    {
+                      $eq: ['$thirdMarkerAccount', '']
+                    },
+                    {
+                      $eq: ['$arbitrateMarkerAccount', '']
+                    },
+                    {
+                      $gt: ['$minScoreDiff', '$arbitrateScoreDiff']
+                    }
+                  ]
+                },
+                1,
+                0
+              ]
+            }
+          },
+          arbitrateFinished: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    {
+                      $eq: ['$questionReason', '']
+                    },
+                    {
+                      $ne: ['$arbitrateMarkerAccount', '']
+                    }
+                  ]
+                },
+                1,
+                0
+              ]
+            }
+          },
+          arbitratePending: {
+            $sum: {
+              $cond: [
+                {
+                  $or: [
+                    {
+                      $and: [
+                        {
+                          $eq: ['$questionReason', '']
+                        },
+                        {
+                          $eq: ['$arbitrateMarkerAccount', '']
+                        },
+                        {
+                          $gt: ['$minScoreDiff', '$arbitrateScoreDiff']
+                        }
+                      ]
+                    }
+                  ]
+                },
+                1,
+                0
+              ]
+            }
+          },
+          questionFinished: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    {
+                      $ne: ['$questionMarkerAccount', '']
+                    }
+                  ]
+                },
+                1,
+                0
+              ]
+            }
+          },
+          questionTotal: {
+            $sum: {
+              $cond: [
+                {
+                  $ne: ['$questionReason', '']
+                },
+                1,
+                0
+              ]
+            }
+          }
+        }
+      }
+    ]).toArray()
+    const questionnamemap = {}
+    stats.forEach(item => {
+      questionnamemap[item._id] = item
+    })
+    const questiontimemap = {}
+    questionname.forEach(item => {
+      if (!questiontimemap[item]) {
+        const markgroup = examsubjectres.markGroup.find(i => i.questionName.includes(item))
+        markgroup.questionName.forEach(item => {
+          questiontimemap[item] = {
+            time: markgroup.time,
+            seconeMarkPercent: markgroup.seconeMarkPercent
+          }
+        })
+      }
+      const qstat = questionnamemap[item] ?? {
+        firstFinished: 0,
+        firstTotal: 0,
+        secondFinished: 0,
+        thirdFinished: 0,
+        thirdPending: 0,
+        arbitrateFinished: 0,
+        arbitratePending: 0,
+        questionFinished: 0,
+        questionTotal: 0,
+      }
+      const time = questiontimemap[item].time
+      if (time == 1) {
+        const stat = {
+          questionName: item,
+          progress: 0,
+          finished: 0,
+          total: 0,
+          detail: [
+            {
+              name: '一评已阅量',
+              count: qstat.firstFinished
+            },
+            {
+              name: '一评总量',
+              count: qstat.firstTotal
+            },
+            {
+              name: '问题卷已处理量',
+              count: qstat.questionFinished
+            },
+            {
+              name: '问题卷总量',
+              count: qstat.questionTotal
+            }
+          ]
+        }
+        stat.finished = qstat.firstFinished + qstat.questionFinished
+        stat.total = qstat.firstTotal + qstat.questionTotal
+        totalfinished += stat.finished
+        totalall += stat.total
+        stat.progress = percent(stat.finished, stat.total)
+        result.list.push(stat)
+      }
+      if (time == 2) {
+        const stat = {
+          questionName: item,
+          progress: 0,
+          finished: 0,
+          total: 0,
+          detail: [
+            {
+              name: '一评已阅量',
+              count: qstat.firstFinished
+            },
+            {
+              name: '一评总量',
+              count: qstat.firstTotal
+            },
+            {
+              name: '二评已阅量',
+              count: qstat.secondFinished
+            },
+            {
+              name: '二评总量',
+              count: Math.max(Math.round(qstat.firstTotal * questiontimemap[item].secondMarkPercent), qstat.secondFinished)
+            },
+            {
+              name: '仲裁已阅量',
+              count: qstat.arbitrateFinished
+            },
+            {
+              name: '仲裁总量',
+              count: qstat.arbitrateFinished + qstat.arbitratePending
+            },
+            {
+              name: '问题卷已处理量',
+              count: qstat.questionFinished
+            },
+            {
+              name: '问题卷总量',
+              count: qstat.questionTotal
+            }
+          ]
+        }
+        stat.finished = qstat.firstFinished + qstat.secondFinished + qstat.arbitrateFinished + qstat.questionFinished
+        stat.total = qstat.firstTotal + stat.detail[3].count + stat.detail[5].count + qstat.questionTotal
+        totalfinished += stat.finished
+        totalall += stat.total
+        stat.progress = percent(stat.finished, stat.total)
+        result.list.push(stat)
+      }
+      if (time == 3) {
+        const stat = {
+          questionName: item,
+          progress: 0,
+          finished: 0,
+          total: 0,
+          detail: [
+            {
+              name: '一评已阅量',
+              count: qstat.firstFinished
+            },
+            {
+              name: '一评总量',
+              count: qstat.firstTotal
+            },
+            {
+              name: '二评已阅量',
+              count: qstat.secondFinished
+            },
+            {
+              name: '二评总量',
+              count: Math.max(Math.round(qstat.firstTotal * questiontimemap[item].secondMarkPercent), qstat.secondFinished)
+            },
+            {
+              name: '三评已阅量',
+              count: qstat.thirdFinished
+            },
+            {
+              name: '三评总量',
+              count: qstat.thirdFinished + qstat.thirdPending
+            },
+            {
+              name: '仲裁已阅量',
+              count: qstat.arbitrateFinished
+            },
+            {
+              name: '仲裁总量',
+              count: qstat.arbitrateFinished + qstat.arbitratePending - qstat.thirdPending
+            },
+            {
+              name: '问题卷已处理量',
+              count: qstat.questionFinished
+            },
+            {
+              name: '问题卷总量',
+              count: qstat.questionTotal
+            }
+          ]
+        }
+        stat.finished = qstat.firstFinished + qstat.secondFinished + qstat.thirdFinished + qstat.arbitrateFinished + qstat.questionFinished
+        stat.total = qstat.firstTotal + stat.detail[3].count + stat.detail[5].count + stat.detail[7].count + qstat.questionTotal
+        totalfinished += stat.finished
+        totalall += stat.total
+        stat.progress = percent(stat.finished, stat.total)
+        result.list.push(stat)
+      }
+    })
     if (result.progress) {
       result.finished = totalfinished
       result.total = totalall

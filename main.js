@@ -44,7 +44,7 @@ async function dealRequest(event, configfilepath) {
         contentType: 'application/json;charset=utf-8'
       }
     }
-    const notparsebodypaths = ['getAccountInfo', 'getClassCount', 'getOnlineExamCount'].map(item => '/api/' + item)
+    const notparsebodypaths = ['getAccountInfo', 'getClassCount', 'getOnlineExamCount', 'getSchoolOrClassList'].map(item => '/api/' + item)
     if (!notparsebodypaths.includes(event.path)) {
       try {
         JSON.parse(event.body)
@@ -131,7 +131,6 @@ function start(configfilepath) {
             response.writeHead(200)
             response.end(res.data)
           } catch (err) {
-            console.log(err)
             if (readConfig(configfilepath, 'saveErrorLog')) {
               fs.writeFileSync(readConfig(configfilepath, 'logRootPath') + '/error-' + timestamp + '.log', err.stack)
             }

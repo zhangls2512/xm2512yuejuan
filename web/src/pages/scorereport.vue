@@ -10,20 +10,23 @@ const currentpage = ref(1)
 const pagesize = ref(10)
 const total = ref(0)
 const type = ref('joint')
-const id = ref('')
+const schoolid = ref('')
+const classid = ref('')
+const schools = ref([])
+const classes = ref([])
 const subject = ref('')
 async function get() {
   if (accountinfo.value.type != 'student') {
-    if (type.value == 'class' && id.value.length != 36) {
+    if (type.value == 'class' && !classid.value) {
       TinyModal.message({
-        message: '请输入有效的ID',
+        message: '请选择班级',
         status: 'warning'
       })
       return
     }
-    if (type.value == 'school' && !accountinfo.value.schoolId && id.value.length != 36) {
+    if (type.value == 'school' && !accountinfo.value.schoolId && !schoolid.value) {
       TinyModal.message({
-        message: '请输入有效的ID',
+        message: '请选择学校',
         status: 'warning'
       })
       return
@@ -36,11 +39,12 @@ async function get() {
       return
     }
   }
+  const id = type.value == 'school' ? schoolid.value : type.value == 'class' ? classid.value : ''
   const countres = await request({
     apiPath: '/getScorereportCount',
     body: {
       type: type.value,
-      id: id.value,
+      id: id,
       subject: subject.value
     }
   })
@@ -49,7 +53,7 @@ async function get() {
     apiPath: '/getScorereportList',
     body: {
       type: type.value,
-      id: id.value,
+      id: id,
       subject: subject.value,
       skip: (currentpage.value - 1) * pagesize.value,
       limit: pagesize.value
@@ -61,11 +65,27 @@ async function get() {
     return item
   })
 }
+async function getList() {
+  const res = await request({
+    apiPath: '/getSchoolOrClassList'
+  })
+  schools.value = res.data.school
+  if (res.data.school.length > 0) {
+    schoolid.value = res.data.school[0].id
+  }
+  classes.value = res.data.class
+  if (res.data.class.length > 0) {
+    classid.value = res.data.class[0].id
+  }
+}
 const exist = localStorage.getItem('accountinfo')
 if (exist) {
   accountinfo.value = JSON.parse(exist)
   if (accountinfo.value.type == 'student') {
     get()
+  }
+  if (accountinfo.value.type == 'teacher') {
+    getList()
   }
 }
 async function currentpageChange(t) {
@@ -77,7 +97,11 @@ async function pagesizeChange(t) {
   get()
 }
 function info(info) {
-  router.push('/scorereportinfo?info=' + encode(info))
+  router.push('/scorereportinfo?info=' + encode({
+    ...info,
+    schoolarr: schools.value,
+    classarr: classes.value
+  }))
 }
 </script>
 
@@ -91,8 +115,17 @@ function info(info) {
           <tiny-radio label="class">班级</tiny-radio>
         </tiny-radio-group>
       </tiny-form-item>
-      <tiny-form-item v-if="type == 'class' || (type == 'school' && accountinfo.schoolId == '')" label="ID">
-        <tiny-input v-model="id" clearable minlength="36" maxlength="36" placeholder="请输入ID"></tiny-input>
+      <tiny-form-item v-if="type == 'school' && accountinfo.schoolId == ''" label="学校">
+        <div v-if="schools.length == 0">无学校</div>
+        <tiny-radio-group v-model="schoolid">
+          <tiny-radio v-for="item in schools" :label="item.id">{{ item.name }}</tiny-radio>
+        </tiny-radio-group>
+      </tiny-form-item>
+      <tiny-form-item v-if="type == 'class'" label="班级">
+        <div v-if="classes.length == 0">无班级</div>
+        <tiny-radio-group v-model="classid">
+          <tiny-radio v-for="item in classes" :label="item.id">{{ item.name }}</tiny-radio>
+        </tiny-radio-group>
       </tiny-form-item>
       <tiny-form-item label="科目">
         <tiny-input v-model="subject" clearable placeholder="请输入科目"></tiny-input>

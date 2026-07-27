@@ -116,14 +116,14 @@ async function newQuestion() {
               </tiny-base-select>
               <tiny-button type="info" @click="get">抽取</tiny-button>
             </div>
-            <div class="spacebetween">
-              <div class="cz" style="width:50%;height:100%">
+            <div class="spacebetween" style="align-items:flex-start">
+              <div class="cz" style="width:50%">
                 <div v-for="item in answer.answerImage" style="display:flex;justify-content:center">
                   <tiny-image v-if="item != ''" :src="item" :preview-src-list="[item]"></tiny-image>
                   <div v-if="item == ''" class="large-text" style="color:red">图片数据异常</div>
                 </div>
               </div>
-              <div v-if="answer.stepScore" class="cz" style="width:45%;height:100%">
+              <div v-if="answer.stepScore" class="cz" style="width:45%">
                 <div class="sp">
                   <div class="bold-text">总分</div>
                   <div>{{ answer.totalScore }}</div>

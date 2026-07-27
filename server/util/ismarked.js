@@ -1,46 +1,59 @@
 const { spawn } = require('child_process')
-const path = require('path')
+const fs = require('fs')
 const { readConfig } = require('../../util/readconfig')
-function isMarked(page, coord, configfilepath) {
+function batchIsMarkedPerPage(page, questions, configfilepath) {
   return new Promise((resolve, reject) => {
-    const py = spawn(readConfig(configfilepath, 'pythonVenvPath'), [path.join(__dirname, 'ismarked.py')])
+    const py = spawn(readConfig(configfilepath, 'pythonVenvPath'), [__dirname + '/ismarked.py'])
     py.stdin.write(JSON.stringify({
       img: page.image,
-      x1: page.originCoord[0] + coord[0],
-      y1: page.originCoord[1] + coord[1],
-      x2: page.originCoord[0] + coord[2],
-      y2: page.originCoord[1] + coord[3]
+      questions: questions.map(q => {
+        return {
+          questionName: q.questionName,
+          coords: q.coords.map(coord => {
+            return [page.originCoord[0] + coord[0], page.originCoord[1] + coord[1], page.originCoord[0] + coord[2], page.originCoord[1] + coord[3]]
+          })
+        }
+      })
     }))
     py.stdin.end()
     let out = ''
+    let error = false
     py.stdout.on('data', d => out += d)
-    py.stdout.on('end', () => resolve(out == 'true' ? true : false))
-  })
-}
-async function getAnswerIndex(page, questionname, pages, configfilepath) {
-  let coord = []
-  let pageindex = 0
-  page.forEach((item, index) => {
-    item.forEach(i => {
-      if (i.objectiveQuestionName == questionname) {
-        coord = i.coord
-        pageindex = index
+    py.stderr.on('data', d => {
+      error = true
+      if (readConfig(configfilepath, 'saveErrorLog')) {
+        fs.writeFileSync(readConfig(configfilepath, 'logRootPath') + '/error-' + Date.now() + '.log', String(d))
+      }
+      py.kill('SIGKILL')
+    })
+    py.on('close', () => {
+      if (error) {
+        resolve([])
+      } else {
+        try {
+          resolve(JSON.parse(out))
+        } catch {
+          resolve([])
+        }
       }
     })
   })
-  if (coord.length == 0) {
-    return []
-  }
-  if (coord.length > 0) {
-    const result = []
-    for (let i = 0; i < coord.length; i++) {
-      const ismarked = await isMarked(pages[pageindex], coord[i], configfilepath)
-      if (ismarked) {
-        result.push(i)
+}
+async function getAnswerIndex(page, pages, configfilepath, questionnames) {
+  const tasks = page.map((pageitem, index) => {
+    const questions = []
+    pageitem.forEach(item => {
+      if (questionnames.includes(item.objectiveQuestionName)) {
+        questions.push({
+          questionName: item.objectiveQuestionName,
+          coords: item.coord
+        })
       }
-    }
-    return result
-  }
+    })
+    return batchIsMarkedPerPage(pages[index], questions, configfilepath)
+  })
+  const result = await Promise.all(tasks)
+  return result.flat()
 }
 module.exports = {
   getAnswerIndex

@@ -163,7 +163,7 @@ async function deleteQuestion(id) {
             <img :src="item.question"></img>
             <div class="sp">
               <div class="bold-text">答案</div>
-              <img :src="item.answer"></img>
+              <img :src="item.answer" style="flex:1;min-width:0"></img>
             </div>
             <div class="sp">
               <div class="bold-text">类型</div>

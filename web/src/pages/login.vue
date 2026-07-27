@@ -14,7 +14,7 @@ if (localStorage.getItem('authorization')) {
   routePush()
 }
 async function login() {
-  if (account.value.length < 8) {
+  if (account.value.length != 36) {
     TinyModal.message({
       message: '请输入有效的账号',
       status: 'warning'

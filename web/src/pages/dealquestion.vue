@@ -183,8 +183,8 @@ async function mark(id) {
       <tiny-breadcrumb-item :to="{ path: data.backpath }" :label="data.backname"></tiny-breadcrumb-item>
       <tiny-breadcrumb-item :to="{ path: '/dealquestion' }" label="处理问题卷"></tiny-breadcrumb-item>
     </tiny-breadcrumb>
-    <div class="spacebetween">
-      <div class="cz" style="width:50%;height:100%">
+    <div class="spacebetween" style="align-items:flex-start">
+      <div class="cz" style="width:50%">
         <div class="spacebetween">
           <div class="sp">
             <div class="large-bold-text">{{ data.examName }}</div>
@@ -213,8 +213,8 @@ async function mark(id) {
           <div v-if="item == ''" class="large-text" style="color:red">图片数据异常</div>
         </div>
       </div>
-      <div class="sp" style="width:45%;height:100%">
-        <div v-if="markloglist.length > 0" class="cz" style="height:100%">
+      <div class="sp" style="width:45%;align-items:flex-start">
+        <div v-if="markloglist.length > 0" class="cz" style="flex:1;min-width:0">
           <div v-for="item, index in markloglist" class="cz">
             <div class="bold-text">{{ item.questionName }}</div>
             <div v-if="item.stepScore.length == 1">
@@ -250,7 +250,7 @@ async function mark(id) {
             <div style="flex:1">{{ studentaccount }}</div>
           </div>
         </div>
-        <div class="cz" style="height:100%">
+        <div class="cz" style="flex:1;min-width:0">
           <div class="sp">
             <div class="large-bold-text">列表</div>
             <tiny-button type="info" @click="get">刷新</tiny-button>

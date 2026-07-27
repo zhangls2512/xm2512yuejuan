@@ -1,3 +1,4 @@
+const crypto = require('crypto')
 function sum(arr) {
   return arr.reduce((sum, num) => sum + num, 0)
 }
@@ -172,6 +173,7 @@ async function getScoreReport(subject, classes, marklog, config, schoolid, confi
   const jointmap = {
     question: {},
     knowledgepoint: {},
+    school: [],
     student: {}
   }
   const schoolmap = {}
@@ -418,6 +420,7 @@ async function getScoreReport(subject, classes, marklog, config, schoolid, confi
       }
     }
   })
+  const classschoolmap = {}
   jointmap.student.forEach(item => {
     const studentinfo = studentmap[item.account]
     if (studentinfo.schoolId) {
@@ -425,6 +428,7 @@ async function getScoreReport(subject, classes, marklog, config, schoolid, confi
     }
     studentinfo.classId.forEach(classid => {
       classmap[classid].student.push(item)
+      classschoolmap[classid] = studentinfo.schoolId
     })
   })
   const schoolrankmap = {}
@@ -449,6 +453,7 @@ async function getScoreReport(subject, classes, marklog, config, schoolid, confi
         schoolrankmap[item.account] = index + 1
       }
     })
+    schoolmap[schoolid].class = []
     schoolmap[schoolid].student = clonestudent
     const schoolstudentscorearr = schoolmap[schoolid].student.map(item => config.fuScoreRule.length > 0 ? item.fuScore : item.totalScoreWithoutExtra)
     schoolmap[schoolid].averageScore = average(schoolstudentscorearr)
@@ -487,7 +492,6 @@ async function getScoreReport(subject, classes, marklog, config, schoolid, confi
       }
     })
   })
-  const schoolreports = Object.values(schoolmap)
   Object.keys(classmap).forEach(classid => {
     classmap[classid].knowledgepoint = Object.values(classmap[classid].knowledgepoint).map(item => {
       return {
@@ -547,6 +551,21 @@ async function getScoreReport(subject, classes, marklog, config, schoolid, confi
     })
   })
   const classreports = Object.values(classmap)
+  classreports.forEach(item => {
+    const n = Object.fromEntries(Object.entries(item).filter(([key]) => !['classId', 'question', 'knowledgepoint', 'student'].includes(key)))
+    schoolmap[classschoolmap[item.classId]].class.push({
+      id: item.classId,
+      ...n
+    })
+  })
+  const schoolreports = Object.values(schoolmap)
+  jointmap.school = schoolreports.map(item => {
+    const n = Object.fromEntries(Object.entries(item).filter(([key]) => !['schoolId', 'question', 'knowledgepoint', 'class', 'student'].includes(key)))
+    return {
+      id: item.schoolId,
+      ...n
+    }
+  })
   return {
     joint: jointmap,
     school: schoolreports,
@@ -555,6 +574,7 @@ async function getScoreReport(subject, classes, marklog, config, schoolid, confi
 }
 function getMultipleSubjectScoreReport(input) {
   const jointmap = {
+    school: [],
     student: {}
   }
   const schoolmap = {}
@@ -595,6 +615,7 @@ function getMultipleSubjectScoreReport(input) {
       if (!schoolmap[item.schoolId]) {
         schoolmap[item.schoolId] = {
           schoolId: item.schoolId,
+          class: item.class.map(c => c.id),
           student: {}
         }
       }
@@ -706,6 +727,13 @@ function getMultipleSubjectScoreReport(input) {
     schoolmap[schoolid].discrimination = calcDiscrimination(schoolstudentscorearr)
   })
   const schoolreports = Object.values(schoolmap)
+  jointmap.school = schoolreports.map(item => {
+    const n = Object.fromEntries(Object.entries(item).filter(([key]) => !['schoolId', 'question', 'student'].includes(key)))
+    return {
+      id: item.schoolId,
+      ...n
+    }
+  })
   Object.keys(classmap).forEach(classid => {
     classmap[classid].student = Object.values(classmap[classid].student)
     classmap[classid].student.sort((a, b) => b.subject[0].totalScoreWithoutExtra - a.subject[0].totalScoreWithoutExtra)
@@ -726,6 +754,15 @@ function getMultipleSubjectScoreReport(input) {
     classmap[classid].averageScore = average(classstudentscorearr)
     classmap[classid].scoreStandardDeviation = standarddeviation(classstudentscorearr)
     classmap[classid].discrimination = calcDiscrimination(classstudentscorearr)
+  })
+  schoolreports.forEach(item => {
+    item.class = item.class.map(classid => {
+      const n = Object.fromEntries(Object.entries(classmap[classid]).filter(([key]) => !['classId', 'question', 'student'].includes(key)))
+      return {
+        id: classid,
+        ...n
+      }
+    })
   })
   const classreports = Object.values(classmap)
   return {
@@ -828,14 +865,36 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
       })
     }
     if (scorereport.joint.student.length > 0) {
-      await db.collection('scorereport').insertOne({
+      const docs = [{
+        scorereportId: crypto.randomUUID(),
         scorereportconfigId: scorereportconfigid,
         examId: exam.examId,
         subject: item.name,
         createTime: Date.now(),
         type: 'joint',
         ...scorereport.joint
-      })
+      }].concat(scorereport.school.map(schoolitem => ({
+        scorereportId: crypto.randomUUID(),
+        scorereportconfigId: scorereportconfigid,
+        examId: exam.examId,
+        subject: item.name,
+        createTime: Date.now(),
+        type: 'school',
+        ...schoolitem
+      }))).concat(scorereport.class.map(classitem => ({
+        scorereportId: crypto.randomUUID(),
+        scorereportconfigId: scorereportconfigid,
+        examId: exam.examId,
+        subject: item.name,
+        createTime: Date.now(),
+        type: 'class',
+        ...classitem
+      })))
+      if (docs.length > 0) {
+        await db.collection('scorereport').insertMany(docs, {
+          ordered: false
+        })
+      }
       await db.collection('scorereportconfig').updateOne({
         scorereportconfigId: scorereportconfigid
       }, {
@@ -843,28 +902,6 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
           student: scorereport.joint.student.map(item => item.account)
         }
       })
-      for (let j = 0; j < scorereport.school.length; j++) {
-        const schoolitem = scorereport.school[j]
-        await db.collection('scorereport').insertOne({
-          scorereportconfigId: scorereportconfigid,
-          examId: exam.examId,
-          subject: item.name,
-          createTime: Date.now(),
-          type: 'school',
-          ...schoolitem
-        })
-      }
-      for (let j = 0; j < scorereport.class.length; j++) {
-        const classitem = scorereport.class[j]
-        await db.collection('scorereport').insertOne({
-          scorereportconfigId: scorereportconfigid,
-          examId: exam.examId,
-          subject: item.name,
-          createTime: Date.now(),
-          type: 'class',
-          ...classitem
-        })
-      }
     }
     await db.collection('scorereportconfig').updateOne({
       scorereportconfigId: scorereportconfigid
@@ -914,14 +951,36 @@ async function generateSingleSubjectScoreReport(exam, subject, scorereportconfig
     })
   }
   if (scorereport.joint.student.length > 0) {
-    await db.collection('scorereport').insertOne({
+    const docs = [{
+      scorereportId: crypto.randomUUID(),
       scorereportconfigId: scorereportconfig.scorereportconfigId,
       examId: exam.examId,
       subject: scorereportconfig.subject,
       createTime: Date.now(),
       type: 'joint',
       ...scorereport.joint
-    })
+    }].concat(scorereport.school.map(schoolitem => ({
+      scorereportId: crypto.randomUUID(),
+      scorereportconfigId: scorereportconfig.scorereportconfigId,
+      examId: exam.examId,
+      subject: scorereportconfig.subject,
+      createTime: Date.now(),
+      type: 'school',
+      ...schoolitem
+    }))).concat(scorereport.class.map(classitem => ({
+      scorereportId: crypto.randomUUID(),
+      scorereportconfigId: scorereportconfig.scorereportconfigId,
+      examId: exam.examId,
+      subject: scorereportconfig.subject,
+      createTime: Date.now(),
+      type: 'class',
+      ...classitem
+    })))
+    if (docs.length > 0) {
+      await db.collection('scorereport').insertMany(docs, {
+        ordered: false
+      })
+    }
     await db.collection('scorereportconfig').updateOne({
       scorereportconfigId: scorereportconfig.scorereportconfigId
     }, {
@@ -929,28 +988,6 @@ async function generateSingleSubjectScoreReport(exam, subject, scorereportconfig
         student: scorereport.joint.student.map(item => item.account)
       }
     })
-    for (let j = 0; j < scorereport.school.length; j++) {
-      const schoolitem = scorereport.school[j]
-      await db.collection('scorereport').insertOne({
-        scorereportconfigId: scorereportconfig.scorereportconfigId,
-        examId: exam.examId,
-        subject: scorereportconfig.subject,
-        createTime: Date.now(),
-        type: 'school',
-        ...schoolitem
-      })
-    }
-    for (let j = 0; j < scorereport.class.length; j++) {
-      const classitem = scorereport.class[j]
-      await db.collection('scorereport').insertOne({
-        scorereportconfigId: scorereportconfig.scorereportconfigId,
-        examId: exam.examId,
-        subject: scorereportconfig.subject,
-        createTime: Date.now(),
-        type: 'class',
-        ...classitem
-      })
-    }
   }
   await db.collection('scorereportconfig').updateOne({
     scorereportconfigId: scorereportconfig.scorereportconfigId
@@ -989,14 +1026,36 @@ async function generateMultipleSubjectScoreReport(exam, scorereportconfig, confi
     })
   }
   if (scorereport.joint.student.length > 0) {
-    await db.collection('scorereport').insertOne({
+    const docs = [{
+      scorereportId: crypto.randomUUID(),
       scorereportconfigId: scorereportconfig.scorereportconfigId,
       examId: exam.examId,
       subject: '多学科',
       createTime: Date.now(),
       type: 'joint',
       ...scorereport.joint
-    })
+    }].concat(scorereport.school.map(item => ({
+      scorereportId: crypto.randomUUID(),
+      scorereportconfigId: scorereportconfig.scorereportconfigId,
+      examId: exam.examId,
+      subject: '多学科',
+      createTime: Date.now(),
+      type: 'school',
+      ...item
+    }))).concat(scorereport.class.map(item => ({
+      scorereportId: crypto.randomUUID(),
+      scorereportconfigId: scorereportconfig.scorereportconfigId,
+      examId: exam.examId,
+      subject: '多学科',
+      createTime: Date.now(),
+      type: 'class',
+      ...item
+    })))
+    if (docs.length > 0) {
+      await db.collection('scorereport').insertMany(docs, {
+        ordered: false
+      })
+    }
     await db.collection('scorereportconfig').updateOne({
       scorereportconfigId: scorereportconfig.scorereportconfigId
     }, {
@@ -1004,28 +1063,6 @@ async function generateMultipleSubjectScoreReport(exam, scorereportconfig, confi
         student: scorereport.joint.student.map(item => item.account)
       }
     })
-    for (let j = 0; j < scorereport.school.length; j++) {
-      const school = scorereport.school[j]
-      await db.collection('scorereport').insertOne({
-        scorereportconfigId: scorereportconfig.scorereportconfigId,
-        examId: exam.examId,
-        subject: '多学科',
-        createTime: Date.now(),
-        type: 'school',
-        ...school
-      })
-    }
-    for (let j = 0; j < scorereport.class.length; j++) {
-      const classitem = scorereport.class[j]
-      await db.collection('scorereport').insertOne({
-        scorereportconfigId: scorereportconfig.scorereportconfigId,
-        examId: exam.examId,
-        subject: '多学科',
-        createTime: Date.now(),
-        type: 'class',
-        ...classitem
-      })
-    }
   }
   await db.collection('scorereportconfig').updateOne({
     scorereportconfigId: scorereportconfig.scorereportconfigId

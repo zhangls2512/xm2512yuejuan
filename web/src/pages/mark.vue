@@ -293,8 +293,8 @@ async function mark(id) {
       <div v-if="type == 'normal'">正常</div>
       <div v-if="type == 'arbitrate'">仲裁</div>
     </div>
-    <div class="spacebetween">
-      <div class="cz" style="width:50%;height:100%">
+    <div class="spacebetween" style="align-items:flex-start">
+      <div class="cz" style="width:50%">
         <div class="spacebetween">
           <div class="sp">
             <div class="bold-text">题组</div>
@@ -324,8 +324,8 @@ async function mark(id) {
           <div v-if="item == ''" class="large-text" style="color:red">图片数据异常，可提交问题卷</div>
         </div>
       </div>
-      <div class="sp" style="width:45%;height:100%">
-        <div v-if="markloglist.length > 0" class="cz" style="height:100%">
+      <div class="sp" style="width:45%;align-items:flex-start">
+        <div v-if="markloglist.length > 0" class="cz" style="flex:1;min-width:0">
           <div v-for="item, index in markloglist" class="cz">
             <div class="bold-text">{{ item.questionName }}</div>
             <div v-if="item.stepScore.length == 1">
@@ -377,7 +377,7 @@ async function mark(id) {
             </div>
           </div>
         </div>
-        <div class="cz" style="height:100%">
+        <div class="cz" style="flex:1;min-width:0">
           <div class="sp">
             <div class="large-bold-text">阅卷记录</div>
             <tiny-button type="info" @click="getHistoryMarklog">刷新</tiny-button>

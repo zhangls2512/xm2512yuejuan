@@ -59,7 +59,7 @@ exports.main = async (event, configfilepath) => {
           })
         }
         return {
-          scorereportconfigId: item.scorereportconfigId,
+          scorereportId: item.scorereportId,
           examId: item.examId,
           subject: item.subject,
           createTime: item.createTime,
@@ -100,7 +100,8 @@ exports.main = async (event, configfilepath) => {
           type: 'joint'
         }, {
           projection: {
-            _id: false
+            _id: false,
+            scorereportconfigId: false
           }
         }).sort({
           createTime: -1
@@ -134,7 +135,8 @@ exports.main = async (event, configfilepath) => {
         }, {
           projection: {
             _id: false,
-            schoolId: false
+            schoolId: false,
+            scorereportconfigId: false
           }
         }).sort({
           createTime: -1
@@ -203,7 +205,8 @@ exports.main = async (event, configfilepath) => {
         }, {
           projection: {
             _id: false,
-            classId: false
+            classId: false,
+            scorereportconfigId: false
           }
         }).sort({
           createTime: -1

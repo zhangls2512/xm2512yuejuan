@@ -81,7 +81,7 @@ async function deleteAnswer(id) {
       <tiny-grid-column field="createTime" title="时间" align="center"></tiny-grid-column>
       <tiny-grid-column title="操作" align="center">
         <template #default="{ row }">
-          <tiny-popconfirm title="提示" message="删除成功后无法恢复，确定删除？" type="warning" trigger="hover"
+          <tiny-popconfirm title="提示" message="删除成功后会同步清空其阅卷记录且无法恢复，确定删除？" type="warning" trigger="hover"
             @confirm="deleteAnswer(row.studentAccount)">
             <template #reference>
               <tiny-button type="danger">删除</tiny-button>

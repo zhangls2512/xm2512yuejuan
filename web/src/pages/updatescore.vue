@@ -89,14 +89,14 @@ async function submit(item) {
       <tiny-button type="info" @click="search">搜索</tiny-button>
     </div>
     <div style="color:red">修改提交成功后需手动操作生成成绩报告才可生效。</div>
-    <div class="spacebetween">
-      <div class="cz" style="width:50%;height:100%">
+    <div class="spacebetween" style="align-items:flex-start">
+      <div class="cz" style="width:50%">
         <div v-for="item in answerimage" style="display:flex;justify-content:center">
           <tiny-image v-if="item != ''" :src="item" :preview-src-list="[item]"></tiny-image>
           <div v-if="item == ''" class="large-text" style="color:red">图片数据异常</div>
         </div>
       </div>
-      <div v-if="markloglist.length > 0" class="cz" style="width:45%;height:100%">
+      <div v-if="markloglist.length > 0" class="cz" style="width:45%">
         <div v-for="item, index in markloglist" class="cz">
           <div v-if="index > 0" class="line"></div>
           <div class="sp">

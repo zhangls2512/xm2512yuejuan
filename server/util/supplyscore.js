@@ -209,7 +209,9 @@ async function supplyScore(scorelist, subject, exam, account, configfilepath) {
             })
           }
         })
-        await db.collection('marklog').insertMany(marklogarr)
+        await db.collection('marklog').insertMany(marklogarr, {
+          ordered: false
+        })
       }
     }
   }

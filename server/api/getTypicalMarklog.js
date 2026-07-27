@@ -38,8 +38,18 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
+    const scorereportres = await db.collection('scorereport').findOne({
+      scorereportId: requestdata.id
+    })
+    if (!scorereportres) {
+      return {
+        errCode: 400,
+        errMsg: '成绩报告不存在',
+        errFix: '无修复建议'
+      }
+    }
     const scorereportconfigres = await db.collection('scorereportconfig').findOne({
-      scorereportconfigId: requestdata.id,
+      scorereportconfigId: scorereportres.scorereportconfigId,
       status: 'finished',
       subject: {
         $ne: '多学科'
@@ -48,7 +58,7 @@ exports.main = async (event, configfilepath) => {
     if (!scorereportconfigres) {
       return {
         errCode: 400,
-        errMsg: '成绩报告配置不存在',
+        errMsg: '成绩报告不存在',
         errFix: '无修复建议'
       }
     }
@@ -60,16 +70,17 @@ exports.main = async (event, configfilepath) => {
       }
     }
     let access = false
-    if (scorereportconfigres.classTeacherVisible) {
+    if (scorereportres.type == 'class' && scorereportconfigres.classTeacherVisible) {
       access = true
     }
-    if (scorereportconfigres.jointVisibleAccount.includes(account.account)) {
+    if (scorereportres.type == 'joint' && scorereportconfigres.jointVisibleAccount.includes(account.account)) {
       access = true
     }
-    if (scorereportconfigres.schoolVisibleAccount.includes(account.account)) {
+    if (scorereportres.type == 'school' && scorereportconfigres.schoolVisibleAccount.includes(account.account)) {
       access = true
     }
-    if (scorereportconfigres.classVisibleAccount.includes(account.account)) {
+    const classaccess = scorereportconfigres.classVisibleAccount.includes(account.account)
+    if (scorereportres.type == 'class' && classaccess) {
       access = true
     }
     if (!access) {
@@ -79,23 +90,40 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    if (account.schoolId && scorereportconfigres.type != 'joint') {
-      if (scorereportconfigres.type == 'school' && scorereportconfigres.schoolId != account.schoolId) {
+    if (account.schoolId && scorereportres.type != 'joint') {
+      if (scorereportres.type == 'school' && scorereportres.schoolId != account.schoolId) {
         return {
           errCode: 403,
           errMsg: '无权限',
           errFix: '无修复建议'
         }
       }
-      if (scorereportconfigres.type == 'class') {
+      if (scorereportres.type == 'class') {
         const classres = await db.collection('class').findOne({
-          classId: scorereportconfigres.classId
+          classId: scorereportres.classId
         })
+        if (!classres) {
+          return {
+            errCode: 403,
+            errMsg: '无权限',
+            errFix: '无修复建议'
+          }
+        }
         if (classres.schoolId != account.schoolId) {
           return {
             errCode: 403,
             errMsg: '无权限',
             errFix: '无修复建议'
+          }
+        }
+        if (!classaccess) {
+          const teachers = classres.subject.find(s => s.name == scorereportconfigres.subject).teacher
+          if (!teachers || !teachers.teacher.includes(account.account)) {
+            return {
+              errCode: 403,
+              errMsg: '无权限',
+              errFix: '无修复建议'
+            }
           }
         }
       }

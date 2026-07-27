@@ -15,7 +15,32 @@ exports.main = async (event, configfilepath) => {
     return res
   } else {
     const account = res.account
-    if (account.type != 'student') {
+    if (account.type == 'admin') {
+      return {
+        errCode: 403,
+        errMsg: '无权限',
+        errFix: '无修复建议'
+      }
+    }
+    const studentAccount = account.type == 'teacher' ? requestdata.studentAccount : account.account
+    if (typeof (studentAccount) != 'string' || studentAccount.length != 36) {
+      return {
+        errCode: 400,
+        errMsg: '请求参数错误',
+        errFix: '传递有效的studentAccount参数'
+      }
+    }
+    const scorereportres = await db.collection('scorereport').findOne({
+      scorereportId: requestdata.id
+    })
+    if (!scorereportres) {
+      return {
+        errCode: 400,
+        errMsg: '成绩报告不存在',
+        errFix: '无修复建议'
+      }
+    }
+    if (!scorereportres.student.map(item => item.account).includes(studentAccount)) {
       return {
         errCode: 403,
         errMsg: '无权限',
@@ -23,19 +48,81 @@ exports.main = async (event, configfilepath) => {
       }
     }
     const scorereportconfigres = await db.collection('scorereportconfig').findOne({
-      scorereportconfigId: requestdata.id,
+      scorereportconfigId: scorereportres.scorereportconfigId,
       status: 'finished',
       subject: {
         $ne: '多学科'
-      },
-      student: account.account,
-      studentVisible: true
+      }
     })
     if (!scorereportconfigres) {
       return {
         errCode: 400,
-        errMsg: '成绩报告配置不存在',
+        errMsg: '成绩报告不存在',
         errFix: '无修复建议'
+      }
+    }
+    let access = false
+    if (account.type == 'student' && scorereportconfigres.studentVisible) {
+      access = true
+    }
+    if (account.type == 'teacher') {
+      if (scorereportres.type == 'class' && scorereportconfigres.classTeacherVisible) {
+        access = true
+      }
+      if (scorereportres.type == 'joint' && scorereportconfigres.jointVisibleAccount.includes(account.account)) {
+        access = true
+      }
+      if (scorereportres.type == 'school' && scorereportconfigres.schoolVisibleAccount.includes(account.account)) {
+        access = true
+      }
+    }
+    const classaccess = scorereportconfigres.classVisibleAccount.includes(account.account)
+    if (scorereportres.type == 'class' && classaccess) {
+      access = true
+    }
+    if (!access) {
+      return {
+        errCode: 403,
+        errMsg: '无权限',
+        errFix: '无修复建议'
+      }
+    }
+    if (account.schoolId && scorereportres.type != 'joint') {
+      if (scorereportres.type == 'school' && scorereportres.schoolId != account.schoolId) {
+        return {
+          errCode: 403,
+          errMsg: '无权限',
+          errFix: '无修复建议'
+        }
+      }
+      if (scorereportres.type == 'class') {
+        const classres = await db.collection('class').findOne({
+          classId: scorereportres.classId
+        })
+        if (!classres) {
+          return {
+            errCode: 403,
+            errMsg: '无权限',
+            errFix: '无修复建议'
+          }
+        }
+        if (classres.schoolId != account.schoolId) {
+          return {
+            errCode: 403,
+            errMsg: '无权限',
+            errFix: '无修复建议'
+          }
+        }
+        if (!classaccess) {
+          const teachers = classres.subject.find(s => s.name == scorereportconfigres.subject)
+          if (!teachers || !teachers.teacher.includes(account.account)) {
+            return {
+              errCode: 403,
+              errMsg: '无权限',
+              errFix: '无修复建议'
+            }
+          }
+        }
       }
     }
     const examsubjectgetres = await db.collection('examsubject').findOne({
@@ -52,7 +139,7 @@ exports.main = async (event, configfilepath) => {
     const marklogres = await db.collection('marklog').find({
       examId: scorereportconfigres.examId,
       subject: examsubjectgetres.name,
-      studentAccount: account.account,
+      studentAccount: studentAccount,
       questionName: {
         $in: scorereportconfigres.config.scoringQuestionNames
       },
