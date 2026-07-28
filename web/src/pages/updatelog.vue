@@ -2,6 +2,20 @@
 document.title = '智能阅卷系统 - 更新日志'
 const data = [
   {
+    versionNumber: '1.1.5',
+    releaseDate: '2026-07-28',
+    logs: [
+      {
+        type: 'U',
+        content: '页面底部新增AI智能客服'
+      },
+      {
+        type: 'F',
+        content: '修复了一些已知的问题'
+      }
+    ]
+  },
+  {
     versionNumber: '1.1.4',
     releaseDate: '2026-07-27',
     logs: [

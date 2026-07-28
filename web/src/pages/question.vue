@@ -157,13 +157,13 @@ async function deleteQuestion(id) {
             <div class="sp">
               <div class="bold-text">ID</div>
               <tiny-tooltip content="点击复制" placement="top">
-                <div style="cursor:pointer" @click="copy(item.questionId)">{{ item.questionId }}</div>
+                <div class="clickwz" @click="copy(item.questionId)">{{ item.questionId }}</div>
               </tiny-tooltip>
             </div>
-            <img :src="item.question"></img>
+            <img :src="item.question" loading="lazy"></img>
             <div class="sp">
               <div class="bold-text">答案</div>
-              <img :src="item.answer" style="flex:1;min-width:0"></img>
+              <img :src="item.answer" style="flex:1;min-width:0" loading="lazy"></img>
             </div>
             <div class="sp">
               <div class="bold-text">类型</div>

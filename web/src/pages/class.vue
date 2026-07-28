@@ -119,7 +119,7 @@ async function deleteClass(id) {
       <tiny-grid-column title="ID" align="center">
         <template #default="{ row }">
           <tiny-tooltip content="点击复制" placement="top">
-            <div style="cursor:pointer" @click="copy(row.classId)">{{ row.classId }}</div>
+            <div class="clickwz" @click="copy(row.classId)">{{ row.classId }}</div>
           </tiny-tooltip>
         </template>
       </tiny-grid-column>

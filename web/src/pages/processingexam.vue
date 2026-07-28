@@ -285,7 +285,7 @@ async function endExam(id) {
             </div>
             <div class="sp">
               <div class="bold-text">ID</div>
-              <div class="clickwz" style="cursor:pointer" @click="copy(item.examId)">{{ item.examId }}</div>
+              <div class="clickwz" @click="copy(item.examId)">{{ item.examId }}</div>
             </div>
           </div>
           <div class="sp">

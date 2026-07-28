@@ -461,13 +461,13 @@ function formatClassId(a) {
         <div class="bold-text">题目</div>
         <tiny-image v-if="qa.question != ''" :src="qa.question" :preview-src-list="[qa.question]"
           style="flex:1;min-width:0"></tiny-image>
-        <img v-if="qa.question == ''" src="/noimage.png" style="flex:1;min-width:0"></img>
+        <img v-if="qa.question == ''" src="/noimage.png" style="flex:1;min-width:0" loading="lazy"></img>
       </div>
       <div class="sp">
         <div class="bold-text">答案</div>
         <tiny-image v-if="qa.answer != ''" :src="qa.answer" :preview-src-list="[qa.answer]"
           style="flex:1;min-width:0"></tiny-image>
-        <img v-if="qa.answer == ''" src="/noimage.png" style="flex:1;min-width:0"></img>
+        <img v-if="qa.answer == ''" src="/noimage.png" style="flex:1;min-width:0" loading="lazy"></img>
       </div>
       <div class="sp">
         <div class="bold-text">难度</div>
@@ -486,8 +486,8 @@ function formatClassId(a) {
         <div class="large-text" style="color:red">总分：{{ answer.totalScore }}</div>
         <div v-for="item, index in answer.stepScore" style="color:red">步骤{{ index + 1 }}：{{ item }}分</div>
         <div v-for="item in answer.answerImage">
-          <img v-if="item != ''" :src="item"></img>
-          <img v-if="item == ''" src="/noimage.png"></img>
+          <img v-if="item != ''" :src="item" loading="lazy"></img>
+          <img v-if="item == ''" src="/noimage.png" loading="lazy"></img>
         </div>
       </div>
       <template #footer>
@@ -497,7 +497,7 @@ function formatClassId(a) {
     <tiny-dialog-box class="dialog" :visible="aadialog" title="原卷" @close="closeAa">
       <div v-if="answerimage.answerOnline == false">
         <div class="cz">
-          <img v-if="answerimage.image.length == 0" src="/noimage.png"></img>
+          <img v-if="answerimage.image.length == 0" src="/noimage.png" loading="lazy"></img>
           <div v-for="image in answerimage.image">
             <answerimage :data="image"></answerimage>
           </div>
@@ -505,7 +505,7 @@ function formatClassId(a) {
       </div>
       <div v-if="answerimage.answerOnline == true">
         <div class="cz">
-          <img v-if="answerimage.image.length == 0" src="/noimage.png"></img>
+          <img v-if="answerimage.image.length == 0" src="/noimage.png" loading="lazy"></img>
           <div v-for="image in answerimage.image" class="sp">
             <div class="bold-text">{{ image.questionName }}</div>
             <answerimagecanvas :data="image"></answerimagecanvas>

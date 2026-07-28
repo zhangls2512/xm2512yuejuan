@@ -1,0 +1,62 @@
+<svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<desc>
+			Created with Pixso.
+	</desc>
+	<defs>
+		<radialGradient gradientTransform="translate(2.091 12.3796) rotate(24.0053) scale(9.11217 9.11217)" cx="0.000000" cy="0.000000" r="1.000000" id="paint_radial_1548_152319_0" gradientUnits="userSpaceOnUse">
+			<stop stop-color="#AC48F0"/>
+			<stop offset="1.000000" stop-color="#CB8EFB"/>
+		</radialGradient>
+		<radialGradient gradientTransform="translate(17.5339 9.92801) rotate(-165.283) scale(9.0963 9.0963)" cx="0.000000" cy="0.000000" r="1.000000" id="paint_radial_1548_152320_0" gradientUnits="userSpaceOnUse">
+			<stop stop-color="#7DDFE7"/>
+			<stop offset="1.000000" stop-color="#8CA3FA" stop-opacity="0.501961"/>
+		</radialGradient>
+		<radialGradient gradientTransform="translate(4.14149 6.58539) rotate(-39.5421) scale(10.6504 10.6491)" cx="0.000000" cy="0.000000" r="1.000000" id="paint_radial_1548_152324_0" gradientUnits="userSpaceOnUse">
+			<stop stop-color="#5B47D5"/>
+			<stop offset="1.000000" stop-color="#7A66FF" stop-opacity="0.000000"/>
+		</radialGradient>
+		<linearGradient x1="12.867745" y1="14.607773" x2="16.133898" y2="16.933998" id="paint_linear_1548_152327_0" gradientUnits="userSpaceOnUse">
+			<stop stop-color="#8ABEF3"/>
+			<stop offset="1.000000" stop-color="#2F86DE"/>
+		</linearGradient>
+		<linearGradient x1="15.811152" y1="9.109075" x2="16.735691" y2="17.905462" id="paint_linear_1548_152328_0" gradientUnits="userSpaceOnUse">
+			<stop stop-color="#A4ECF1"/>
+			<stop offset="1.000000" stop-color="#55CCD9"/>
+		</linearGradient>
+	</defs>
+	<rect id="属性 1=改色" rx="10.000000" width="20.000000" height="20.000000" fill="#FFFFFF" fill-opacity="0"/>
+	<mask id="mask1548_152317" mask-type="alpha" maskUnits="userSpaceOnUse" x="1.000000" y="1.000000" width="18.000000" height="18.000000">
+		<circle id="椭圆形" cx="10.000000" cy="10.000000" r="9.000000" fill="#D8D8D8" fill-opacity="1.000000"/>
+		<circle id="椭圆形" cx="10.000000" cy="10.000000" r="8.428572" stroke="#979797" stroke-opacity="0" stroke-width="1.142857"/>
+	</mask>
+	<mask id="mask1548_152318" mask-type="alpha" maskUnits="userSpaceOnUse" x="1.000000" y="1.000000" width="18.000000" height="18.000000">
+		<circle id="椭圆形" cx="10.000000" cy="10.000000" r="9.000000" fill="#D8D8D8" fill-opacity="1.000000"/>
+		<circle id="椭圆形" cx="10.000000" cy="10.000000" r="8.428572" stroke="#979797" stroke-opacity="0" stroke-width="1.142857"/>
+	</mask>
+	<g mask="url(#mask1548_152318)">
+		<path id="路径 11" d="M1.04 9.29C1.04 9.29 0.06 13.82 0.66 15.14C1.18 16.29 3.28 16.18 3.96 16.75C6.16 18.58 9.05 19.36 9.99 18.57C10.94 17.77 10.41 14.73 6.94 14.9C3.47 15.07 1.04 9.29 1.04 9.29Z" fill="url(#paint_radial_1548_152319_0)" fill-opacity="1.000000" fill-rule="evenodd"/>
+		<path id="路径 11" d="" fill="#979797" fill-opacity="0" fill-rule="evenodd"/>
+	</g>
+	<g mask="url(#mask1548_152318)">
+		<path id="路径 8" d="M18.45 9.14C18.14 9.19 17.97 8.93 17.92 8.86C17.39 8.17 16.19 7.01 12.62 7.46C7.44 8.1 3.59 7.69 3.26 5.1C2.92 2.51 9.15 -0.23 13.51 1.24C17.87 2.71 19.7 8.95 18.45 9.14Z" fill="#8CA3FA" fill-opacity="1.000000" fill-rule="evenodd"/>
+		<path id="路径 8" d="M18.45 9.14C18.14 9.19 17.97 8.93 17.92 8.86C17.39 8.17 16.19 7.01 12.62 7.46C7.44 8.1 3.59 7.69 3.26 5.1C2.92 2.51 9.15 -0.23 13.51 1.24C17.87 2.71 19.7 8.95 18.45 9.14Z" fill="url(#paint_radial_1548_152320_0)" fill-opacity="0.700000" fill-rule="evenodd"/>
+		<path id="路径 8" d="" fill="#979797" fill-opacity="0" fill-rule="evenodd"/>
+	</g>
+	<g mask="url(#mask1548_152318)">
+		<path id="路径 9" d="M11.3 1C11.12 0.69 7.88 0.69 5.73 1.78C3.58 2.87 2.11 4.69 1.25 7.19C0.39 9.7 1.24 14.02 4.9 14.86C8.56 15.71 9.62 11.54 8.84 7.19C8.05 2.84 11.48 1.3 11.3 1Z" fill="#7A66FF" fill-opacity="1.000000" fill-rule="evenodd"/>
+		<path id="路径 9" d="M11.3 1C11.12 0.69 7.88 0.69 5.73 1.78C3.58 2.87 2.11 4.69 1.25 7.19C0.39 9.7 1.24 14.02 4.9 14.86C8.56 15.71 9.62 11.54 8.84 7.19C8.05 2.84 11.48 1.3 11.3 1Z" fill="#634AF7" fill-opacity="1.000000" fill-rule="evenodd"/>
+		<path id="路径 9" d="" fill="#979797" fill-opacity="0" fill-rule="evenodd"/>
+	</g>
+	<g mask="url(#mask1548_152318)">
+		<mask id="mask_1548_152327" fill="white">
+			<path id="形状结合" d="M12.8018 18.5029C14.5024 18.0078 16.0747 17.0073 17.2739 15.5264C17.7188 14.9766 18.0889 14.3901 18.3843 13.7798C15.9766 16.3945 12.6914 15.1963 11.6475 16.1533C10.6025 17.1108 11.126 18.3589 12.3423 18.5195C12.4702 18.5366 12.6255 18.5308 12.8018 18.5029Z" clip-rule="evenodd" fill="" fill-opacity="1.000000" fill-rule="evenodd"/>
+		</mask>
+		<path id="形状结合" d="M12.8018 18.5029C14.5024 18.0078 16.0747 17.0073 17.2739 15.5264C17.7188 14.9766 18.0889 14.3901 18.3843 13.7798C15.9766 16.3945 12.6914 15.1963 11.6475 16.1533C10.6025 17.1108 11.126 18.3589 12.3423 18.5195C12.4702 18.5366 12.6255 18.5308 12.8018 18.5029Z" clip-rule="evenodd" fill="#8ABEF3" fill-opacity="1.000000" fill-rule="evenodd" mask="url(#mask_1548_152327)"/>
+		<path id="形状结合" d="M12.8018 18.5029C14.5024 18.0078 16.0747 17.0073 17.2739 15.5264C17.7188 14.9766 18.0889 14.3901 18.3843 13.7798C15.9766 16.3945 12.6914 15.1963 11.6475 16.1533C10.6025 17.1108 11.126 18.3589 12.3423 18.5195C12.4702 18.5366 12.6255 18.5308 12.8018 18.5029Z" clip-rule="evenodd" fill="url(#paint_linear_1548_152327_0)" fill-opacity="1.000000" fill-rule="evenodd" mask="url(#mask_1548_152327)"/>
+		<path id="形状结合" d="" clip-rule="evenodd" fill="#979797" fill-opacity="0.000000" fill-rule="evenodd"/>
+	</g>
+	<g mask="url(#mask1548_152318)">
+		<path id="路径 10" d="M16 9.12C15.27 9.36 14.85 10.07 14.76 10.75C14.68 11.44 15.04 14.2 14.92 15.3C14.81 16.39 14.11 18.18 14.11 18.18C14.11 18.18 16.3 17.69 17.56 15.21C18.82 12.73 18.89 11 18.38 10.04C17.86 9.09 16.73 8.88 16 9.12Z" fill="url(#paint_linear_1548_152328_0)" fill-opacity="1.000000" fill-rule="evenodd"/>
+		<path id="路径 10" d="" fill="#979797" fill-opacity="0" fill-rule="evenodd"/>
+	</g>
+</svg>

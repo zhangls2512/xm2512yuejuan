@@ -1,9 +1,12 @@
-export default async function request({ apiPath, body, authorization }) {
-  const loading = TinyLoading.service({
-    lock: true,
-    size: 'large',
-    background: 'rgba(0, 0, 0, 0.5)'
-  })
+export default async function request({ apiPath, body, authorization }, hideloading = false) {
+  let loading
+  if (!hideloading) {
+    loading = TinyLoading.service({
+      lock: true,
+      size: 'large',
+      background: 'rgba(0, 0, 0, 0.5)'
+    })
+  }
   try {
     const res = await fetch(location.origin + '/api' + apiPath, {
       method: 'POST',
@@ -13,7 +16,9 @@ export default async function request({ apiPath, body, authorization }) {
       },
       body: JSON.stringify(body)
     })
-    loading.close()
+    if (!hideloading) {
+      loading.close()
+    }
     if (res.status != 200) {
       TinyModal.message({
         message: 'HTTP 请求失败，状态码：' + res.status,
@@ -33,7 +38,9 @@ export default async function request({ apiPath, body, authorization }) {
     })
     throw '失败'
   } catch (err) {
-    loading.close()
+    if (!hideloading) {
+      loading.close()
+    }
     if (err == '失败') {
       throw err
     }

@@ -71,7 +71,7 @@ function close() {
       <div v-if="index > 0" class="line"></div>
       <div class="sp">
         <div v-if="item.questionName == '客观题'">客观题</div>
-        <div v-if="item.questionName != '客观题'" class="clickwz" style="cursor:pointer" @click="open(item.questionName)">
+        <div v-if="item.questionName != '客观题'" class="clickwz" @click="open(item.questionName)">
           {{ item.questionName }}</div>
         <tiny-progress style="width:50%" stroke-width="12" :percentage="item.progress"></tiny-progress>
         <div>{{ item.finished }}/{{ item.total }}</div>

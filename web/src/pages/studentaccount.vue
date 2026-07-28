@@ -159,7 +159,7 @@ async function deleteAccount(account) {
       <tiny-grid-column title="账号" align="center">
         <template #default="{ row }">
           <tiny-tooltip content="点击复制" placement="top">
-            <div style="cursor:pointer" @click="copy(row.account)">{{ row.account }}</div>
+            <div class="clickwz" @click="copy(row.account)">{{ row.account }}</div>
           </tiny-tooltip>
         </template>
       </tiny-grid-column>

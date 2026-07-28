@@ -198,7 +198,7 @@ async function deleteScorereportconfig(id) {
             </div>
             <div class="sp">
               <div class="bold-text">ID</div>
-              <div class="clickwz" style="cursor:pointer" @click="copy(item.scorereportconfigId)">{{ item.scorereportconfigId }}</div>
+              <div class="clickwz" @click="copy(item.scorereportconfigId)">{{ item.scorereportconfigId }}</div>
             </div>
             <tiny-checkbox v-model="item.studentVisible"
               @change="updateStudentVisible(item.scorereportconfigId)">学生可查看</tiny-checkbox>

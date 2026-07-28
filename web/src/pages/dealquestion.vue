@@ -203,7 +203,8 @@ async function mark(id) {
           <div v-if="item != ''" class="sp">
             <div style="position:relative">
               <tiny-image :src="item" :preview-src-list="[item]"></tiny-image>
-              <img :src="traceimage[index].data" style="position:absolute;inset:0;pointer-events:none"></img>
+              <img :src="traceimage[index].data" style="position:absolute;inset:0;pointer-events:none"
+                loading="lazy"></img>
             </div>
             <div class="sp">
               <tiny-button type="info" @click="selectTraceimage(index)">设置留痕</tiny-button>
