@@ -79,12 +79,22 @@ exports.main = async (event, configfilepath) => {
     if (!examgetres.schoolId) {
       validaccounts = await db.collection('account').find({
         type: 'teacher'
+      }, {
+        projection: {
+          _id: false,
+          account: true
+        }
       }).toArray()
     }
     if (examgetres.schoolId) {
       validaccounts = await db.collection('account').find({
         schoolId: examgetres.schoolId,
         type: 'teacher'
+      }, {
+        projection: {
+          _id: false,
+          account: true
+        }
       }).toArray()
     }
     validaccounts = validaccounts.map(item => item.account)
@@ -137,7 +147,7 @@ exports.main = async (event, configfilepath) => {
         const item = requestdata.scorereportconfigIdArray[i]
         const scoreconfig = await db.collection('scorereportconfig').findOne({
           scorereportconfigId: item,
-          examId: examgetres.examId,
+          examId: requestdata.id,
           subject: {
             $ne: '多学科'
           },

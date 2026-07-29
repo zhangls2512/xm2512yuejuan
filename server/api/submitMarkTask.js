@@ -381,7 +381,6 @@ exports.main = async (event, configfilepath) => {
       if (type == 'updatefirst') {
         await db.collection('marklog').updateOne({
           marklogId: marklogres.marklogId,
-          markerAccount: account.account,
           type: 'first'
         }, {
           $set: {
@@ -407,7 +406,6 @@ exports.main = async (event, configfilepath) => {
       if (type == 'updatesecond') {
         await db.collection('marklog').updateOne({
           marklogId: marklogres.marklogId,
-          markerAccount: account.account,
           type: 'second'
         }, {
           $set: {
@@ -433,7 +431,6 @@ exports.main = async (event, configfilepath) => {
       if (type == 'updatethird') {
         await db.collection('marklog').updateOne({
           marklogId: marklogres.marklogId,
-          markerAccount: account.account,
           type: 'third'
         }, {
           $set: {
@@ -459,7 +456,6 @@ exports.main = async (event, configfilepath) => {
       if (type == 'updatearbitrate') {
         await db.collection('marklog').updateOne({
           marklogId: marklogres.marklogId,
-          markerAccount: account.account,
           type: 'arbitrate'
         }, {
           $set: {

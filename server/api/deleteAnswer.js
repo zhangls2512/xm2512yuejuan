@@ -57,6 +57,11 @@ exports.main = async (event, configfilepath) => {
     }
     const examgetres = await db.collection('exam').findOne({
       examId: requestdata.id
+    }, {
+      projection: {
+        _id: false,
+        schoolId: true
+      }
     })
     if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
       const adminexist = examsubjectgetres.admin.find(item => item.account == account.account)
@@ -81,6 +86,10 @@ exports.main = async (event, configfilepath) => {
         $in: [examsubjectgetres.name].concat(examsubjectgetres.subSubject)
       },
       student: requestdata.studentAccount
+    }, {
+      projection: {
+        _id: false
+      }
     })
     if (scorereportconfigres) {
       return {

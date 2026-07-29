@@ -50,6 +50,10 @@ exports.main = async (event, configfilepath) => {
     }
     const examsubjectgetres = await db.collection('examsubject').findOne({
       examId: requestdata.id
+    }, {
+      projection: {
+        _id: false
+      }
     })
     if (examsubjectgetres) {
       return {

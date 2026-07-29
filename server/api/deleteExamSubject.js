@@ -71,6 +71,10 @@ exports.main = async (event, configfilepath) => {
     const answergetres = await db.collection('answer').findOne({
       examId: requestdata.id,
       subject: requestdata.name
+    }, {
+      projection: {
+        _id: false
+      }
     })
     if (answergetres) {
       return {
@@ -82,6 +86,10 @@ exports.main = async (event, configfilepath) => {
     const markloggetres = await db.collection('marklog').findOne({
       examId: requestdata.id,
       subject: requestdata.name
+    }, {
+      projection: {
+        _id: false
+      }
     })
     if (markloggetres) {
       return {
@@ -94,6 +102,10 @@ exports.main = async (event, configfilepath) => {
       examId: requestdata.id,
       subject: {
         $in: [examsubjectgetres.name].concat(examsubjectgetres.subSubject)
+      }
+    }, {
+      projection: {
+        _id: false
       }
     })
     if (scorereportgetres) {

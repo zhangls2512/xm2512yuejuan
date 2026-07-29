@@ -136,6 +136,11 @@ exports.main = async (event, configfilepath) => {
       }
       const examgetres = await db.collection('exam').findOne({
         examId: requestdata.id
+      }, {
+        projection: {
+          _id: false,
+          schoolId: true
+        }
       })
       if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
         const adminexist = data.admin.find(item => item.account == account.account)
@@ -175,9 +180,9 @@ exports.main = async (event, configfilepath) => {
       }
       if (examgetres.schoolId) {
         studentexist = await db.collection('account').findOne({
-          schoolId: examgetres.schoolId,
           account: requestdata.studentAccount,
-          type: 'student'
+          type: 'student',
+          schoolId: examgetres.schoolId
         })
       }
       if (!studentexist) {

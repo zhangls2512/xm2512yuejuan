@@ -48,6 +48,11 @@ exports.main = async (event, configfilepath) => {
     }
     const examgetres = await db.collection('exam').findOne({
       examId: requestdata.id
+    }, {
+      projection: {
+        _id: false,
+        schoolId: true
+      }
     })
     if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
       const adminexist = examsubjectgetres.admin.find(item => item.account == account.account)
@@ -69,6 +74,10 @@ exports.main = async (event, configfilepath) => {
     const answerres = await db.collection('answer').findOne({
       examId: requestdata.id,
       subject: requestdata.name
+    }, {
+      projection: {
+        _id: false
+      }
     })
     const olddata = answerres ? examsubjectgetres : undefined
     const checkres = require('../util/checksubjectconfig').checkSubjectConfig(requestdata, olddata)
@@ -78,11 +87,21 @@ exports.main = async (event, configfilepath) => {
       if (checkres.data.class.length > 0) {
         let validclass = []
         if (!examgetres.schoolId) {
-          validclass = await db.collection('class').find({}).toArray()
+          validclass = await db.collection('class').find({}, {
+            projection: {
+              _id: false,
+              classId: true
+            }
+          }).toArray()
         }
         if (examgetres.schoolId) {
           validclass = await db.collection('class').find({
             schoolId: examgetres.schoolId
+          }, {
+            projection: {
+              _id: false,
+              classId: true
+            }
           }).toArray()
         }
         validclass = validclass.map(item => item.classId)
@@ -101,6 +120,11 @@ exports.main = async (event, configfilepath) => {
             type: {
               $ne: 'student'
             }
+          }, {
+            projection: {
+              _id: false,
+              account: true
+            }
           }).toArray()
         }
         if (examgetres.schoolId) {
@@ -108,6 +132,11 @@ exports.main = async (event, configfilepath) => {
             schoolId: examgetres.schoolId,
             type: {
               $ne: 'student'
+            }
+          }, {
+            projection: {
+              _id: false,
+              account: true
             }
           }).toArray()
         }

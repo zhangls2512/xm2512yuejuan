@@ -65,6 +65,12 @@ exports.main = async (event, configfilepath) => {
     const teacher = [...new Set(allteacher)]
     const accountres = await db.collection('account').find({
       schoolId: account.schoolId
+    }, {
+      projection: {
+        _id: false,
+        account: true,
+        type: true
+      }
     }).toArray()
     const validstudents = accountres.filter(item => item.type == 'student').map(item => item.account)
     if (student.some(item => !validstudents.includes(item))) {
@@ -83,8 +89,8 @@ exports.main = async (event, configfilepath) => {
       }
     }
     const updateres = await db.collection('class').updateOne({
-      schoolId: account.schoolId,
-      classId: requestdata.id
+      classId: requestdata.id,
+      schoolId: account.schoolId
     }, {
       $set: {
         name: requestdata.name,

@@ -58,6 +58,10 @@ exports.main = async (event, configfilepath) => {
       markStatus: {
         $ne: 'end'
       }
+    }, {
+      projection: {
+        _id: false
+      }
     })
     if (examsubjectgetres) {
       return {

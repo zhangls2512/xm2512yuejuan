@@ -29,8 +29,8 @@ exports.main = async (event, configfilepath) => {
       }
     }
     const updateres = await db.collection('account').updateOne({
-      schoolId: account.schoolId,
       account: requestdata.account,
+      schoolId: account.schoolId,
       type: {
         $in: ['teacher', 'student']
       }

@@ -37,8 +37,8 @@ exports.main = async (event, configfilepath) => {
       }
     }
     const getres = await db.collection('account').find({
-      schoolId: account.schoolId,
       account: requestdata.account,
+      schoolId: account.schoolId,
       type: requestdata.type
     }, {
       projection: {

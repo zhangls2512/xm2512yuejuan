@@ -113,18 +113,28 @@ async function supplyScore(scorelist, subject, exam, account, configfilepath) {
   if (!exam.schoolId) {
     res = await db.collection('account').find({
       type: 'student'
+    }, {
+      projection: {
+        _id: false,
+        account: true
+      }
     }).toArray()
   }
   if (exam.schoolId) {
     res = await db.collection('account').find({
       schoolId: exam.schoolId,
       type: 'student'
+    }, {
+      projection: {
+        _id: false,
+        account: true
+      }
     }).toArray()
   }
-  const validstudents = res.map(item => item.account)
+  res = res.map(item => item.account)
   for (let i = 0; i < scorelist.length; i++) {
     const item = scorelist[i]
-    if (validstudents.includes(item.studentAccount)) {
+    if (res.includes(item.studentAccount)) {
       const answer = await db.collection('answer').findOne({
         examId: exam.examId,
         subject: subject.name,

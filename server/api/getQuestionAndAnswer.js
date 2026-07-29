@@ -148,6 +148,11 @@ exports.main = async (event, configfilepath) => {
     if (question.questionId) {
       const exam = await db.collection('exam').findOne({
         examId: scorereportconfigres.examId
+      }, {
+        projection: {
+          _id: false,
+          schoolId: true
+        }
       })
       const qa = await db.collection('question').findOne({
         questionId: question.questionId,

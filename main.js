@@ -3,12 +3,12 @@ const http = require('http')
 const https = require('https')
 const { read, contenttype } = require('./util/file')
 const { readConfig } = require('./util/readconfig')
+let webvalidpaths = new Set(fs.readdirSync(__dirname + '/web/dist').filter(item => item != 'assets').map(item => __dirname + '/web/dist/' + item).concat(fs.readdirSync(__dirname + '/web/dist/assets').map(item => __dirname + '/web/dist/assets/' + item)))
+let apivalidpaths = new Set(fs.readdirSync(__dirname + '/server/api').map(item => '/api/' + item.replace('.js', '')))
 async function dealRequest(event, configfilepath) {
   if (!event.path.startsWith('/api')) {
     const realpath = __dirname + '/web/dist' + event.path
-    let validpaths = fs.readdirSync(__dirname + '/web/dist').filter(item => item != 'assets').map(item => __dirname + '/web/dist/' + item)
-    validpaths = validpaths.concat(fs.readdirSync(__dirname + '/web/dist/assets').map(item => __dirname + '/web/dist/assets/' + item))
-    if (!validpaths.includes(realpath)) {
+    if (!webvalidpaths.has(realpath)) {
       return {
         data: fs.readFileSync(__dirname + '/web/dist/index.html'),
         contentType: contenttype(__dirname + '/web/dist/index.html')
@@ -30,11 +30,7 @@ async function dealRequest(event, configfilepath) {
         contentType: 'application/json;charset=utf-8'
       }
     }
-    const validpaths = []
-    fs.readdirSync(__dirname + '/server/api').forEach(item => {
-      validpaths.push('/api/' + item.replace('.js', ''))
-    })
-    if (!validpaths.includes(event.path)) {
+    if (!apivalidpaths.has(event.path)) {
       return {
         data: JSON.stringify({
           errCode: 400,

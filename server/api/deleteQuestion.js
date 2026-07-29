@@ -24,8 +24,8 @@ exports.main = async (event, configfilepath) => {
       }
     }
     const deleteres = await db.collection('question').deleteOne({
-      schoolId: account.schoolId,
-      questionId: requestdata.id
+      questionId: requestdata.id,
+      schoolId: account.schoolId
     })
     if (deleteres.deletedCount != 0) {
       const dir = readConfig(configfilepath, 'dataRootPath') + '/question/'

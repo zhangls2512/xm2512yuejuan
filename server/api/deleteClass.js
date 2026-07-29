@@ -22,8 +22,8 @@ exports.main = async (event, configfilepath) => {
       }
     }
     const deleteres = await db.collection('class').deleteOne({
-      schoolId: account.schoolId,
-      classId: requestdata.id
+      classId: requestdata.id,
+      schoolId: account.schoolId
     })
     if (deleteres.deletedCount != 0) {
       return {

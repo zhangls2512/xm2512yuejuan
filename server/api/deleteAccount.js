@@ -22,8 +22,8 @@ exports.main = async (event, configfilepath) => {
       }
     }
     const deleteres = await db.collection('account').deleteOne({
-      schoolId: account.schoolId,
       account: requestdata.account,
+      schoolId: account.schoolId,
       type: {
         $in: ['teacher', 'student']
       }

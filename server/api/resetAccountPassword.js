@@ -22,35 +22,28 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const getres = await db.collection('account').findOne({
-      schoolId: account.schoolId,
+    const updateres = await db.collection('account').updateOne({
       account: requestdata.account,
+      schoolId: account.schoolId,
       type: {
         $in: ['teacher', 'student']
       }
+    }, {
+      $set: {
+        password: bcrypt.hashSync('12345678', 12)
+      }
     })
-    if (!getres) {
+    if (updateres.matchedCount != 0) {
+      return {
+        errCode: 0,
+        errMsg: '成功'
+      }
+    }
+    if (updateres.matchedCount == 0) {
       return {
         errCode: 400,
         errMsg: '账号不存在',
         errFix: '无修复建议'
-      }
-    }
-    if (getres) {
-      await db.collection('account').updateOne({
-        schoolId: account.schoolId,
-        account: requestdata.account,
-        type: {
-          $in: ['teacher', 'student']
-        }
-      }, {
-        $set: {
-          password: bcrypt.hashSync('12345678', 12)
-        }
-      })
-      return {
-        errCode: 0,
-        errMsg: '成功'
       }
     }
   }

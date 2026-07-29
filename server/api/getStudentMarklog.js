@@ -58,6 +58,11 @@ exports.main = async (event, configfilepath) => {
     }
     const examgetres = await db.collection('exam').findOne({
       examId: requestdata.id
+    }, {
+      projection: {
+        _id: false,
+        schoolId: true
+      }
     })
     if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
       const adminexist = examsubjectres.admin.find(item => item.account == account.account)

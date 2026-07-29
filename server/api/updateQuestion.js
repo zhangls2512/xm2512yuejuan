@@ -73,8 +73,8 @@ exports.main = async (event, configfilepath) => {
       }
     }
     const updateres = await db.collection('question').updateOne({
-      schoolId: account.schoolId,
-      questionId: requestdata.id
+      questionId: requestdata.id,
+      schoolId: account.schoolId
     }, {
       $set: {
         type: requestdata.type,

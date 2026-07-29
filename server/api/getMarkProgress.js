@@ -41,6 +41,11 @@ exports.main = async (event, configfilepath) => {
     }
     const examgetres = await db.collection('exam').findOne({
       examId: requestdata.id
+    }, {
+      projection: {
+        _id: false,
+        schoolId: true
+      }
     })
     let questionname
     if (account.type == 'admin' && account.schoolId == examgetres.schoolId) {
@@ -90,6 +95,7 @@ exports.main = async (event, configfilepath) => {
           $match: {
             examId: requestdata.id,
             subject: requestdata.subject,
+            type: 'system',
             questionName: {
               $in: question
             }

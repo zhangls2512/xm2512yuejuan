@@ -81,12 +81,22 @@ exports.main = async (event, configfilepath) => {
     if (!examgetres.schoolId) {
       validaccounts = await db.collection('account').find({
         type: 'teacher'
+      }, {
+        projection: {
+          _id: false,
+          account: true
+        }
       }).toArray()
     }
     if (examgetres.schoolId) {
       validaccounts = await db.collection('account').find({
         schoolId: examgetres.schoolId,
         type: 'teacher'
+      }, {
+        projection: {
+          _id: false,
+          account: true
+        }
       }).toArray()
     }
     validaccounts = validaccounts.map(item => item.account)
