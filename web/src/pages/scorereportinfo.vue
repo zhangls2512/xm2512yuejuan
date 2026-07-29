@@ -500,7 +500,7 @@ function formatClassId(a) {
         <div class="cz">
           <img v-if="answerimage.image.length == 0" src="/noimage.png" loading="lazy"></img>
           <div v-for="image in answerimage.image">
-            <answerimage :data="image"></answerimage>
+            <answerimagecanvas :data="image"></answerimagecanvas>
           </div>
         </div>
       </div>
