@@ -1,3 +1,5 @@
+**v1.1.6（2026.7.29）**  
+1.`F` 修复了一些已知的问题  
 **v1.1.5（2026.7.28）**  
 1.`U` 配置文件新增`allowAnonymousUserUseAiAssistant`（布尔值、可选、默认`false`，表示是否允许未登录匿名用户使用AI智能客服）、`yuanqiAppid`（腾讯元器智能体APPID字符串、可选，表示AI智能客服使用腾讯元器智能体的APPID）、`yuanqiAppkey`（腾讯元器智能体APPKEY字符串、可选，表示AI智能客服使用腾讯元器智能体的APPKEY）属性  
 2.`U` 页面底部新增AI智能客服  
