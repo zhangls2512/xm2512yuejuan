@@ -56,7 +56,7 @@ if (info) {
         chartdata.value = {
           data: data.value.school.map(item => {
             return {
-              schoolId: schoolmap.value[item.id],
+              schoolId: accountinfo.value.schoolId ? accountinfo.value.schoolName : schoolmap.value[item.id],
               '平均分': item.averageScore,
               '标准差': item.scoreStandardDeviation,
               '原始区分度': item.discrimination

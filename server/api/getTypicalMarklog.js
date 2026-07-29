@@ -117,7 +117,7 @@ exports.main = async (event, configfilepath) => {
           }
         }
         if (!classaccess) {
-          const teachers = classres.subject.find(s => s.name == scorereportconfigres.subject).teacher
+          const teachers = classres.subject.find(s => s.name == scorereportconfigres.subject)
           if (!teachers || !teachers.teacher.includes(account.account)) {
             return {
               errCode: 403,
