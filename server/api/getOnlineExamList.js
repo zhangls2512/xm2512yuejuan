@@ -36,19 +36,14 @@ exports.main = async (event, configfilepath) => {
     }).sort({
       startTime: -1
     }).skip(skip).limit(limit).toArray()
-    const result = []
-    const exams = []
-    const promises = [...new Set(data.map(item => item.examId))].map(async (item) => {
-      const exam = await db.collection('exam').findOne({
-        examId: item
-      })
-      if (!exam.schoolId || (exam.schoolId && account.schoolId)) {
-        exams.push(exam)
+    const exams = await db.collection('exam').find({
+      examId: {
+        $in: [...new Set(data.map(item => item.examId))]
       }
-    })
-    await Promise.all(promises)
+    }).toArray()
+    const result = []
     data.forEach(item => {
-      const exist = exams.find(itema => itema.examId == item.examId)
+      const exist = exams.find(itema => itema.examId == item.examId && (!itema.schoolId || itema.schoolId == account.schoolId))
       if (exist) {
         result.push({
           examId: exist.examId,

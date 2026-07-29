@@ -159,186 +159,189 @@ exports.main = async (event, configfilepath) => {
         default: 0
       }
     }
-    const stats = await db.collection('marklog').aggregate([
-      {
-        $match: {
-          examId: requestdata.id,
-          subject: requestdata.subject,
-          type: 'system',
-          questionName: {
-            $in: questionname
-          },
-          updateMarkerAccount: ''
-        }
-      },
-      {
-        $addFields: {
-          arbitrateScoreDiff: scorediffcase
-        }
-      },
-      {
-        $group: {
-          _id: '$questionName',
-          firstFinished: {
-            $sum: {
-              $cond: [
-                {
-                  $and: [
-                    {
-                      $eq: ['$questionReason', '']
-                    },
-                    {
-                      $ne: ['$firstMarkerAccount', '']
-                    }
-                  ]
-                },
-                1, 0
-              ]
-            }
-          },
-          firstTotal: {
-            $sum: {
-              $cond: [
-                {
-                  $eq: ['$questionReason', '']
-                },
-                1,
-                0
-              ]
-            }
-          },
-          secondFinished: {
-            $sum: {
-              $cond: [
-                {
-                  $and: [
-                    {
-                      $eq: ['$questionReason', '']
-                    },
-                    {
-                      $ne: ['$secondMarkerAccount', '']
-                    }
-                  ]
-                },
-                1,
-                0
-              ]
-            }
-          },
-          thirdFinished: {
-            $sum: {
-              $cond: [
-                {
-                  $and: [
-                    {
-                      $eq: ['$questionReason', '']
-                    },
-                    {
-                      $ne: ['$thirdMarkerAccount', '']
-                    }
-                  ]
-                },
-                1,
-                0
-              ]
-            }
-          },
-          thirdPending: {
-            $sum: {
-              $cond: [
-                {
-                  $and: [
-                    {
-                      $eq: ['$questionReason', '']
-                    },
-                    {
-                      $eq: ['$thirdMarkerAccount', '']
-                    },
-                    {
-                      $eq: ['$arbitrateMarkerAccount', '']
-                    },
-                    {
-                      $gt: ['$minScoreDiff', '$arbitrateScoreDiff']
-                    }
-                  ]
-                },
-                1,
-                0
-              ]
-            }
-          },
-          arbitrateFinished: {
-            $sum: {
-              $cond: [
-                {
-                  $and: [
-                    {
-                      $eq: ['$questionReason', '']
-                    },
-                    {
-                      $ne: ['$arbitrateMarkerAccount', '']
-                    }
-                  ]
-                },
-                1,
-                0
-              ]
-            }
-          },
-          arbitratePending: {
-            $sum: {
-              $cond: [
-                {
-                  $or: [
-                    {
-                      $and: [
-                        {
-                          $eq: ['$questionReason', '']
-                        },
-                        {
-                          $eq: ['$arbitrateMarkerAccount', '']
-                        },
-                        {
-                          $gt: ['$minScoreDiff', '$arbitrateScoreDiff']
-                        }
-                      ]
-                    }
-                  ]
-                },
-                1,
-                0
-              ]
-            }
-          },
-          questionFinished: {
-            $sum: {
-              $cond: [
-                {
-                  $and: [
-                    {
-                      $ne: ['$questionMarkerAccount', '']
-                    }
-                  ]
-                },
-                1,
-                0
-              ]
-            }
-          },
-          questionTotal: {
-            $sum: {
-              $cond: [
-                {
-                  $ne: ['$questionReason', '']
-                },
-                1,
-                0
-              ]
+    let stats = []
+    if (examsubjectres.subjectiveQuestion.length > 0) {
+      stats = await db.collection('marklog').aggregate([
+        {
+          $match: {
+            examId: requestdata.id,
+            subject: requestdata.subject,
+            type: 'system',
+            questionName: {
+              $in: questionname
+            },
+            updateMarkerAccount: ''
+          }
+        },
+        {
+          $addFields: {
+            arbitrateScoreDiff: scorediffcase
+          }
+        },
+        {
+          $group: {
+            _id: '$questionName',
+            firstFinished: {
+              $sum: {
+                $cond: [
+                  {
+                    $and: [
+                      {
+                        $eq: ['$questionReason', '']
+                      },
+                      {
+                        $ne: ['$firstMarkerAccount', '']
+                      }
+                    ]
+                  },
+                  1, 0
+                ]
+              }
+            },
+            firstTotal: {
+              $sum: {
+                $cond: [
+                  {
+                    $eq: ['$questionReason', '']
+                  },
+                  1,
+                  0
+                ]
+              }
+            },
+            secondFinished: {
+              $sum: {
+                $cond: [
+                  {
+                    $and: [
+                      {
+                        $eq: ['$questionReason', '']
+                      },
+                      {
+                        $ne: ['$secondMarkerAccount', '']
+                      }
+                    ]
+                  },
+                  1,
+                  0
+                ]
+              }
+            },
+            thirdFinished: {
+              $sum: {
+                $cond: [
+                  {
+                    $and: [
+                      {
+                        $eq: ['$questionReason', '']
+                      },
+                      {
+                        $ne: ['$thirdMarkerAccount', '']
+                      }
+                    ]
+                  },
+                  1,
+                  0
+                ]
+              }
+            },
+            thirdPending: {
+              $sum: {
+                $cond: [
+                  {
+                    $and: [
+                      {
+                        $eq: ['$questionReason', '']
+                      },
+                      {
+                        $eq: ['$thirdMarkerAccount', '']
+                      },
+                      {
+                        $eq: ['$arbitrateMarkerAccount', '']
+                      },
+                      {
+                        $gt: ['$minScoreDiff', '$arbitrateScoreDiff']
+                      }
+                    ]
+                  },
+                  1,
+                  0
+                ]
+              }
+            },
+            arbitrateFinished: {
+              $sum: {
+                $cond: [
+                  {
+                    $and: [
+                      {
+                        $eq: ['$questionReason', '']
+                      },
+                      {
+                        $ne: ['$arbitrateMarkerAccount', '']
+                      }
+                    ]
+                  },
+                  1,
+                  0
+                ]
+              }
+            },
+            arbitratePending: {
+              $sum: {
+                $cond: [
+                  {
+                    $or: [
+                      {
+                        $and: [
+                          {
+                            $eq: ['$questionReason', '']
+                          },
+                          {
+                            $eq: ['$arbitrateMarkerAccount', '']
+                          },
+                          {
+                            $gt: ['$minScoreDiff', '$arbitrateScoreDiff']
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  1,
+                  0
+                ]
+              }
+            },
+            questionFinished: {
+              $sum: {
+                $cond: [
+                  {
+                    $and: [
+                      {
+                        $ne: ['$questionMarkerAccount', '']
+                      }
+                    ]
+                  },
+                  1,
+                  0
+                ]
+              }
+            },
+            questionTotal: {
+              $sum: {
+                $cond: [
+                  {
+                    $ne: ['$questionReason', '']
+                  },
+                  1,
+                  0
+                ]
+              }
             }
           }
         }
-      }
-    ]).toArray()
+      ]).toArray()
+    }
     const questionnamemap = {}
     stats.forEach(item => {
       questionnamemap[item._id] = item

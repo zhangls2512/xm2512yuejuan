@@ -352,11 +352,11 @@ exports.main = async (event, configfilepath) => {
             errFix: '无修复建议'
           }
         }
-        if (typeof (exist.answer) != 'string' || exist.answer.length > 100000 || (exist.answer && !/^data:image\/\w+;base64,/.test(exist.answer))) {
+        if (typeof (exist.answer) != 'string' || (exist.answer && !/^data:image\/\w+;base64,/.test(exist.answer))) {
           return {
             errCode: 400,
             errMsg: '主观题组' + question.name + '作答不合法',
-            errFix: '无修复建议（图片大小不超过75KB）'
+            errFix: '无修复建议'
           }
         }
         result.subjectiveQuestionGroup[i].answer = exist.answer

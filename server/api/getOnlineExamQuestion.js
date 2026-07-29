@@ -60,6 +60,11 @@ exports.main = async (event, configfilepath) => {
     }
     const exam = await db.collection('exam').findOne({
       examId: requestdata.id
+    }, {
+      projection: {
+        _id: false,
+        schoolId: true
+      }
     })
     if (!exam.schoolId || (exam.schoolId && account.schoolId)) {
       const result = {
@@ -91,39 +96,35 @@ exports.main = async (event, configfilepath) => {
         })
       })
       const dir = readConfig(configfilepath, 'dataRootPath') + '/question/'
-      const promisesa = result.objectiveQuestion.map(async (item) => {
-        if (item.question) {
-          const question = await db.collection('question').findOne({
-            questionId: item.question,
-            schoolId: exam.schoolId
-          })
-          if (!question) {
-            item.question = ''
-          }
-          if (question) {
-            item.question = read(dir + item.question + '-question')
-          }
+      const allquestion = data.objectiveQuestion.concat(data.subjectiveQuestion)
+      const questionmap = {}
+      allquestion.forEach(item => {
+        questionmap[item.name] = item.questionId
+      })
+      const questions = await db.collection('question').find({
+        questionId: {
+          $in: [...new Set(allquestion.map(item => item.questionId).filter(item => item))]
+        },
+        schoolId: exam.schoolId
+      }, {
+        projection: {
+          _id: true,
+          questionId: true
+        }
+      }).toArray()
+      const questionset = new Set(questions.map(item => item.questionId))
+      result.objectiveQuestion.forEach(item => {
+        if (questionset.has(questionmap[item.name])) {
+          item.question = read(dir + questionmap[item.name] + '-question')
         }
       })
-      const promisesb = result.subjectiveQuestionGroup.map(async (item) => {
-        const promises = item.question.map(async (q) => {
-          if (q.question) {
-            const question = await db.collection('question').findOne({
-              questionId: q.question,
-              schoolId: exam.schoolId
-            })
-            if (!question) {
-              q.question = ''
-            }
-            if (question) {
-              q.question = read(dir + q.question + '-question')
-            }
+      result.subjectiveQuestionGroup.forEach(g => {
+        g.question.forEach(item => {
+          if (questionset.has(questionmap[item.name])) {
+            item.question = read(dir + questionmap[item.name] + '-question')
           }
         })
-        await Promise.all(promises)
       })
-      await Promise.all(promisesa)
-      await Promise.all(promisesb)
       return {
         errCode: 0,
         errMsg: '成功',

@@ -138,7 +138,7 @@ function info(info) {
       <div class="cz">
         <div class="spacebetween">
           <div class="cz">
-            <div class="large-bold-text">{{ item.scorereportconfigName }}</div>
+            <div class="large-bold-text">{{ item.name }}</div>
             <div class="sp">
               <div class="bold-text">考试</div>
               <div>{{ item.examName }}</div>

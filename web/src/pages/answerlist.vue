@@ -6,22 +6,24 @@ const props = defineProps({
     type: Object,
     required: true
   },
-  scorereportId: {
+  id: {
     type: String,
     required: true
   },
-  questionNameClick: {
+  click: {
     type: Boolean,
     required: true
   }
 })
 const qadialog = ref(false)
 const qa = ref({})
+const sadialog = ref(false)
+const answer = ref({})
 async function openQa(questionname) {
   const res = await request({
     apiPath: '/getQuestionAndAnswer',
     body: {
-      id: props.scorereportId,
+      id: props.id,
       questionName: questionname
     }
   })
@@ -32,27 +34,43 @@ function closeQa() {
   qadialog.value = false
   qa.value = {}
 }
+async function openSa(questionname) {
+  const res = await request({
+    apiPath: '/getStudentQuestionAnswer',
+    body: {
+      id: props.id,
+      questionName: questionname
+    }
+  })
+  answer.value = res.data
+  sadialog.value = true
+}
+function closeSa() {
+  sadialog.value = false
+  answer.value = {}
+}
 </script>
 
 <template>
   <tiny-grid :data="data" border>
     <tiny-grid-column field="questionName" title="题号" align="center">
       <template #default="{ row }">
-        <div v-if="questionNameClick == true" class="clickwz" @click="openQa(row.questionName)">{{ row.questionName }}
-        </div>
-        <div v-if="questionNameClick == false">{{ row.questionName }}</div>
+        <div v-if="click == true" class="clickwz" @click="openQa(row.questionName)">{{ row.questionName }}</div>
+        <div v-if="click == false">{{ row.questionName }}</div>
       </template>
     </tiny-grid-column>
     <tiny-grid-column title="作答" align="center">
       <template #default="{ row }">
         <div v-if="row.correctAnswer != ''">{{ row.answer }}</div>
-        <div v-if="row.correctAnswer == ''" class="clickwz" @click="openSa(row.questionName, '')">查看</div>
+        <div v-if="row.correctAnswer == '' && click == true" class="clickwz" @click="openSa(row.questionName)">查看</div>
+        <div v-if="row.correctAnswer == '' && click == false">-</div>
       </template>
     </tiny-grid-column>
     <tiny-grid-column title="答案" align="center">
       <template #default="{ row }">
         <div v-if="row.correctAnswer != ''">{{ row.correctAnswer }}</div>
-        <div v-if="row.correctAnswer == ''" class="clickwz" @click="openQa(row.questionName)">查看</div>
+        <div v-if="row.correctAnswer == '' && click == true" class="clickwz" @click="openQa(row.questionName)">查看</div>
+        <div v-if="row.correctAnswer == '' && click == false">-</div>
       </template>
     </tiny-grid-column>
     <tiny-grid-column field="score" title="得分" align="center"></tiny-grid-column>
@@ -81,6 +99,20 @@ function closeQa() {
     </div>
     <template #footer>
       <tiny-button type="info" @click="closeQa">确定</tiny-button>
+    </template>
+  </tiny-dialog-box>
+  <tiny-dialog-box class="dialog" :visible="sadialog" title="作答" @close="closeSa">
+    <div class="cz">
+      <div class="large-text" style="color:red">总分：{{ answer.totalScore }}</div>
+      <div v-for="item, index in answer.stepScore" v-if="answer.stepScore.length > 1" style="color:red">步骤{{ index + 1
+      }}：{{ item }}分</div>
+      <div v-for="item in answer.answerImage">
+        <img v-if="item != ''" :src="item" loading="lazy"></img>
+        <img v-if="item == ''" src="/noimage.png" loading="lazy"></img>
+      </div>
+    </div>
+    <template #footer>
+      <tiny-button type="info" @click="closeSa">确定</tiny-button>
     </template>
   </tiny-dialog-box>
 </template>

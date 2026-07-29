@@ -148,18 +148,26 @@ async function getScoreReport(subject, classes, marklog, config, schoolid, confi
       }
     }
   })
-  const questionnames = subject.objectiveQuestion.concat(subject.subjectiveQuestion).filter(item => item.questionId)
-  const questionknowledgepointmap = {}
-  const promises = questionnames.map(async (item) => {
-    const qa = await db.collection('question').findOne({
-      questionId: item.questionId,
-      schoolId: schoolid
-    })
-    if (qa) {
-      questionknowledgepointmap[item.name] = qa.knowledgepoint
+  const questions = subject.objectiveQuestion.concat(subject.subjectiveQuestion).filter(item => item.questionId)
+  const questionidnamemap = {}
+  questions.forEach(item => {
+    if (!questionidnamemap[item.questionId]) {
+      questionidnamemap[item.questionId] = []
     }
+    questionidnamemap[item.questionId].push(item.name)
   })
-  await Promise.all(promises)
+  const questionknowledgepointmap = {}
+  const qa = await db.collection('question').find({
+    questionId: {
+      $in: Object.keys(questionidnamemap)
+    },
+    schoolId: schoolid
+  }).toArray()
+  qa.forEach(item => {
+    questionidnamemap[item.questionId].forEach(qn => {
+      questionknowledgepointmap[qn] = item.knowledgepoint
+    })
+  })
   const knowledgepointquestionmap = {}
   Object.entries(questionknowledgepointmap).forEach(([question, knowledgepoint]) => {
     knowledgepoint.forEach(k => {

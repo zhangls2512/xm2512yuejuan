@@ -91,7 +91,7 @@ async function getStudentMap() {
   const res = await request({
     apiPath: '/getScorereportStudentMap',
     body: {
-      id: data.value.scorereportId
+      id: data.value.id
     }
   })
   studentmap.value = res.data
@@ -100,7 +100,7 @@ async function getAnswerList(stu = '') {
   const res = await request({
     apiPath: '/getStudentAnswerList',
     body: {
-      id: data.value.scorereportId,
+      id: data.value.id,
       studentAccount: stu
     }
   })
@@ -110,7 +110,7 @@ async function getKnowledgepointList(stu = '') {
   const res = await request({
     apiPath: '/getStudentKnowledgepointList',
     body: {
-      id: data.value.scorereportId,
+      id: data.value.id,
       studentAccount: stu
     }
   })
@@ -120,7 +120,7 @@ async function openQa(questionname) {
   const res = await request({
     apiPath: '/getQuestionAndAnswer',
     body: {
-      id: data.value.scorereportId,
+      id: data.value.id,
       questionName: questionname
     }
   })
@@ -151,7 +151,7 @@ async function openSa(questionname, stu) {
   const res = await request({
     apiPath: '/getStudentQuestionAnswer',
     body: {
-      id: data.value.scorereportId,
+      id: data.value.id,
       studentAccount: stu,
       questionName: questionname
     }
@@ -163,7 +163,7 @@ async function openSab(row, type) {
   const res = await request({
     apiPath: '/getTypicalMarklog',
     body: {
-      id: data.value.scorereportId,
+      id: data.value.id,
       questionName: row.name,
       type: type
     }
@@ -179,7 +179,7 @@ async function openAa(stu) {
   const res = await request({
     apiPath: '/getStudentAnswerImage',
     body: {
-      id: data.value.scorereportId,
+      id: data.value.id,
       studentAccount: stu
     }
   })
@@ -268,7 +268,7 @@ function formatClassId(a) {
       <tiny-breadcrumb-item :to="{ path: '/scorereport' }" label="成绩报告"></tiny-breadcrumb-item>
       <tiny-breadcrumb-item :to="{ path: '/scorereportinfo' }" label="成绩报告详情"></tiny-breadcrumb-item>
     </tiny-breadcrumb>
-    <div class="large-bold-text">{{ data.scorereportconfigName }}</div>
+    <div class="large-bold-text">{{ data.name }}</div>
     <div class="sp">
       <div class="bold-text">考试</div>
       <div>{{ data.examName }}</div>
@@ -436,7 +436,7 @@ function formatClassId(a) {
         <tiny-tabs v-if="data.subject != '多学科'" v-model="tabnameb">
           <tiny-tab-item title="小题作答情况" name="小题作答情况">
             <template #default>
-              <answerlistgrid :data="answerlist" :scorereportId="data.scorereportId" :questionNameClick="true">
+              <answerlistgrid :data="answerlist" :id="data.id" :click="true">
               </answerlistgrid>
             </template>
           </tiny-tab-item>
@@ -484,7 +484,8 @@ function formatClassId(a) {
     <tiny-dialog-box class="dialog" :visible="sadialog" title="作答" @close="closeSa">
       <div class="cz">
         <div class="large-text" style="color:red">总分：{{ answer.totalScore }}</div>
-        <div v-for="item, index in answer.stepScore" style="color:red">步骤{{ index + 1 }}：{{ item }}分</div>
+        <div v-for="item, index in answer.stepScore" v-if="answer.stepScore.length > 1" style="color:red">步骤{{ index + 1
+        }}：{{ item }}分</div>
         <div v-for="item in answer.answerImage">
           <img v-if="item != ''" :src="item" loading="lazy"></img>
           <img v-if="item == ''" src="/noimage.png" loading="lazy"></img>
@@ -517,7 +518,7 @@ function formatClassId(a) {
       </template>
     </tiny-dialog-box>
     <tiny-dialog-box class="dialog" :visible="aldialog" title="小题作答情况" @close="closeAl">
-      <answerlistgrid :data="answerlist" :scorereportId="data.scorereportId" :questionNameClick="false">
+      <answerlistgrid :data="answerlist" :id="data.id" :click="false">
       </answerlistgrid>
       <template #footer>
         <tiny-button type="info" @click="closeAl">确定</tiny-button>

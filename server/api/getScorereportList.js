@@ -60,6 +60,7 @@ exports.main = async (event, configfilepath) => {
         }
         return {
           scorereportId: item.scorereportId,
+          scorereportconfigId: item.scorereportconfigId,
           examId: item.examId,
           subject: item.subject,
           createTime: item.createTime,
@@ -100,8 +101,7 @@ exports.main = async (event, configfilepath) => {
           type: 'joint'
         }, {
           projection: {
-            _id: false,
-            scorereportconfigId: false
+            _id: false
           }
         }).sort({
           createTime: -1
@@ -135,8 +135,7 @@ exports.main = async (event, configfilepath) => {
         }, {
           projection: {
             _id: false,
-            schoolId: false,
-            scorereportconfigId: false
+            schoolId: false
           }
         }).sort({
           createTime: -1
@@ -205,8 +204,7 @@ exports.main = async (event, configfilepath) => {
         }, {
           projection: {
             _id: false,
-            classId: false,
-            scorereportconfigId: false
+            classId: false
           }
         }).sort({
           createTime: -1
@@ -214,17 +212,21 @@ exports.main = async (event, configfilepath) => {
       }
     }
     const exammap = {}
-    const promises = [...new Set(data.map(item => item.examId))].map(async (item) => {
-      const examgetres = await db.collection('exam').findOne({
-        examId: item
-      })
-      exammap[item] = examgetres ? examgetres : '未知'
+    const examgetres = await db.collection('exam').find({
+      examId: {
+        $in: [...new Set(data.map(item => item.examId))]
+      }
+    }).toArray()
+    examgetres.forEach(item => {
+      exammap[item.examId] = item
     })
-    await Promise.all(promises)
     data.forEach(item => {
       item.examName = exammap[item.examId].name
       item.examType = exammap[item.examId].type
-      item.scorereportconfigName = confignamemap[item.scorereportconfigId]
+      item.id = item.scorereportId
+      item.name = confignamemap[item.scorereportconfigId]
+      delete item.scorereportId
+      delete item.scorereportconfigId
     })
     return {
       errCode: 0,

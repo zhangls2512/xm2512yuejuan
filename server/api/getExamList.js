@@ -44,6 +44,7 @@ exports.main = async (event, configfilepath) => {
       }, {
         projection: {
           _id: false,
+          schoolId: false,
           adminAccount: false,
           end: false
         }
@@ -58,6 +59,7 @@ exports.main = async (event, configfilepath) => {
       }, {
         projection: {
           _id: false,
+          schoolId: false,
           adminAccount: false,
           end: false
         }
@@ -65,19 +67,24 @@ exports.main = async (event, configfilepath) => {
         time: -1
       }).skip(skip).limit(limit).toArray()
     }
-    const promises = data.map(async (item) => {
-      const examsubjectgetres = await db.collection('examsubject').find({
-        examId: item.examId
-      }).toArray()
-      item.subject = examsubjectgetres.map((subject) => {
-        ['_id', 'examId', 'adminAccount', 'subSubject', 'createTime'].forEach(item => {
-          delete subject[item]
-        })
-        return subject
-      }).sort((a, b) => a.name.localeCompare(b.name))
-      delete item.schoolId
+    const examids = data.map(item => item.examId)
+    const examsubjectgetres = await db.collection('examsubject').find({
+      examId: {
+        $in: examids
+      }
+    }).toArray()
+    examsubjectgetres.sort((a, b) => a.name.localeCompare(b.name))
+    examsubjectgetres.forEach(item => {
+      const index = examids.indexOf(item.examId)
+      const deletekeys = ['_id', 'examId', 'adminAccount', 'subSubject', 'createTime']
+      deletekeys.forEach(key => {
+        delete item[key]
+      })
+      if (!data[index].subject) {
+        data[index].subject = []
+      }
+      data[index].subject.push(item)
     })
-    await Promise.all(promises)
     return {
       errCode: 0,
       errMsg: '成功',

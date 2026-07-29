@@ -138,6 +138,11 @@ exports.main = async (event, configfilepath) => {
     })
     const exam = await db.collection('exam').findOne({
       examId: scorereportconfigres.examId
+    }, {
+      projection: {
+        _id: false,
+        schoolId: true
+      }
     })
     const marklogres = await db.collection('marklog').find({
       examId: scorereportconfigres.examId,
@@ -148,33 +153,43 @@ exports.main = async (event, configfilepath) => {
       },
       type: 'system'
     }).toArray()
-    const questions = examsubjectgetres.objectiveQuestion.concat(examsubjectgetres.subjectiveQuestion).filter(item => item.questionId)
+    const questions = examsubjectgetres.objectiveQuestion.concat(examsubjectgetres.subjectiveQuestion)
+    const questionmap = {}
+    questions.forEach(item => {
+      questionmap[item.name] = item
+    })
+    const questionnames = questions.filter(item => item.questionId)
+    const marklogquestionids = marklogres.map(item => questionmap[item.questionName].questionId).filter(item => item)
+    const questionidknowledgepointmap = {}
+    const qa = await db.collection('question').find({
+      questionId: {
+        $in: [...new Set(marklogquestionids)]
+      },
+      schoolId: exam.schoolId
+    }).toArray()
+    qa.forEach(item => {
+      questionidknowledgepointmap[item.questionId] = item.knowledgepoint
+    })
     const knowledgepointmap = {}
-    const promises = marklogres.map(async (item) => {
-      const question = questions.find(q => q.name == item.questionName)
-      if (question) {
-        const qa = await db.collection('question').findOne({
-          questionId: question.questionId,
-          schoolId: exam.schoolId
-        })
-        if (qa) {
-          qa.knowledgepoint.forEach(k => {
-            if (!knowledgepointmap[k]) {
-              knowledgepointmap[k] = {
-                name: k,
-                questionName: [],
-                score: 0,
-                fullscore: 0
-              }
+    marklogres.forEach(item => {
+      const question = questionmap[item.questionName]
+      const knowledgepoint = questionidknowledgepointmap[question.questionId]
+      if (knowledgepoint) {
+        knowledgepoint.forEach(k => {
+          if (!knowledgepointmap[k]) {
+            knowledgepointmap[k] = {
+              name: k,
+              questionName: [],
+              score: 0,
+              fullscore: 0
             }
-            knowledgepointmap[k].questionName.push(item.questionName)
-            knowledgepointmap[k].score += item.answer ? calcObjectiveScore(question, item.answer) : item.finalTotalScore
-            knowledgepointmap[k].fullscore += item.answer ? Math.max(...[...new Set(question.correctOptionCountRule.map(r => r.score).concat(question.specialOptionGroupRule.map(r => r.score)))]) : sum(question.stepScore.map(s => s[0]))
-          })
-        }
+          }
+          knowledgepointmap[k].questionName.push(item.questionName)
+          knowledgepointmap[k].score += item.answer ? calcObjectiveScore(question, item.answer) : item.finalTotalScore
+          knowledgepointmap[k].fullscore += item.answer ? Math.max(...[...new Set(question.correctOptionCountRule.map(r => r.score).concat(question.specialOptionGroupRule.map(r => r.score)))]) : sum(question.stepScore.map(s => s[0]))
+        })
       }
     })
-    await Promise.all(promises)
     return {
       errCode: 0,
       errMsg: '成功',

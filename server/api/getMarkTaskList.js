@@ -41,19 +41,14 @@ exports.main = async (event, configfilepath) => {
     }).sort({
       createTime: -1
     }).skip(skip).limit(limit).toArray()
-    const exams = []
-    const promises = [...new Set(data.map(item => item.examId))].map(async (item) => {
-      const examgetres = await db.collection('exam').findOne({
-        examId: item
-      })
-      if (examgetres && (!examgetres.schoolId || examgetres.schoolId == account.schoolId)) {
-        exams.push(examgetres)
+    const exams = await db.collection('exam').find({
+      examId: {
+        $in: [...new Set(data.map(item => item.examId))]
       }
-    })
-    await Promise.all(promises)
+    }).toArray()
     const result = []
     data.forEach(item => {
-      const exam = exams.find(i => i.examId == item.examId)
+      const exam = exams.find(i => i.examId == item.examId && (!i.schoolId || i.schoolId == account.schoolId))
       if (exam) {
         ['_id', 'examId', 'adminAccount', 'subSubject', 'createTime'].forEach(key => {
           delete item[key]
