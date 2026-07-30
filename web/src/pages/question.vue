@@ -160,10 +160,10 @@ async function deleteQuestion(id) {
                 <div class="clickwz" @click="copy(item.questionId)">{{ item.questionId }}</div>
               </tiny-tooltip>
             </div>
-            <img :src="item.question" loading="lazy"></img>
+            <img :src="item.question"></img>
             <div class="sp">
               <div class="bold-text">答案</div>
-              <img :src="item.answer" style="flex:1;min-width:0" loading="lazy"></img>
+              <img :src="item.answer" style="flex:1;min-width:0"></img>
             </div>
             <div class="sp">
               <div class="bold-text">类型</div>

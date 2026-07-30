@@ -52,6 +52,7 @@ exports.main = async (event, configfilepath) => {
     }, {
       projection: {
         _id: false,
+        examId: true,
         schoolId: true
       }
     })

@@ -105,6 +105,6 @@ function getCoord(item, w = 0, h = 0) {
 </script>
 
 <template>
-  <img ref="i" :src="data.answerImage || '/noimage.png'" @load="draw" style="display:none" loading="lazy"></img>
+  <img ref="i" :src="data.answerImage || '/noimage.png'" @load="draw" style="display:none"></img>
   <canvas ref="c"></canvas>
 </template>

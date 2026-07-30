@@ -107,13 +107,13 @@ async function newQuestion() {
       <tiny-form-item label="题目">
         <div class="cz">
           <div><tiny-button type="info" @click="selectQuestion">选择图片</tiny-button></div>
-          <img v-if="question != ''" :src="question" loading="lazy"></img>
+          <img v-if="question != ''" :src="question"></img>
         </div>
       </tiny-form-item>
       <tiny-form-item label="答案">
         <div class="cz">
           <div><tiny-button type="info" @click="selectAnswer">选择图片</tiny-button></div>
-          <img v-if="answer != ''" :src="answer" loading="lazy"></img>
+          <img v-if="answer != ''" :src="answer"></img>
         </div>
       </tiny-form-item>
       <tiny-form-item label="类型">

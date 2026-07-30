@@ -72,7 +72,7 @@ function getScoreList(subjectconfig, csvstr) {
     volume.page.forEach(page => {
       page.forEach(q => {
         if (q.objectiveQuestionName) {
-          allquestionnames = allquestionnames.push(q.objectiveQuestionName)
+          allquestionnames.push(q.objectiveQuestionName)
         }
         if (q.markGroupName) {
           const markgroup = subjectconfig.markGroup.find(item => item.name == q.markGroupName)

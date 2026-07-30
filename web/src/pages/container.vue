@@ -75,7 +75,7 @@ function clearHistory() {
   <div class="container">
     <div class="header">
       <div class="sp">
-        <img class="tx" src="/logo.png" loading="lazy"></img>
+        <img class="tx" src="/logo.png"></img>
         <div class="header-title">智能阅卷系统</div>
       </div>
     </div>
@@ -89,7 +89,7 @@ function clearHistory() {
       <router-link class="footer-text" to="/updatelog" target="_blank">更新日志</router-link>
       <tiny-divider direction="vertical"></tiny-divider>
       <div class="sp">
-        <img src="/ai.svg" loading="lazy" @click="openAiDialog"></img>
+        <img src="/ai.svg" @click="openAiDialog"></img>
         <div class="clickwz" @click="openAiDialog">AI智能客服</div>
       </div>
     </div>

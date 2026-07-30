@@ -176,7 +176,7 @@ const data = [
   <div class="container">
     <div class="header">
       <div class="sp">
-        <img class="tx" src="/logo.png" loading="lazy"></img>
+        <img class="tx" src="/logo.png"></img>
         <div class="header-title">更新日志</div>
       </div>
     </div>
