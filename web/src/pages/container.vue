@@ -81,7 +81,7 @@ function clearHistory() {
     </div>
     <router-view class="empty"></router-view>
     <div class="footer">
-      <div class="footer-text">Version 1.1.7</div>
+      <div class="footer-text">Version 1.1.8</div>
       <tiny-divider direction="vertical"></tiny-divider>
       <a class="footer-text" href="https://docs.qq.com/doc/p/cfe2a8b2b5709cadd6d9048aa4fd001678197397"
         target="_blank">帮助文档</a>

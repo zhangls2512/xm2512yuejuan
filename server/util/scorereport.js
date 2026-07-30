@@ -148,7 +148,7 @@ async function getScoreReport(subject, classes, marklog, config, schoolid, confi
       }
     }
   })
-  const questions = subject.objectiveQuestion.concat(subject.subjectiveQuestion).filter(item => item.questionId)
+  const questions = subject.objectiveQuestion.concat(subject.subjectiveQuestion).filter(item => item.questionId && config.scoringQuestionNames.includes(item.name))
   const questionidnamemap = {}
   questions.forEach(item => {
     if (!questionidnamemap[item.questionId]) {
@@ -857,7 +857,10 @@ async function generateDefaultScoreReport(exam, subject, configfilepath) {
     const marklog = await db.collection('marklog').find({
       examId: exam.examId,
       subject: subject.name,
-      type: 'system'
+      type: 'system',
+      questionName: {
+        $in: item.config.scoringQuestionNames
+      }
     }).toArray()
     const scorereport = await getScoreReport(subject, classes, marklog, item.config, exam.schoolId, configfilepath)
     if (scorereportconfig && scorereportconfig.status == 'finished') {
@@ -943,7 +946,10 @@ async function generateSingleSubjectScoreReport(exam, subject, scorereportconfig
   const marklog = await db.collection('marklog').find({
     examId: exam.examId,
     subject: subject.name,
-    type: 'system'
+    type: 'system',
+    questionName: {
+      $in: scorereportconfig.config.scoringQuestionNames
+    }
   }).toArray()
   const scorereport = await getScoreReport(subject, classes, marklog, scorereportconfig.config, exam.schoolId, configfilepath)
   if (scorereportconfig.status == 'finished') {

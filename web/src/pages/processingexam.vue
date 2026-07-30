@@ -279,7 +279,7 @@ async function endExam(id) {
               <div class="bold-text">时间</div>
               <div>{{ item.time }}</div>
             </div>
-            <div class="sp">
+            <div v-if="item.subject.length > 0" class="sp">
               <div class="bold-text">科目</div>
               <tiny-tag v-for="i in item.subject" type="info">{{ i.name }}</tiny-tag>
             </div>

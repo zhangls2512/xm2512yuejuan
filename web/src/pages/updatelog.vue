@@ -12,6 +12,16 @@ const data = [
     ]
   },
   {
+    versionNumber: '1.1.7',
+    releaseDate: '2026-07-30',
+    logs: [
+      {
+        type: 'F',
+        content: '修复了一些已知的问题'
+      }
+    ]
+  },
+  {
     versionNumber: '1.1.6',
     releaseDate: '2026-07-29',
     logs: [

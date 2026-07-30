@@ -17,7 +17,7 @@ if (info) {
 async function upload() {
   const content = await readFile('csv')
   await request({
-    apiPath: '/supplyExamSubjectScore',
+    apiPath: '/supplyScore',
     body: {
       id: data.value.examId,
       subject: data.value.subject.name,
