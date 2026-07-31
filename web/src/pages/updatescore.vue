@@ -101,7 +101,7 @@ async function submit(item) {
           <div v-if="index > 0" class="line"></div>
           <div class="sp">
             <div class="bold-text">{{ item.questionName }}</div>
-            <div class="cz">
+            <div class="cz" style="flex:1">
               <tiny-checkbox-group v-if="item.option" v-model="item.answer">
                 <tiny-checkbox v-for="(i, j) in item.option" :label="j">{{ i }}</tiny-checkbox>
               </tiny-checkbox-group>
