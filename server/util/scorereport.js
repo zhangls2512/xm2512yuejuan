@@ -1026,6 +1026,7 @@ async function generateMultipleSubjectScoreReport(exam, scorereportconfig, confi
       $in: scorereportconfig.scorereportconfigIdArray
     }
   }).toArray()
+  scorereportres.sort((a, b) => scorereportconfig.scorereportconfigIdArray.indexOf(a.scorereportconfigId) - scorereportconfig.scorereportconfigIdArray.indexOf(b.scorereportconfigId))
   const scorereport = getMultipleSubjectScoreReport(scorereportres)
   if (scorereportconfig.status == 'finished') {
     await db.collection('scorereport').deleteMany({

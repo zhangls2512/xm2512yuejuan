@@ -46,6 +46,7 @@ if (info) {
         classmap.value[item.id] = item.name
       })
       if (data.value.subject == '多学科') {
+        tabname.value = '成绩单'
         tabledata.value = flatStudents(data.value.student)
         columns.value = buildColumns(data.value.student)
       }
