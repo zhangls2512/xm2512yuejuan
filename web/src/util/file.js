@@ -54,7 +54,6 @@ export function getTransparentImage(width, height) {
   const canvas = document.createElement('canvas')
   canvas.width = width
   canvas.height = height
-  const ctx = canvas.getContext('2d')
   const base64 = canvas.toDataURL('image/png')
   return base64
 }
