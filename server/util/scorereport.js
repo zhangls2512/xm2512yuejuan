@@ -16,7 +16,7 @@ function standarddeviation(arr) {
   return fixtwo(Math.sqrt(arr.reduce((s, x) => s + (x - averagescore) ** 2, 0) / arr.length))
 }
 function calcDiscrimination(scorearr, fullscore = 0) {
-  const sorted = scorearr.sort((a, b) => a - b)
+  const sorted = scorearr.sort()
   const n = sorted.length
   const groupsize = Math.floor(n * 0.27)
   if (groupsize == 0) {

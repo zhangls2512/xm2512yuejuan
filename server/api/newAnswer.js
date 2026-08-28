@@ -340,7 +340,7 @@ exports.main = async (event, configfilepath) => {
             errFix: '无修复建议'
           }
         }
-        result.objectiveQuestion[i].answer = [...new Set(exist.answer)].sort((a, b) => a - b)
+        result.objectiveQuestion[i].answer = [...new Set(exist.answer)].sort()
       }
       for (let i = 0; i < result.subjectiveQuestionGroup.length; i++) {
         const question = data.markGroup[i]

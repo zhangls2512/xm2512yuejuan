@@ -117,7 +117,7 @@ exports.main = async (event, configfilepath) => {
         type: 'system'
       }, {
         $set: {
-          answer: [...new Set(requestdata.answer)].sort((a, b) => a - b)
+          answer: [...new Set(requestdata.answer)].sort()
         }
       })
     } else {

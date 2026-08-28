@@ -139,7 +139,7 @@ function checkSubjectConfig(requestdata, olddata) {
         errFix: '传递有效的objectiveQuestion参数'
       }
     }
-    questionitem.correctOptionIndex = [...new Set(questionitem.correctOptionIndex.sort((a, b) => a - b))]
+    questionitem.correctOptionIndex = [...new Set(questionitem.correctOptionIndex.sort())]
     if (!Array.isArray(questionitem.correctOptionCountRule) || !questionitem.correctOptionCountRule.every(item => Number.isInteger(item.count) && item.count >= 0 && item.count <= questionitem.correctOptionIndex.length && item.score >= 0)) {
       return {
         errCode: 400,
@@ -169,7 +169,7 @@ function checkSubjectConfig(requestdata, olddata) {
     }
     questionitem.specialOptionGroupRule = questionitem.specialOptionGroupRule.map(item => {
       return {
-        optionIndex: [...new Set(item.optionIndex)].sort((a, b) => a - b),
+        optionIndex: [...new Set(item.optionIndex)].sort(),
         score: item.score
       }
     })
