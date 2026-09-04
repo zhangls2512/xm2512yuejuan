@@ -77,7 +77,7 @@ async function newQuestion() {
     })
     return
   }
-  const res = await request({
+  await request({
     apiPath: '/newQuestion',
     body: {
       question: question.value,

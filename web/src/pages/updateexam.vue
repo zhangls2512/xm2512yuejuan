@@ -94,7 +94,7 @@ async function updateExam() {
     })
     return
   }
-  const res = await request({
+  await request({
     apiPath: '/updateExam',
     body: {
       id: id,

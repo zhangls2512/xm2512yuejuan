@@ -78,7 +78,7 @@ async function newExam() {
     })
     return
   }
-  const res = await request({
+  await request({
     apiPath: '/newExam',
     body: {
       name: name.value,

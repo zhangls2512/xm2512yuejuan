@@ -96,7 +96,7 @@ async function updateQuestion() {
     })
     return
   }
-  const res = await request({
+  await request({
     apiPath: '/updateQuestion',
     body: {
       id: id,
