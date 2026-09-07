@@ -67,6 +67,9 @@ exports.main = async (event, configfilepath) => {
         time: -1
       }).skip(skip).limit(limit).toArray()
     }
+    data.forEach(item => {
+      item.subject = []
+    })
     const examids = data.map(item => item.examId)
     const examsubjectgetres = await db.collection('examsubject').find({
       examId: {
@@ -80,9 +83,6 @@ exports.main = async (event, configfilepath) => {
       deletekeys.forEach(key => {
         delete item[key]
       })
-      if (!data[index].subject) {
-        data[index].subject = []
-      }
       data[index].subject.push(item)
     })
     return {
