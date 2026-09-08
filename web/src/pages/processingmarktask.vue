@@ -155,17 +155,6 @@ function supplyscore(param) {
     backname: '阅卷任务'
   }))
 }
-function updatescore(param) {
-  router.push('/updatescore?info=' + encode({
-    examId: param.examId,
-    examName: param.examName,
-    examType: param.examType,
-    examTime: param.examTime,
-    subject: param.subject.name,
-    backpath: '/processingmarktask',
-    backname: '阅卷任务'
-  }))
-}
 function markqualitymonitor(param) {
   router.push('/markqualitymonitor?info=' + encode({
     examId: param.examId,
@@ -187,7 +176,7 @@ function markqualitymonitor(param) {
           <div class="cz">
             <div class="sp">
               <div class="large-bold-text">{{ item.examName }}</div>
-              <tiny-tag type="info">{{ item.examType }}</tiny-tag>
+              <tiny-tag type="info" style="flex-shrink:0">{{ item.examType }}</tiny-tag>
             </div>
             <div class="sp">
               <div class="bold-text">时间</div>

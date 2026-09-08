@@ -181,8 +181,8 @@ async function deleteScorereportconfig(id) {
           <div class="cz">
             <div class="sp">
               <div class="large-bold-text">{{ item.name }}</div>
-              <tiny-tag v-if="item.type == 'system'" type="info">系统</tiny-tag>
-              <tiny-tag v-if="item.type == 'custom'" type="info">自定义</tiny-tag>
+              <tiny-tag v-if="item.type == 'system'" type="info" style="flex-shrink:0">系统</tiny-tag>
+              <tiny-tag v-if="item.type == 'custom'" type="info" style="flex-shrink:0">自定义</tiny-tag>
             </div>
             <div class="sp">
               <div class="bold-text">科目</div>

@@ -2,7 +2,6 @@
 document.title = '智能阅卷系统 - 账号管理 - 学生'
 import { ref } from 'vue'
 import request from '../util/request'
-import router from '../router'
 const data = ref([])
 const currentpage = ref(1)
 const pagesize = ref(10)

@@ -54,7 +54,7 @@ function close() {
     </tiny-breadcrumb>
     <div class="sp">
       <div class="large-bold-text">{{ data.examName }}</div>
-      <tiny-tag type="info">{{ data.examType }}</tiny-tag>
+      <tiny-tag type="info" style="flex-shrink:0">{{ data.examType }}</tiny-tag>
       <div class="bold-text">时间</div>
       <div>{{ data.examTime }}</div>
       <div class="bold-text">科目</div>

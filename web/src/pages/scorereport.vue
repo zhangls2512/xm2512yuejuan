@@ -142,7 +142,7 @@ function info(info) {
             <div class="sp">
               <div class="bold-text">考试</div>
               <div>{{ item.examName }}</div>
-              <tiny-tag type="info">{{ item.examType }}</tiny-tag>
+              <tiny-tag type="info" style="flex-shrink:0">{{ item.examType }}</tiny-tag>
             </div>
             <div class="sp">
               <div class="bold-text">科目</div>

@@ -30,14 +30,14 @@ if (info) {
     </div>
     <div class="bold-text">老师</div>
     <div v-for="item in data.subject" class="sp">
-      <div>{{ item.name }}</div>
-      <div class="cz" style="flex:1">
+      <div style="flex-shrink:0">{{ item.name }}</div>
+      <div class="cz">
         <div v-for="itema in item.teacher">{{ itema }}</div>
       </div>
     </div>
     <div class="sp">
       <div class="bold-text">学生</div>
-      <div class="cz" style="flex:1">
+      <div class="cz">
         <div v-for="item in data.student">{{ item }}</div>
       </div>
     </div>

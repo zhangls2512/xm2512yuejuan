@@ -87,6 +87,17 @@ exports.main = async (event, configfilepath) => {
           }
         }
       }
+      const existres = await db.collection('scorereportconfig').findOne({
+        subject: '多学科',
+        scorereportconfigIdArray: requestdata.id
+      })
+      if (existres) {
+        return {
+          errCode: 400,
+          errMsg: '已合并多学科',
+          errFix: '无修复建议'
+        }
+      }
     }
     await db.collection('scorereportconfig').deleteOne({
       scorereportconfigId: requestdata.id

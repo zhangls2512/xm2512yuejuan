@@ -4,6 +4,7 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { TinyHuichartsHistogram as TinyChartHistogram } from '@opentiny/vue-huicharts'
 import { decode } from '../util/code'
+import { saveFile } from '../util/file'
 import request from '../util/request'
 import answerimagecanvas from './answerimage.vue'
 import answerlistgrid from './answerlist.vue'
@@ -96,6 +97,11 @@ async function getStudentMap() {
     }
   })
   studentmap.value = res.data
+  if (data.value.subject == '多学科') {
+    tabledata.value.forEach(item => {
+      item.account = studentmap.value[item.account]
+    })
+  }
 }
 async function getAnswerList(stu = '') {
   const res = await request({
@@ -208,18 +214,17 @@ function flatStudents(students) {
   })
 }
 function buildColumns(students) {
-  const subjects = new Set()
-  const fields = new Set()
-  students.forEach(stu => {
-    stu.subject.forEach(sub => {
-      subjects.add(sub.name)
-      Object.keys(sub).forEach(k => {
-        if (k != 'name') {
-          fields.add(k)
-        }
-      })
-    })
-  })
+  const result = [
+    {
+      type: 'index',
+      title: '序号'
+    },
+    {
+      field: 'account',
+      title: '姓名'
+    }
+  ]
+  const subjects = []
   const titlemap = {
     totalScoreWithExtra: '分数（含附）',
     totalScoreWithoutExtra: '分数（不含附）',
@@ -230,24 +235,28 @@ function buildColumns(students) {
     fuScore: '赋分',
     level: '等级'
   }
-  return [
-    {
-      type: 'index',
-      title: '序号'
-    },
-    {
-      field: 'account',
-      title: '学生ID'
-    },
-    ...[...subjects].map(subject => ({
-      title: subject,
-      children: [...fields].map(field => ({
-        field: subject + '_' + field,
-        title: titlemap[field],
-        sortable: true
-      }))
-    }))
-  ]
+  students.forEach(stu => {
+    stu.subject.forEach(sub => {
+      if (!subjects.includes(sub.name)) {
+        subjects.push(sub.name)
+        const children = []
+        Object.keys(sub).map(field => {
+          if (field != 'name') {
+            children.push({
+              field: sub.name + '_' + field,
+              title: titlemap[field],
+              sortable: true
+            })
+          }
+        })
+        result.push({
+          title: sub.name,
+          children: children
+        })
+      }
+    })
+  })
+  return result
 }
 function formatQuestionName(a) {
   return a.cellValue.join('、')
@@ -261,6 +270,110 @@ function formatSchoolId(a) {
 function formatClassId(a) {
   return classmap.value[a.cellValue]
 }
+function downloadScore() {
+  const subject = data.value.subject
+  const hangs = [['序号', '姓名']]
+  if (subject != '多学科') {
+    hangs[0].push('分数（含附）')
+    hangs[0].push('分数（不含附）')
+    hangs[0].push('附分')
+    if (data.value.student[0].fuScore != undefined) {
+      hangs[0].push('赋分')
+      hangs[0].push('等级')
+    }
+    hangs[0].push('联次')
+    if (data.value.type != 'joint') {
+      hangs[0].push('校次')
+    }
+    if (data.value.type == 'class') {
+      hangs[0].push('班次')
+    }
+    data.value.student.forEach((stu, stuindex) => {
+      const hang = [stuindex + 1, studentmap.value[stu.account]]
+      hang.push(stu.totalScoreWithExtra)
+      hang.push(stu.totalScoreWithoutExtra)
+      hang.push(stu.extraTotalScore)
+      if (stu.fuScore != undefined) {
+        hang.push(stu.fuScore)
+        hang.push(stu.level)
+      }
+      hang.push(stu.jointRank)
+      if (data.value.type != 'joint') {
+        hang.push(stu.schoolRank)
+      }
+      if (data.value.type == 'class') {
+        hang.push(stu.classRank)
+      }
+      hangs.push(hang)
+    })
+  }
+  if (subject == '多学科') {
+    const subjects = []
+    data.value.student.forEach(stu => {
+      stu.subject.forEach(sub => {
+        if (!subjects.includes(sub.name)) {
+          subjects.push(sub.name)
+          hangs[0].push(sub.name + '分数（含附）')
+          hangs[0].push(sub.name + '分数（不含附）')
+          hangs[0].push(sub.name + '附分')
+          if (sub.fuScore != undefined) {
+            hangs[0].push(sub.name + '赋分')
+            hangs[0].push(sub.name + '等级')
+          }
+          hangs[0].push(sub.name + '联次')
+          if (data.value.type != 'joint') {
+            hangs[0].push(sub.name + '校次')
+          }
+          if (data.value.type == 'class') {
+            hangs[0].push(sub.name + '班次')
+          }
+        }
+      })
+    })
+    data.value.student.forEach((stu, stuindex) => {
+      const hang = [stuindex + 1, studentmap.value[stu.account]]
+      let stusubindex = 0
+      subjects.forEach(sub => {
+        const stusub = stu.subject[stusubindex]
+        if (sub != stusub.name) {
+          hang.push('-')
+          hang.push('-')
+          hang.push('-')
+          if (stusub.fuScore != undefined) {
+            hang.push('-')
+            hang.push('-')
+          }
+          hang.push('-')
+          if (data.value.type != 'joint') {
+            hang.push('-')
+          }
+          if (data.value.type == 'class') {
+            hang.push('-')
+          }
+        }
+        if (sub == stusub.name) {
+          hang.push(stusub.totalScoreWithExtra)
+          hang.push(stusub.totalScoreWithoutExtra)
+          hang.push(stusub.extraTotalScore)
+          if (stusub.fuScore != undefined) {
+            hang.push(stusub.fuScore)
+            hang.push(stusub.level)
+          }
+          hang.push(stusub.jointRank)
+          if (data.value.type != 'joint') {
+            hang.push(stusub.schoolRank)
+          }
+          if (data.value.type == 'class') {
+            hang.push(stusub.classRank)
+          }
+          stusubindex++
+        }
+      })
+      hangs.push(hang)
+    })
+  }
+  saveFile(hangs.map(item => item.join(',')).join('\r\n'), data.value.examName + '（' + subject + '）成绩单.csv')
+}
 </script>
 
 <template>
@@ -273,7 +386,7 @@ function formatClassId(a) {
     <div class="sp">
       <div class="bold-text">考试</div>
       <div>{{ data.examName }}</div>
-      <tiny-tag type="info">{{ data.examType }}</tiny-tag>
+      <tiny-tag type="info" style="flex-shrink:0">{{ data.examType }}</tiny-tag>
     </div>
     <div class="sp">
       <div class="bold-text">科目</div>
@@ -375,38 +488,42 @@ function formatClassId(a) {
         </tiny-tab-item>
         <tiny-tab-item title="成绩单" name="成绩单">
           <template #default>
-            <tiny-grid v-if="data.subject == '多学科'" :data="tabledata" :columns="columns" align="center"
-              border></tiny-grid>
-            <tiny-grid v-if="data.subject != '多学科'" :data="data.student" border>
-              <tiny-grid-column type="index" title="序号" align="center"></tiny-grid-column>
-              <tiny-grid-column title="姓名" align="center">
-                <template #default="{ row }">
-                  <tiny-dropdown :show-icon="false">
-                    <template #default>
-                      <div class="clickwz">{{ studentmap[row.account] }}</div>
-                    </template>
-                    <template #dropdown>
-                      <tiny-dropdown-menu placement="bottom-start">
-                        <tiny-dropdown-item @click="openAa(row.account)">查看原卷</tiny-dropdown-item>
-                        <tiny-dropdown-item @click="openAl(row.account)">查看小题作答情况</tiny-dropdown-item>
-                        <tiny-dropdown-item @click="openKp(row.account)">查看知识点掌握情况</tiny-dropdown-item>
-                      </tiny-dropdown-menu>
-                    </template>
-                  </tiny-dropdown>
-                </template>
-              </tiny-grid-column>
-              <tiny-grid-column field="totalScoreWithExtra" title="分数（含附）" sortable align="center"></tiny-grid-column>
-              <tiny-grid-column field="totalScoreWithoutExtra" title="分数（不含附）" sortable
-                align="center"></tiny-grid-column>
-              <tiny-grid-column field="extraTotalScore" title="附分" sortable align="center"></tiny-grid-column>
-              <tiny-grid-column v-if="fu == true" field="fuScore" title="赋分" sortable align="center"></tiny-grid-column>
-              <tiny-grid-column v-if="fu == true" field="level" title="等级" sortable align="center"></tiny-grid-column>
-              <tiny-grid-column field="jointRank" title="联次" sortable align="center"></tiny-grid-column>
-              <tiny-grid-column v-if="data.type != 'joint'" field="schoolRank" title="校次" sortable
-                align="center"></tiny-grid-column>
-              <tiny-grid-column v-if="data.type == 'class'" field="classRank" title="班次" sortable
-                align="center"></tiny-grid-column>
-            </tiny-grid>
+            <div class="cz">
+              <div><tiny-button type="info" @click="downloadScore">下载</tiny-button></div>
+              <tiny-grid v-if="data.subject == '多学科'" :data="tabledata" :columns="columns" align="center"
+                border></tiny-grid>
+              <tiny-grid v-if="data.subject != '多学科'" :data="data.student" border>
+                <tiny-grid-column type="index" title="序号" align="center"></tiny-grid-column>
+                <tiny-grid-column title="姓名" align="center">
+                  <template #default="{ row }">
+                    <tiny-dropdown :show-icon="false">
+                      <template #default>
+                        <div class="clickwz">{{ studentmap[row.account] }}</div>
+                      </template>
+                      <template #dropdown>
+                        <tiny-dropdown-menu placement="bottom-start">
+                          <tiny-dropdown-item @click="openAa(row.account)">查看原卷</tiny-dropdown-item>
+                          <tiny-dropdown-item @click="openAl(row.account)">查看小题作答情况</tiny-dropdown-item>
+                          <tiny-dropdown-item @click="openKp(row.account)">查看知识点掌握情况</tiny-dropdown-item>
+                        </tiny-dropdown-menu>
+                      </template>
+                    </tiny-dropdown>
+                  </template>
+                </tiny-grid-column>
+                <tiny-grid-column field="totalScoreWithExtra" title="分数（含附）" sortable align="center"></tiny-grid-column>
+                <tiny-grid-column field="totalScoreWithoutExtra" title="分数（不含附）" sortable
+                  align="center"></tiny-grid-column>
+                <tiny-grid-column field="extraTotalScore" title="附分" sortable align="center"></tiny-grid-column>
+                <tiny-grid-column v-if="fu == true" field="fuScore" title="赋分" sortable
+                  align="center"></tiny-grid-column>
+                <tiny-grid-column v-if="fu == true" field="level" title="等级" sortable align="center"></tiny-grid-column>
+                <tiny-grid-column field="jointRank" title="联次" sortable align="center"></tiny-grid-column>
+                <tiny-grid-column v-if="data.type != 'joint'" field="schoolRank" title="校次" sortable
+                  align="center"></tiny-grid-column>
+                <tiny-grid-column v-if="data.type == 'class'" field="classRank" title="班次" sortable
+                  align="center"></tiny-grid-column>
+              </tiny-grid>
+            </div>
           </template>
         </tiny-tab-item>
       </tiny-tabs>
@@ -460,15 +577,13 @@ function formatClassId(a) {
     <tiny-dialog-box class="dialog" :visible="qadialog" title="题目" @close="closeQa">
       <div class="sp">
         <div class="bold-text">题目</div>
-        <tiny-image v-if="qa.question != ''" :src="qa.question" :preview-src-list="[qa.question]"
-          style="flex:1;min-width:0"></tiny-image>
-        <img v-if="qa.question == ''" src="/noimage.png" style="flex:1;min-width:0"></img>
+        <tiny-image v-if="qa.question != ''" :src="qa.question" :preview-src-list="[qa.question]"></tiny-image>
+        <img v-if="qa.question == ''" src="/noimage.png"></img>
       </div>
       <div class="sp">
         <div class="bold-text">答案</div>
-        <tiny-image v-if="qa.answer != ''" :src="qa.answer" :preview-src-list="[qa.answer]"
-          style="flex:1;min-width:0"></tiny-image>
-        <img v-if="qa.answer == ''" src="/noimage.png" style="flex:1;min-width:0"></img>
+        <tiny-image v-if="qa.answer != ''" :src="qa.answer" :preview-src-list="[qa.answer]"></tiny-image>
+        <img v-if="qa.answer == ''" src="/noimage.png"></img>
       </div>
       <div class="sp">
         <div class="bold-text">难度</div>

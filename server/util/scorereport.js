@@ -1,4 +1,7 @@
 const crypto = require('crypto')
+function fixtwo(num) {
+  return Number(num.toFixed(2))
+}
 function sum(arr) {
   return arr.reduce((sum, num) => sum + num, 0)
 }
@@ -31,9 +34,6 @@ function calcDiscrimination(scorearr, fullscore = 0) {
   if (fullscore != 0) {
     return fixtwo(cha / fullscore)
   }
-}
-function fixtwo(num) {
-  return Number(num.toFixed(2))
 }
 function calcObjectiveScore(config, answer) {
   const specialrules = config.specialOptionGroupRule.map(item => {
@@ -364,6 +364,11 @@ async function getScoreReport(subject, classes, marklog, config, schoolid, confi
     }
   })
   jointmap.student = Object.values(jointmap.student)
+  jointmap.student.forEach(item => {
+    item.totalScoreWithExtra = fixtwo(item.totalScoreWithExtra)
+    item.totalScoreWithoutExtra = fixtwo(item.totalScoreWithoutExtra)
+    item.extraTotalScore = fixtwo(item.extraTotalScore)
+  })
   if (config.fuScoreRule.length > 0) {
     const ff = generateGradedReport(jointmap.student.map(item => item.totalScoreWithoutExtra), config.fuScoreRule)
     const ffmap = {}
@@ -587,38 +592,43 @@ function getMultipleSubjectScoreReport(input) {
   }
   const schoolmap = {}
   const classmap = {}
-  input.forEach(item => {
-    if (item.type == 'joint') {
-      item.student.forEach(stu => {
-        const studentaccount = stu.account
-        delete stu.account
-        if (!jointmap.student[studentaccount]) {
-          jointmap.student[studentaccount] = {
-            account: studentaccount,
-            subject: [
-              {
-                name: '多学科',
-                totalScoreWithExtra: 0,
-                totalScoreWithoutExtra: 0,
-                extraTotalScore: 0
-              }
-            ]
-          }
+  input.filter(item => item.type == 'joint').forEach(item => {
+    item.student.forEach(stu => {
+      const studentaccount = stu.account
+      delete stu.account
+      if (!jointmap.student[studentaccount]) {
+        jointmap.student[studentaccount] = {
+          account: studentaccount,
+          subject: [
+            {
+              name: '多学科',
+              totalScoreWithExtra: 0,
+              totalScoreWithoutExtra: 0,
+              extraTotalScore: 0
+            }
+          ]
         }
-        jointmap.student[studentaccount].subject[0].totalScoreWithExtra += stu.totalScoreWithExtra
-        if (typeof (stu.fuScore) == 'undefined') {
-          jointmap.student[studentaccount].subject[0].totalScoreWithoutExtra += stu.totalScoreWithoutExtra
-        }
-        if (typeof (stu.fuScore) == 'number') {
-          jointmap.student[studentaccount].subject[0].totalScoreWithoutExtra += stu.fuScore
-        }
-        jointmap.student[studentaccount].subject[0].extraTotalScore += stu.extraTotalScore
-        jointmap.student[studentaccount].subject.push({
-          name: item.subject,
-          ...stu
-        })
+      }
+      jointmap.student[studentaccount].subject[0].totalScoreWithExtra += stu.totalScoreWithExtra
+      if (typeof (stu.fuScore) == 'undefined') {
+        jointmap.student[studentaccount].subject[0].totalScoreWithoutExtra += stu.totalScoreWithoutExtra
+      }
+      if (typeof (stu.fuScore) == 'number') {
+        jointmap.student[studentaccount].subject[0].totalScoreWithoutExtra += stu.fuScore
+      }
+      jointmap.student[studentaccount].subject[0].extraTotalScore += stu.extraTotalScore
+      jointmap.student[studentaccount].subject.push({
+        name: item.subject,
+        ...stu
       })
-    }
+    })
+  })
+  Object.keys(jointmap.student).forEach(stu => {
+    jointmap.student[stu].subject[0].totalScoreWithExtra = fixtwo(jointmap.student[stu].subject[0].totalScoreWithExtra)
+    jointmap.student[stu].subject[0].totalScoreWithoutExtra = fixtwo(jointmap.student[stu].subject[0].totalScoreWithoutExtra)
+    jointmap.student[stu].subject[0].extraTotalScore = fixtwo(jointmap.student[stu].subject[0].extraTotalScore)
+  })
+  input.filter(item => item.type != 'joint').forEach(item => {
     if (item.type == 'school') {
       if (!schoolmap[item.schoolId]) {
         schoolmap[item.schoolId] = {
@@ -636,21 +646,13 @@ function getMultipleSubjectScoreReport(input) {
             subject: [
               {
                 name: '多学科',
-                totalScoreWithExtra: 0,
-                totalScoreWithoutExtra: 0,
-                extraTotalScore: 0
+                totalScoreWithExtra: jointmap.student[studentaccount].subject[0].totalScoreWithExtra,
+                totalScoreWithoutExtra: jointmap.student[studentaccount].subject[0].totalScoreWithoutExtra,
+                extraTotalScore: jointmap.student[studentaccount].subject[0].extraTotalScore
               }
             ]
           }
         }
-        schoolmap[item.schoolId].student[studentaccount].subject[0].totalScoreWithExtra += stu.totalScoreWithExtra
-        if (typeof (stu.fuScore) == 'undefined') {
-          schoolmap[item.schoolId].student[studentaccount].subject[0].totalScoreWithoutExtra += stu.totalScoreWithoutExtra
-        }
-        if (typeof (stu.fuScore) == 'number') {
-          schoolmap[item.schoolId].student[studentaccount].subject[0].totalScoreWithoutExtra += stu.fuScore
-        }
-        schoolmap[item.schoolId].student[studentaccount].subject[0].extraTotalScore += stu.extraTotalScore
         schoolmap[item.schoolId].student[studentaccount].subject.push({
           name: item.subject,
           ...stu
@@ -673,21 +675,13 @@ function getMultipleSubjectScoreReport(input) {
             subject: [
               {
                 name: '多学科',
-                totalScoreWithExtra: 0,
-                totalScoreWithoutExtra: 0,
-                extraTotalScore: 0
+                totalScoreWithExtra: jointmap.student[studentaccount].subject[0].totalScoreWithExtra,
+                totalScoreWithoutExtra: jointmap.student[studentaccount].subject[0].totalScoreWithoutExtra,
+                extraTotalScore: jointmap.student[studentaccount].subject[0].extraTotalScore
               }
             ]
           }
         }
-        classmap[item.classId].student[studentaccount].subject[0].totalScoreWithExtra += stu.totalScoreWithExtra
-        if (typeof (stu.fuScore) == 'undefined') {
-          classmap[item.classId].student[studentaccount].subject[0].totalScoreWithoutExtra += stu.totalScoreWithoutExtra
-        }
-        if (typeof (stu.fuScore) == 'number') {
-          classmap[item.classId].student[studentaccount].subject[0].totalScoreWithoutExtra += stu.fuScore
-        }
-        classmap[item.classId].student[studentaccount].subject[0].extraTotalScore += stu.extraTotalScore
         classmap[item.classId].student[studentaccount].subject.push({
           name: item.subject,
           ...stu
@@ -780,7 +774,6 @@ function getMultipleSubjectScoreReport(input) {
   }
 }
 async function generateDefaultScoreReport(exam, subject, configfilepath) {
-  const crypto = require('crypto')
   const db = await (require('./db').database(configfilepath))
   const subjects = []
   subjects.push({

@@ -158,7 +158,7 @@ function markqualitymonitor(exam, subject) {
           <div class="cz">
             <div class="sp">
               <div class="large-bold-text">{{ item.name }}</div>
-              <tiny-tag type="info">{{ item.type }}</tiny-tag>
+              <tiny-tag type="info" style="flex-shrink:0">{{ item.type }}</tiny-tag>
             </div>
             <div class="sp">
               <div class="bold-text">时间</div>

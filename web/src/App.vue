@@ -96,6 +96,7 @@
 }
 
 .bold-text {
+  flex-shrink: 0;
   font-weight: bold;
 }
 

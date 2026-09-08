@@ -188,7 +188,7 @@ async function mark(id) {
         <div class="spacebetween">
           <div class="sp">
             <div class="large-bold-text">{{ data.examName }}</div>
-            <tiny-tag type="info">{{ data.examType }}</tiny-tag>
+            <tiny-tag type="info" style="flex-shrink:0">{{ data.examType }}</tiny-tag>
             <div class="bold-text">时间</div>
             <div>{{ data.examTime }}</div>
             <div class="bold-text">科目</div>
@@ -247,7 +247,7 @@ async function mark(id) {
           </div>
           <div v-if="studentaccount != ''" class="sp">
             <div class="bold-text">学生</div>
-            <div style="flex:1">{{ studentaccount }}</div>
+            <div>{{ studentaccount }}</div>
           </div>
         </div>
         <div class="cz" style="flex:1;min-width:0">

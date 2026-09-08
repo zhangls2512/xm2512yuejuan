@@ -213,7 +213,7 @@ async function newQuestion() {
     await request({
       apiPath: '/newQuestionMarklog',
       body: {
-        id: markloglist.value[i].id,
+        id: markitem.id,
         reason: reason.value
       }
     })
@@ -284,7 +284,7 @@ async function mark(id) {
     </tiny-breadcrumb>
     <div class="sp">
       <div class="large-bold-text">{{ data.examName }}</div>
-      <tiny-tag type="info">{{ data.examType }}</tiny-tag>
+      <tiny-tag type="info" style="flex-shrink:0">{{ data.examType }}</tiny-tag>
       <div class="bold-text">时间</div>
       <div>{{ data.examTime }}</div>
       <div class="bold-text">科目</div>
@@ -359,19 +359,19 @@ async function mark(id) {
             <div class="bold-text">历史分数</div>
             <div class="sp">
               <div class="bold-text">一评</div>
-              <div class="cz" style="flex:1">
+              <div class="cz">
                 <div v-for="item, index in scorehistory.first">步骤{{ index + 1 }}：{{ item }}</div>
               </div>
             </div>
             <div class="sp">
               <div class="bold-text">二评</div>
-              <div class="cz" style="flex:1">
+              <div class="cz">
                 <div v-for="item, index in scorehistory.second">步骤{{ index + 1 }}：{{ item }}</div>
               </div>
             </div>
             <div v-if="scorehistory.third.length > 0" class="sp">
               <div class="bold-text">三评</div>
-              <div class="cz" style="flex:1">
+              <div class="cz">
                 <div v-for="item, index in scorehistory.third">步骤{{ index + 1 }}：{{ item }}</div>
               </div>
             </div>

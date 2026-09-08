@@ -51,7 +51,7 @@ function answer(info) {
           <div class="cz">
             <div class="sp">
               <div class="large-bold-text">{{ item.examName }}</div>
-              <tiny-tag type="info">{{ item.examType }}</tiny-tag>
+              <tiny-tag type="info" style="flex-shrink:0">{{ item.examType }}</tiny-tag>
             </div>
             <div class="sp">
               <div class="bold-text">科目</div>

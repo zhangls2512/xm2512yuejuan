@@ -273,7 +273,7 @@ async function endExam(id) {
           <div class="cz">
             <div class="sp">
               <div class="large-bold-text">{{ item.name }}</div>
-              <tiny-tag type="info">{{ item.type }}</tiny-tag>
+              <tiny-tag type="info" style="flex-shrink:0">{{ item.type }}</tiny-tag>
             </div>
             <div class="sp">
               <div class="bold-text">时间</div>
@@ -309,7 +309,7 @@ async function endExam(id) {
                 <div v-if="subject.markStatus != 'end'" class="clickwz"
                   @click="updateSubject(item.examId, subject.name)">○
                   编辑配置</div>
-                <div v-if="subject.markStatus == 'end'" class="disabledwz">☑ 编辑配置</div>
+                <div v-if="subject.markStatus == 'end'" class="disabledwz" style="cursor:not-allowed">☑ 编辑配置</div>
                 <div class="disabledwz">····</div>
                 <div v-if="subject.markStatus == 'paused'" class="clickwz"
                   @click="updateMarkStatus(item.examId, subject.name, 'processing')">○ 开始阅卷</div>

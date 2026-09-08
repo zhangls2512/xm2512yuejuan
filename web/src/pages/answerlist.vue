@@ -79,15 +79,13 @@ function closeSa() {
   <tiny-dialog-box class="dialog" :visible="qadialog" title="题目" @close="closeQa">
     <div class="sp">
       <div class="bold-text">题目</div>
-      <tiny-image v-if="qa.question != ''" :src="qa.question" :preview-src-list="[qa.question]"
-        style="flex:1;min-width:0"></tiny-image>
-      <img v-if="qa.question == ''" src="/noimage.png" style="flex:1;min-width:0"></img>
+      <tiny-image v-if="qa.question != ''" :src="qa.question" :preview-src-list="[qa.question]"></tiny-image>
+      <img v-if="qa.question == ''" src="/noimage.png"></img>
     </div>
     <div class="sp">
       <div class="bold-text">答案</div>
-      <tiny-image v-if="qa.answer != ''" :src="qa.answer" :preview-src-list="[qa.answer]"
-        style="flex:1;min-width:0"></tiny-image>
-      <img v-if="qa.answer == ''" src="/noimage.png" style="flex:1;min-width:0"></img>
+      <tiny-image v-if="qa.answer != ''" :src="qa.answer" :preview-src-list="[qa.answer]"></tiny-image>
+      <img v-if="qa.answer == ''" src="/noimage.png"></img>
     </div>
     <div class="sp">
       <div class="bold-text">难度</div>

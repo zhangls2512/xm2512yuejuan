@@ -77,14 +77,13 @@ async function submit(item) {
     </tiny-breadcrumb>
     <div class="sp">
       <div class="large-bold-text">{{ data.examName }}</div>
-      <tiny-tag type="info">{{ data.examType }}</tiny-tag>
+      <tiny-tag type="info" style="flex-shrink:0">{{ data.examType }}</tiny-tag>
       <div class="bold-text">时间</div>
       <div>{{ data.examTime }}</div>
       <div class="bold-text">科目</div>
       <div>{{ data.subject }}</div>
     </div>
     <div class="sp">
-      <div>学生账号</div>
       <tiny-input v-model="studentaccount" clearable minlength="36" maxlength="36" placeholder="请输入学生账号"></tiny-input>
       <tiny-button type="info" @click="search">搜索</tiny-button>
     </div>
@@ -101,7 +100,7 @@ async function submit(item) {
           <div v-if="index > 0" class="line"></div>
           <div class="sp">
             <div class="bold-text">{{ item.questionName }}</div>
-            <div class="cz" style="flex:1">
+            <div class="cz">
               <tiny-checkbox-group v-if="item.option" v-model="item.answer">
                 <tiny-checkbox v-for="(i, j) in item.option" :label="j">{{ i }}</tiny-checkbox>
               </tiny-checkbox-group>

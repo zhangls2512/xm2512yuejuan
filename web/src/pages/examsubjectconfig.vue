@@ -44,7 +44,7 @@ if (info) {
     </div>
     <div class="sp">
       <div class="bold-text">班级</div>
-      <div class="cz" style="flex:1">
+      <div class="cz">
         <div v-for="item in data.class">{{ item }}</div>
       </div>
     </div>
