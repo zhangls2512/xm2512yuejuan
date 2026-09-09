@@ -353,7 +353,7 @@ exports.main = async (event, configfilepath) => {
         markgroup.questionName.forEach(item => {
           questiontimemap[item] = {
             time: markgroup.time,
-            seconeMarkPercent: markgroup.seconeMarkPercent
+            secondMarkPercent: markgroup.secondMarkPercent
           }
         })
       }
