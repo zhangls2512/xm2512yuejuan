@@ -1,14 +1,17 @@
 <script setup>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { TinyHuichartsLine as TinyChartLine } from '@opentiny/vue-huicharts'
 import { decode } from '../util/code'
 import request from '../util/request'
 const route = useRoute()
 const data = ref({})
-const tabname = ref('分数一致性')
-const markconsistency = ref([])
+const tabname = ref('分数曲线')
 const questionname = ref('')
 const questionnamearr = ref([])
+const markeraccount = ref('')
+const markcurve = ref({})
+const markconsistency = ref([])
 const answer = ref({})
 const info = route.query.info
 if (info) {
@@ -16,8 +19,52 @@ if (info) {
     data.value = decode(info)
     document.title = '智能阅卷系统 - ' + data.value.backname + ' - 阅卷质量监控'
     questionnamearr.value = data.value.subject.subjectiveQuestion.map(item => item.name)
-    getMarkConsistency()
   } catch {
+  }
+}
+async function getMarkCurve() {
+  if (!questionname.value) {
+    TinyModal.message({
+      message: '请选择题号',
+      status: 'warning'
+    })
+    return
+  }
+  if (markeraccount.value && markeraccount.value.length != 36) {
+    TinyModal.message({
+      message: '请输入有效的阅卷老师账号',
+      status: 'warning'
+    })
+    return
+  }
+  markcurve.value = {}
+  const res = await request({
+    apiPath: '/getMarkCurve',
+    body: {
+      id: data.value.examId,
+      subject: data.value.subject.name,
+      questionName: questionname.value,
+      markerAccount: markeraccount.value
+    }
+  })
+  markcurve.value = {
+    data: res.data.map(item => {
+      return {
+        finalTotalScore: item.finalTotalScore,
+        '数量': item.count
+      }
+    }),
+    legend: {
+      show: false
+    },
+    xAxis: {
+      data: 'finalTotalScore',
+      name: '分数'
+    },
+    yAxis: {
+      name: '数量',
+      interval: 1
+    }
   }
 }
 async function getMarkConsistency() {
@@ -38,13 +85,21 @@ async function get() {
     })
     return
   }
+  if (markeraccount.value && markeraccount.value.length != 36) {
+    TinyModal.message({
+      message: '请输入有效的阅卷老师账号',
+      status: 'warning'
+    })
+    return
+  }
   answer.value = {}
   const res = await request({
     apiPath: '/spotMarklog',
     body: {
       id: data.value.examId,
       subject: data.value.subject.name,
-      questionName: questionname.value
+      questionName: questionname.value,
+      markerAccount: markeraccount.value
     }
   })
   answer.value = res.data
@@ -80,9 +135,25 @@ async function newQuestion() {
       <div>{{ data.subject.name }}</div>
     </div>
     <tiny-tabs v-model="tabname">
+      <tiny-tab-item title="分数曲线" name="分数曲线">
+        <template #default>
+          <div class="cz">
+            <div class="sp">
+              <div class="bold-text">题号</div>
+              <tiny-base-select v-model="questionname" style="width:150px">
+                <tiny-option v-for="item in questionnamearr" :value="item"></tiny-option>
+              </tiny-base-select>
+              <tiny-input v-model="markeraccount" clearable maxlength="36" placeholder="请输入阅卷老师账号"></tiny-input>
+              <tiny-button type="info" @click="getMarkCurve">获取</tiny-button>
+            </div>
+            <tiny-chart-line :options="markcurve"></tiny-chart-line>
+          </div>
+        </template>
+      </tiny-tab-item>
       <tiny-tab-item title="分数一致性" name="分数一致性">
         <template #default>
           <div class="cz">
+            <div><tiny-button type="info" @click="getMarkConsistency">获取</tiny-button></div>
             <div style="color:red">偏差率：平均分差占该题总分的百分比。</div>
             <div class="wide-sp">
               <div class="bold-text">阅卷人账号</div>
@@ -114,6 +185,7 @@ async function newQuestion() {
               <tiny-base-select v-model="questionname" style="width:150px">
                 <tiny-option v-for="item in questionnamearr" :value="item"></tiny-option>
               </tiny-base-select>
+              <tiny-input v-model="markeraccount" clearable maxlength="36" placeholder="请输入阅卷老师账号"></tiny-input>
               <tiny-button type="info" @click="get">抽取</tiny-button>
             </div>
             <div class="spacebetween" style="align-items:flex-start">

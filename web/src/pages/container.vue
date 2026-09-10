@@ -81,7 +81,7 @@ function clearHistory() {
     </div>
     <router-view class="empty"></router-view>
     <div class="footer">
-      <div class="footer-text">Version 1.1.12</div>
+      <div class="footer-text">Version 1.2.0</div>
       <tiny-divider direction="vertical"></tiny-divider>
       <a class="footer-text" href="https://docs.qq.com/doc/p/cfe2a8b2b5709cadd6d9048aa4fd001678197397"
         target="_blank">帮助文档</a>
@@ -111,7 +111,7 @@ function clearHistory() {
       </div>
       <template #footer>
         <div class="sp">
-          <tiny-input v-model="question" minlength="1" maxlength="100" placeholder="请输入问题"></tiny-input>
+          <tiny-input v-model="question" clearable minlength="1" maxlength="100" placeholder="请输入问题"></tiny-input>
           <tiny-button type="success" :disabled="disabled" @click="send">发送</tiny-button>
           <tiny-button type="danger" :disabled="disabled" @click="clearHistory">清除历史</tiny-button>
         </div>

@@ -131,7 +131,7 @@ async function newQuestion() {
       <tiny-form-item label="知识点">
         <div class="cz">
           <div class="sp">
-            <tiny-input v-model="knowledgepointwz" placeholder="请输入知识点名称"></tiny-input>
+            <tiny-input v-model="knowledgepointwz" clearable placeholder="请输入知识点名称"></tiny-input>
             <tiny-button type="success" @click="add">添加</tiny-button>
           </div>
           <div v-for="(item, index) in knowledgepoint" class="sp">

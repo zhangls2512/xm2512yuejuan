@@ -64,7 +64,10 @@ if (info) {
               '原始区分度': item.discrimination
             }
           }),
-          xAxis: 'schoolId'
+          xAxis: {
+            data: 'schoolId',
+            name: '学校'
+          }
         }
       }
       if (data.value.type == 'school') {
@@ -77,7 +80,10 @@ if (info) {
               '原始区分度': item.discrimination
             }
           }),
-          xAxis: 'classId'
+          xAxis: {
+            data: 'classId',
+            name: '班级'
+          }
         }
       }
       getStudentMap()

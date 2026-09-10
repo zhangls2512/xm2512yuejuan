@@ -243,7 +243,7 @@ exports.main = async (event, configfilepath) => {
           minscorediff = res.minscorediff
           finalstepscore = res.finalstepscore
         }
-        if (!['', account.account].includes(marklogres.firstMarkerAccount) && !['', account.account].includes(marklogres.secondMarkerAccount) && markgroup.time >= 2 && marklogres.minScoreDiff > question.arbitrateScoreDiff && isarbitrator) {
+        if (!['', account.account].includes(marklogres.firstMarkerAccount) && !['', account.account].includes(marklogres.secondMarkerAccount) && markgroup.time >= 2 && marklogres.minScoreDiff > question.arbitrateScoreDiff && !marklogres.arbitrateMarkerAccount && isarbitrator) {
           if (!marklogres.thirdMarkerAccount || marklogres.thirdMarkerAccount != account.account) {
             if (markgroup.time == 2 || (markgroup.time == 3 && marklogres.thirdMarkerAccount)) {
               type = 'newarbitrate'

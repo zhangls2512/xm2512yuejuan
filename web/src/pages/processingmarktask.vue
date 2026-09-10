@@ -247,6 +247,16 @@ function markqualitymonitor(param) {
               <div class="sp">
                 <tiny-button type="success" @click="markProgress(item)">阅卷进度</tiny-button>
                 <tiny-button type="warning" @click="dealQuestion(item)">处理问题卷</tiny-button>
+                <tiny-dropdown type="info" :show-icon="false">
+                  <template #default>
+                    <tiny-button type="info">工具箱</tiny-button>
+                  </template>
+                  <template #dropdown>
+                    <tiny-dropdown-menu placement="bottom-start">
+                      <tiny-dropdown-item @click="markqualitymonitor(item)">阅卷质量监控</tiny-dropdown-item>
+                    </tiny-dropdown-menu>
+                  </template>
+                </tiny-dropdown>
               </div>
             </div>
             <div class="line"></div>

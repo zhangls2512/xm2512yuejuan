@@ -61,7 +61,7 @@ function checkSubjectConfig(requestdata, olddata) {
   }
   const admin = []
   const adminaccount = []
-  const validpermissions = ['dealQuestion', 'updateMarkStatus', 'getMarkProgress', 'getMarkConsistency', 'spotMarklog', 'updateScore', 'manageAnswer', 'manageScorereportconfig', 'getAnswerCsv', 'updateConfig', 'supplyScore']
+  const validpermissions = ['dealQuestion', 'updateMarkStatus', 'getMarkProgress', 'getMarkCurve', 'getMarkConsistency', 'spotMarklog', 'updateScore', 'manageAnswer', 'manageScorereportconfig', 'getAnswerCsv', 'updateConfig', 'supplyScore']
   for (let i = 0; i < requestdata.admin.length; i++) {
     const item = requestdata.admin[i]
     if (typeof (item.account) != 'string' || item.account.length != 36 || !Array.isArray(item.permission) || !item.permission.every(p => validpermissions.includes(p))) {
@@ -391,7 +391,7 @@ function checkSubjectConfig(requestdata, olddata) {
       }
     }
     questionitem.questionName = [...new Set(questionitem.questionName)]
-    const validpermissions = ['dealQuestion', 'getMarkProgress']
+    const validpermissions = ['dealQuestion', 'getMarkProgress', 'getMarkCurve', 'getMarkConsistency', 'spotMarklog']
     const tempadmin = []
     const tempadminaccount = []
     for (let i = 0; i < questionitem.admin.length; i++) {

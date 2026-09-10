@@ -55,27 +55,41 @@ exports.main = async (event, configfilepath) => {
         schoolId: true
       }
     })
-    if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
-      const adminexist = examsubjectres.admin.find(item => item.account == account.account)
-      if (!adminexist) {
-        return {
-          errCode: 403,
-          errMsg: '无权限',
-          errFix: '无修复建议'
+    let questionname
+    if (account.type == 'admin' && account.schoolId == examgetres.schoolId) {
+      questionname = 'all'
+    }
+    if (examsubjectres.admin.find(item => item.account == account.account && item.permission.includes('getMarkConsistency'))) {
+      questionname = 'all'
+    }
+    if (!questionname) {
+      for (let i = 0; i < examsubjectres.markGroup.length; i++) {
+        const item = examsubjectres.markGroup[i]
+        if (item.admin.find(item => item.account == account.account && item.permission.includes('getMarkConsistency'))) {
+          if (!questionname) {
+            questionname = []
+          }
+          questionname = questionname.concat(item.questionName)
         }
       }
-      if (adminexist && !adminexist.permission.includes('getMarkConsistency')) {
-        return {
-          errCode: 403,
-          errMsg: '无权限',
-          errFix: '无修复建议'
-        }
+    }
+    if (!questionname || (questionname != 'all' && !questionname.includes(requestdata.questionName))) {
+      return {
+        errCode: 403,
+        errMsg: '无权限',
+        errFix: '无修复建议'
       }
+    }
+    if (questionname == 'all') {
+      questionname = examsubjectres.subjectiveQuestion.map(item => item.name)
     }
     const markconsistencyres = await db.collection('marklog').find({
       examId: requestdata.id,
       subject: requestdata.subject,
-      type: 'consistencycheck'
+      type: 'consistencycheck',
+      questionName: {
+        $in: questionname
+      }
     }).toArray()
     const markermap = {}
     const questiontotalscoremap = {}
