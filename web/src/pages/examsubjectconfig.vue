@@ -31,14 +31,14 @@ if (info) {
     </div>
     <div class="sp">
       <div class="bold-text">作答方式</div>
-      <div v-if="data.answerOnline == true">在线</div>
-      <div v-if="data.answerOnline == false">扫描</div>
+      <div v-if="data.answerOnline">在线</div>
+      <div v-if="!data.answerOnline">扫描</div>
     </div>
-    <div v-if="data.answerOnline == true" class="sp">
+    <div v-if="data.answerOnline" class="sp">
       <div class="bold-text">作答开始时间</div>
       <div>{{ data.startTime }}</div>
     </div>
-    <div v-if="data.answerOnline == true" class="sp">
+    <div v-if="data.answerOnline" class="sp">
       <div class="bold-text">作答结束时间</div>
       <div>{{ data.endTime }}</div>
     </div>

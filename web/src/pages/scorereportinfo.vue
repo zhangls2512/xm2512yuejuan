@@ -520,9 +520,8 @@ function downloadScore() {
                 <tiny-grid-column field="totalScoreWithoutExtra" title="分数（不含附）" sortable
                   align="center"></tiny-grid-column>
                 <tiny-grid-column field="extraTotalScore" title="附分" sortable align="center"></tiny-grid-column>
-                <tiny-grid-column v-if="fu == true" field="fuScore" title="赋分" sortable
-                  align="center"></tiny-grid-column>
-                <tiny-grid-column v-if="fu == true" field="level" title="等级" sortable align="center"></tiny-grid-column>
+                <tiny-grid-column v-if="fu" field="fuScore" title="赋分" sortable align="center"></tiny-grid-column>
+                <tiny-grid-column v-if="fu" field="level" title="等级" sortable align="center"></tiny-grid-column>
                 <tiny-grid-column field="jointRank" title="联次" sortable align="center"></tiny-grid-column>
                 <tiny-grid-column v-if="data.type != 'joint'" field="schoolRank" title="校次" sortable
                   align="center"></tiny-grid-column>
@@ -583,13 +582,13 @@ function downloadScore() {
     <tiny-dialog-box class="dialog" :visible="qadialog" title="题目" @close="closeQa">
       <div class="sp">
         <div class="bold-text">题目</div>
-        <tiny-image v-if="qa.question != ''" :src="qa.question" :preview-src-list="[qa.question]"></tiny-image>
-        <img v-if="qa.question == ''" src="/noimage.png"></img>
+        <tiny-image v-if="qa.question" :src="qa.question" :preview-src-list="[qa.question]"></tiny-image>
+        <img v-if="!qa.question" src="/noimage.png"></img>
       </div>
       <div class="sp">
         <div class="bold-text">答案</div>
-        <tiny-image v-if="qa.answer != ''" :src="qa.answer" :preview-src-list="[qa.answer]"></tiny-image>
-        <img v-if="qa.answer == ''" src="/noimage.png"></img>
+        <tiny-image v-if="qa.answer" :src="qa.answer" :preview-src-list="[qa.answer]"></tiny-image>
+        <img v-if="!qa.answer" src="/noimage.png"></img>
       </div>
       <div class="sp">
         <div class="bold-text">难度</div>
@@ -609,8 +608,8 @@ function downloadScore() {
         <div v-for="item, index in answer.stepScore" v-if="answer.stepScore.length > 1" style="color:red">步骤{{ index + 1
         }}：{{ item }}分</div>
         <div v-for="item in answer.answerImage">
-          <img v-if="item != ''" :src="item"></img>
-          <img v-if="item == ''" src="/noimage.png"></img>
+          <img v-if="item" :src="item"></img>
+          <img v-if="!item" src="/noimage.png"></img>
         </div>
       </div>
       <template #footer>
@@ -618,7 +617,7 @@ function downloadScore() {
       </template>
     </tiny-dialog-box>
     <tiny-dialog-box class="dialog" :visible="aadialog" title="原卷" @close="closeAa">
-      <div v-if="answerimage.answerOnline == false">
+      <div v-if="!answerimage.answerOnline">
         <div class="cz">
           <img v-if="answerimage.image.length == 0" src="/noimage.png"></img>
           <div v-for="image in answerimage.image">
@@ -626,7 +625,7 @@ function downloadScore() {
           </div>
         </div>
       </div>
-      <div v-if="answerimage.answerOnline == true">
+      <div v-if="answerimage.answerOnline">
         <div class="cz">
           <img v-if="answerimage.image.length == 0" src="/noimage.png"></img>
           <div v-for="image in answerimage.image" class="sp">

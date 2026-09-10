@@ -115,7 +115,7 @@ function info(info) {
           <tiny-radio label="class">班级</tiny-radio>
         </tiny-radio-group>
       </tiny-form-item>
-      <tiny-form-item v-if="type == 'school' && accountinfo.schoolId == ''" label="学校">
+      <tiny-form-item v-if="type == 'school' && !accountinfo.schoolId" label="学校">
         <div v-if="schools.length == 0">无学校</div>
         <tiny-radio-group v-model="schoolid">
           <tiny-radio v-for="item in schools" :label="item.id">{{ item.name }}</tiny-radio>

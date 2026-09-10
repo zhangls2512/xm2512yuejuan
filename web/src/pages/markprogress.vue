@@ -61,13 +61,13 @@ function close() {
       <div>{{ data.subject }}</div>
     </div>
     <div><tiny-button type="info" @click="get">刷新</tiny-button></div>
-    <div v-if="markprogress != '' && markprogress.progress !== false" class="sp">
+    <div v-if="markprogress && markprogress.progress !== false" class="sp">
       <div class="bold-text">整体</div>
       <tiny-progress style="width:50%" stroke-width="12" :percentage="markprogress.progress"></tiny-progress>
       <div>{{ markprogress.finished }}/{{ markprogress.total }}</div>
     </div>
-    <div v-if="markprogress != ''" class="bold-text">小题</div>
-    <div v-for="item, index in markprogress.list" v-if="markprogress != ''" class="cz">
+    <div v-if="markprogress" class="bold-text">小题</div>
+    <div v-for="item, index in markprogress.list" v-if="markprogress" class="cz">
       <div v-if="index > 0" class="line"></div>
       <div class="sp">
         <div v-if="item.questionName == '客观题'">客观题</div>

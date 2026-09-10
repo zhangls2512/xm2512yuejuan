@@ -194,13 +194,13 @@ async function mark(id) {
             <div class="bold-text">科目</div>
             <div>{{ data.subject }}</div>
           </div>
-          <div class="sp">
-            <div v-if="fullscreen == false" class="clickwz" @click="enterfullscreen">全屏阅卷</div>
-            <div v-if="fullscreen == true" class="clickwz" @click="exitfullscreen">退出全屏</div>
+          <div class="sp" style="flex-shrink:0;margin-left:10px">
+            <div v-if="!fullscreen" class="clickwz" @click="enterfullscreen">全屏阅卷</div>
+            <div v-if="fullscreen" class="clickwz" @click="exitfullscreen">退出全屏</div>
           </div>
         </div>
         <div v-for="item, index in answerimage" style="display:flex;justify-content:center">
-          <div v-if="item != ''" class="sp">
+          <div v-if="item" class="sp">
             <div style="position:relative">
               <tiny-image :src="item" :preview-src-list="[item]"></tiny-image>
               <img :src="traceimage[index].data" style="position:absolute;inset:0;pointer-events:none"></img>
@@ -210,7 +210,7 @@ async function mark(id) {
               <tiny-button type="danger" @click="deleteTraceimage(index)">删除留痕</tiny-button>
             </div>
           </div>
-          <div v-if="item == ''" class="large-text" style="color:red">图片数据异常</div>
+          <div v-if="!item" class="large-text" style="color:red">图片数据异常</div>
         </div>
       </div>
       <div class="sp" style="width:45%;align-items:flex-start">
@@ -237,15 +237,15 @@ async function mark(id) {
             </div>
           </div>
           <tiny-button type="success" @click="submit">提交</tiny-button>
-          <div v-if="questionreason != ''" class="sp">
+          <div v-if="questionreason" class="sp">
             <div class="bold-text">原因</div>
             <div>{{ questionreason }}</div>
           </div>
-          <div v-if="questionnewaccount != ''" class="sp">
+          <div v-if="questionnewaccount" class="sp">
             <div class="bold-text">提交者</div>
             <div>{{ questionnewaccount }}</div>
           </div>
-          <div v-if="studentaccount != ''" class="sp">
+          <div v-if="studentaccount" class="sp">
             <div class="bold-text">学生</div>
             <div>{{ studentaccount }}</div>
           </div>

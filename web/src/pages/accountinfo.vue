@@ -85,24 +85,24 @@ async function updatePassword() {
         <div class="bold-text">身份</div>
         <div>{{ accountinfo.typewz }}</div>
       </div>
-      <div v-if="accountinfo.schoolId != ''" class="sp">
+      <div v-if="accountinfo.schoolId" class="sp">
         <div class="bold-text">学校 ID</div>
         <div>{{ accountinfo.schoolId }}</div>
       </div>
-      <div v-if="accountinfo.schoolId != ''" class="sp">
+      <div v-if="accountinfo.schoolId" class="sp">
         <div class="bold-text">学校名称</div>
         <div>{{ accountinfo.schoolName }}</div>
       </div>
     </div>
     <tiny-dialog-box class="dialog" :visible="dialog" title="修改密码" @close="closeDialog">
       <div class="dialog-cz">
-        <tiny-input v-if="updatepasswordbutton == true" v-model="newpassworda" type="password" clearable show-password
+        <tiny-input v-if="updatepasswordbutton" v-model="newpassworda" type="password" clearable show-password
           minlength="8" maxlength="32" autocomplete="new-password" placeholder="请输入新密码（长度 8 - 32 位）"></tiny-input>
-        <tiny-input v-if="updatepasswordbutton == true" v-model="newpasswordb" type="password" clearable show-password
+        <tiny-input v-if="updatepasswordbutton" v-model="newpasswordb" type="password" clearable show-password
           minlength="8" maxlength="32" autocomplete="new-password" placeholder="请再次输入新密码"></tiny-input>
       </div>
       <template #footer>
-        <tiny-button v-if="updatepasswordbutton == true" type="info" @click="updatePassword">修改</tiny-button>
+        <tiny-button v-if="updatepasswordbutton" type="info" @click="updatePassword">修改</tiny-button>
       </template>
     </tiny-dialog-box>
   </div>

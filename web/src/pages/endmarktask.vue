@@ -144,7 +144,7 @@ function updatescore(param) {
               <div>{{ item.subject.name }}</div>
             </div>
           </div>
-          <div v-if="item.admin == true" class="sp">
+          <div v-if="item.admin" class="sp">
             <tiny-dropdown type="info" :show-icon="false">
               <template #default>
                 <tiny-button type="info">工具箱</tiny-button>

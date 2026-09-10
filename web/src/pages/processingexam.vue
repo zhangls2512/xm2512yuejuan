@@ -266,7 +266,7 @@ async function endExam(id) {
 
 <template>
   <div class="cz">
-    <div v-if="admin == true"><tiny-button type="success" @click="newExam">新增</tiny-button></div>
+    <div v-if="admin"><tiny-button type="success" @click="newExam">新增</tiny-button></div>
     <div v-for="item in data" class="kuang">
       <div class="cz">
         <div class="spacebetween">
@@ -305,7 +305,7 @@ async function endExam(id) {
           <div class="spacebetween">
             <div class="wide-sp">
               <div style="width:150px">【{{ subject.name }}】</div>
-              <div v-if="admin == true" class="sp" style="width:400px">
+              <div v-if="admin" class="sp" style="width:400px">
                 <div v-if="subject.markStatus != 'end'" class="clickwz"
                   @click="updateSubject(item.examId, subject.name)">○
                   编辑配置</div>
@@ -314,29 +314,27 @@ async function endExam(id) {
                 <div v-if="subject.markStatus == 'paused'" class="clickwz"
                   @click="updateMarkStatus(item.examId, subject.name, 'processing')">○ 开始阅卷</div>
                 <div v-if="subject.markStatus == 'processing'" class="clickwz"
-                  @click="updateMarkStatus(item.examId, subject.name, 'paused')">○ 暂停阅卷
-                </div>
+                  @click="updateMarkStatus(item.examId, subject.name, 'paused')">○ 暂停阅卷</div>
                 <div v-if="subject.markStatus == 'processing'" class="disabledwz">····</div>
                 <div v-if="subject.markStatus == 'processing'" class="clickwz"
-                  @click="updateMarkStatus(item.examId, subject.name, 'end')">○ 结束阅卷
-                </div>
+                  @click="updateMarkStatus(item.examId, subject.name, 'end')">○ 结束阅卷</div>
                 <div v-if="subject.markStatus == 'end'" class="clickwz"
                   @click="updateMarkStatus(item.examId, subject.name, 'paused')">○ 重新阅卷</div>
               </div>
               <div class="sp">
                 <div v-if="subject.markStatus == 'end'" class="footer-text">阅卷已结束。</div>
                 <div v-if="subject.markStatus != 'end'" class="clickwz" @click="config(subject)">查看配置</div>
-                <div v-if="admin == true && subject.markStatus != 'end'" class="clickwz"
+                <div v-if="admin && subject.markStatus != 'end'" class="clickwz"
                   @click="answer(item.examId, subject.name)">作答记录</div>
-                <div v-if="admin == true && subject.markStatus != 'end'" class="clickwz"
+                <div v-if="admin && subject.markStatus != 'end'" class="clickwz"
                   @click="markProgress(item, subject.name)">阅卷进度</div>
-                <div v-if="admin == true && subject.markStatus != 'end'" class="clickwz"
+                <div v-if="admin && subject.markStatus != 'end'" class="clickwz"
                   @click="dealQuestion(item, subject.name)">处理问题卷</div>
-                <div v-if="admin == true && subject.markStatus == 'end'" class="clickwz"
+                <div v-if="admin && subject.markStatus == 'end'" class="clickwz"
                   @click="getAnswerCsv(item, subject.name)">导出小题明细</div>
-                <div v-if="admin == true && subject.markStatus == 'end'" class="clickwz"
+                <div v-if="admin && subject.markStatus == 'end'" class="clickwz"
                   @click="scorereportconfig(item.examId, subject.name)">成绩报告配置</div>
-                <tiny-dropdown v-if="admin == true" :show-icon="false">
+                <tiny-dropdown v-if="admin" :show-icon="false">
                   <template #default>
                     <div class="clickwz">更多</div>
                   </template>

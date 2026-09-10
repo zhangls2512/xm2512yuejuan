@@ -192,7 +192,7 @@ async function deleteScorereportconfig(id) {
               <div class="bold-text">合并成绩报告配置ID</div>
               <div>{{ item.idArray }}</div>
             </div>
-            <div v-if="item.updateTimeSeen == true" class="sp">
+            <div v-if="item.updateTimeSeen" class="sp">
               <div class="bold-text">最近生成时间</div>
               <div>{{ item.updateTime }}</div>
             </div>

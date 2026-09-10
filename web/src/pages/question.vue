@@ -177,7 +177,7 @@ async function deleteQuestion(id) {
               <div class="bold-text">科目</div>
               <div>{{ item.subject }}</div>
             </div>
-            <div v-if="item.grade != ''" class="sp">
+            <div v-if="item.grade" class="sp">
               <div class="bold-text">年级</div>
               <div>{{ item.grade }}</div>
             </div>

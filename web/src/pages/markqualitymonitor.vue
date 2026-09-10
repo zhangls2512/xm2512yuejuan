@@ -191,8 +191,8 @@ async function newQuestion() {
             <div class="spacebetween" style="align-items:flex-start">
               <div class="cz" style="width:50%">
                 <div v-for="item in answer.answerImage" style="display:flex;justify-content:center">
-                  <tiny-image v-if="item != ''" :src="item" :preview-src-list="[item]"></tiny-image>
-                  <div v-if="item == ''" class="large-text" style="color:red">图片数据异常</div>
+                  <tiny-image v-if="item" :src="item" :preview-src-list="[item]"></tiny-image>
+                  <div v-if="!item" class="large-text" style="color:red">图片数据异常</div>
                 </div>
               </div>
               <div v-if="answer.stepScore" class="cz" style="width:45%">

@@ -304,14 +304,14 @@ async function mark(id) {
             <div class="bold-text">已阅量/任务量</div>
             <div>{{ markgroupfinished }}/{{ markgroupquota }}</div>
           </div>
-          <div class="sp">
-            <div v-if="huiping == true" class="clickwz" @click="get">继续阅卷</div>
-            <div v-if="fullscreen == false" class="clickwz" @click="enterfullscreen">全屏阅卷</div>
-            <div v-if="fullscreen == true" class="clickwz" @click="exitfullscreen">退出全屏</div>
+          <div class="sp" style="flex-shrink:0;margin-left:10px">
+            <div v-if="huiping" class="clickwz" @click="get">继续阅卷</div>
+            <div v-if="!fullscreen" class="clickwz" @click="enterfullscreen">全屏阅卷</div>
+            <div v-if="fullscreen" class="clickwz" @click="exitfullscreen">退出全屏</div>
           </div>
         </div>
         <div v-for="item, index in answerimage" style="display:flex;justify-content:center">
-          <div v-if="item != ''" class="sp">
+          <div v-if="item" class="sp">
             <div style="position:relative">
               <tiny-image :src="item" :preview-src-list="[item]"></tiny-image>
               <img :src="traceimage[index].data" style="position:absolute;inset:0;pointer-events:none"></img>
@@ -321,7 +321,7 @@ async function mark(id) {
               <tiny-button type="danger" @click="deleteTraceimage(index)">删除留痕</tiny-button>
             </div>
           </div>
-          <div v-if="item == ''" class="large-text" style="color:red">图片数据异常，可提交问题卷</div>
+          <div v-if="!item" class="large-text" style="color:red">图片数据异常，可提交问题卷</div>
         </div>
       </div>
       <div class="sp" style="width:45%;align-items:flex-start">
@@ -355,7 +355,7 @@ async function mark(id) {
             <tiny-button type="success" @click="submit">提交</tiny-button>
             <tiny-button type="warning" @click="openDialog">提交问题卷</tiny-button>
           </div>
-          <div v-if="type == 'arbitrate' && scorehistory != ''" class="cz">
+          <div v-if="type == 'arbitrate' && scorehistory" class="cz">
             <div class="bold-text">历史分数</div>
             <div class="sp">
               <div class="bold-text">一评</div>

@@ -52,7 +52,7 @@ function getScoreList(subjectconfig, csvstr) {
           }
           answers.push({
             questionName: question.name,
-            answer: item == '' ? [] : item.split('').map(c => question.option.indexOf(c))
+            answer: !item ? [] : item.split('').map(c => question.option.indexOf(c))
           })
         } else {
           const stepscore = item.split(';').map(s => Number(s))

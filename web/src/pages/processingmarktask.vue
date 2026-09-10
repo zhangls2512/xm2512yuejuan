@@ -194,7 +194,7 @@ function markqualitymonitor(param) {
         </div>
         <div class="line"></div>
         <div class="cz">
-          <div v-if="item.normalmarkgroupname != ''" class="cz">
+          <div v-if="item.normalmarkgroupname" class="cz">
             <div class="spacebetween">
               <div>普通【{{ item.normalmarkgroupname }}】</div>
               <tiny-button type="success" :disabled="item.markStatus == 'paused'"
@@ -202,7 +202,7 @@ function markqualitymonitor(param) {
             </div>
             <div class="line"></div>
           </div>
-          <div v-if="item.arbitratemarkgroupname != ''" class="cz">
+          <div v-if="item.arbitratemarkgroupname" class="cz">
             <div class="spacebetween">
               <div>仲裁【{{ item.arbitratemarkgroupname }}】</div>
               <tiny-button type="info" :disabled="item.markStatus == 'paused'"
@@ -210,7 +210,7 @@ function markqualitymonitor(param) {
             </div>
             <div class="line"></div>
           </div>
-          <div v-if="item.admin == true" class="cz">
+          <div v-if="item.admin" class="cz">
             <div class="spacebetween">
               <div>科组长</div>
               <div class="sp">
@@ -241,7 +241,7 @@ function markqualitymonitor(param) {
             </div>
             <div class="line"></div>
           </div>
-          <div v-if="item.adminmarkgroupname != ''" class="cz">
+          <div v-if="item.adminmarkgroupname" class="cz">
             <div class="spacebetween">
               <div>题组长【{{ item.adminmarkgroupname }}】</div>
               <div class="sp">

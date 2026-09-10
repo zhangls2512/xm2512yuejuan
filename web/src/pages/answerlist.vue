@@ -55,22 +55,22 @@ function closeSa() {
   <tiny-grid :data="data" border>
     <tiny-grid-column field="questionName" title="题号" align="center">
       <template #default="{ row }">
-        <div v-if="click == true" class="clickwz" @click="openQa(row.questionName)">{{ row.questionName }}</div>
-        <div v-if="click == false">{{ row.questionName }}</div>
+        <div v-if="click" class="clickwz" @click="openQa(row.questionName)">{{ row.questionName }}</div>
+        <div v-if="!click">{{ row.questionName }}</div>
       </template>
     </tiny-grid-column>
     <tiny-grid-column title="作答" align="center">
       <template #default="{ row }">
-        <div v-if="row.correctAnswer != ''">{{ row.answer }}</div>
-        <div v-if="row.correctAnswer == '' && click == true" class="clickwz" @click="openSa(row.questionName)">查看</div>
-        <div v-if="row.correctAnswer == '' && click == false">-</div>
+        <div v-if="row.correctAnswer">{{ row.answer }}</div>
+        <div v-if="!row.correctAnswer && click" class="clickwz" @click="openSa(row.questionName)">查看</div>
+        <div v-if="!row.correctAnswer && !click">-</div>
       </template>
     </tiny-grid-column>
     <tiny-grid-column title="答案" align="center">
       <template #default="{ row }">
-        <div v-if="row.correctAnswer != ''">{{ row.correctAnswer }}</div>
-        <div v-if="row.correctAnswer == '' && click == true" class="clickwz" @click="openQa(row.questionName)">查看</div>
-        <div v-if="row.correctAnswer == '' && click == false">-</div>
+        <div v-if="row.correctAnswer">{{ row.correctAnswer }}</div>
+        <div v-if="!row.correctAnswer && click" class="clickwz" @click="openQa(row.questionName)">查看</div>
+        <div v-if="!row.correctAnswer && !click">-</div>
       </template>
     </tiny-grid-column>
     <tiny-grid-column field="score" title="得分" align="center"></tiny-grid-column>
@@ -79,13 +79,13 @@ function closeSa() {
   <tiny-dialog-box class="dialog" :visible="qadialog" title="题目" @close="closeQa">
     <div class="sp">
       <div class="bold-text">题目</div>
-      <tiny-image v-if="qa.question != ''" :src="qa.question" :preview-src-list="[qa.question]"></tiny-image>
-      <img v-if="qa.question == ''" src="/noimage.png"></img>
+      <tiny-image v-if="qa.question" :src="qa.question" :preview-src-list="[qa.question]"></tiny-image>
+      <img v-if="!qa.question" src="/noimage.png"></img>
     </div>
     <div class="sp">
       <div class="bold-text">答案</div>
-      <tiny-image v-if="qa.answer != ''" :src="qa.answer" :preview-src-list="[qa.answer]"></tiny-image>
-      <img v-if="qa.answer == ''" src="/noimage.png"></img>
+      <tiny-image v-if="qa.answer" :src="qa.answer" :preview-src-list="[qa.answer]"></tiny-image>
+      <img v-if="!qa.answer" src="/noimage.png"></img>
     </div>
     <div class="sp">
       <div class="bold-text">难度</div>
@@ -105,8 +105,8 @@ function closeSa() {
       <div v-for="item, index in answer.stepScore" v-if="answer.stepScore.length > 1" style="color:red">步骤{{ index + 1
       }}：{{ item }}分</div>
       <div v-for="item in answer.answerImage">
-        <img v-if="item != ''" :src="item"></img>
-        <img v-if="item == ''" src="/noimage.png"></img>
+        <img v-if="item" :src="item"></img>
+        <img v-if="!item" src="/noimage.png"></img>
       </div>
     </div>
     <template #footer>

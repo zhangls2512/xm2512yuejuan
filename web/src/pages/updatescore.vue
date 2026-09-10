@@ -91,8 +91,8 @@ async function submit(item) {
     <div class="spacebetween" style="align-items:flex-start">
       <div class="cz" style="width:50%">
         <div v-for="item in answerimage" style="display:flex;justify-content:center">
-          <tiny-image v-if="item != ''" :src="item" :preview-src-list="[item]"></tiny-image>
-          <div v-if="item == ''" class="large-text" style="color:red">图片数据异常</div>
+          <tiny-image v-if="item" :src="item" :preview-src-list="[item]"></tiny-image>
+          <div v-if="!item" class="large-text" style="color:red">图片数据异常</div>
         </div>
       </div>
       <div v-if="markloglist.length > 0" class="cz" style="width:45%">

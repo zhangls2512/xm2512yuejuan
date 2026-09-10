@@ -50,6 +50,13 @@ exports.main = async (event, configfilepath) => {
       examId: marklogres.examId,
       name: marklogres.subject
     })
+    if (examsubjectres.markStatus == 'paused') {
+      return {
+        errCode: 400,
+        errMsg: '阅卷未开始',
+        errFix: '无修复建议'
+      }
+    }
     if (examsubjectres.markStatus == 'end') {
       return {
         errCode: 400,

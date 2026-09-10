@@ -81,7 +81,7 @@ function clearHistory() {
     </div>
     <router-view class="empty"></router-view>
     <div class="footer">
-      <div class="footer-text">Version 1.2.0</div>
+      <div class="footer-text">Version 1.2.1</div>
       <tiny-divider direction="vertical"></tiny-divider>
       <a class="footer-text" href="https://docs.qq.com/doc/p/cfe2a8b2b5709cadd6d9048aa4fd001678197397"
         target="_blank">帮助文档</a>
@@ -103,9 +103,9 @@ function clearHistory() {
           <div class="aikuang" style="align-self:flex-end;background-color:#0DC2B333;text-align:right">{{ item.question
           }}
           </div>
-          <div v-if="item.answer != ''" class="aikuang" style="background-color:rgba(187,187,187,0.2)">{{ item.answer }}
+          <div v-if="item.answer" class="aikuang" style="background-color:rgba(187,187,187,0.2)">{{ item.answer }}
           </div>
-          <div v-if="item.answer == ''" class="aikuang" style="background-color:rgba(187,187,187,0.2)">正在努力回答中，请耐心等待...
+          <div v-if="!item.answer" class="aikuang" style="background-color:rgba(187,187,187,0.2)">正在努力回答中，请耐心等待...
           </div>
         </div>
       </div>

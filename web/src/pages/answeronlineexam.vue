@@ -105,8 +105,8 @@ async function submit() {
       <div class="sp" style="width:100%">
         <div style="flex-shrink:0">{{ item.name }}</div>
         <div class="cz">
-          <img v-if="item.question != ''" :src="item.question"></img>
-          <tiny-tag v-if="item.extra == true" type="info">附加题</tiny-tag>
+          <img v-if="item.question" :src="item.question"></img>
+          <tiny-tag v-if="item.extra" type="info">附加题</tiny-tag>
           <tiny-checkbox-group v-model="answer.objectiveQuestion[index].answer">
             <tiny-checkbox v-for="(i, j) in item.option" :label="j">{{ i }}</tiny-checkbox>
           </tiny-checkbox-group>
@@ -118,12 +118,12 @@ async function submit() {
         <div v-for="q in item.question" class="sp" style="width:100%">
           <div style="flex-shrink:0">{{ q.name }}</div>
           <div class="sp">
-            <tiny-tag v-if="q.extra == true" type="info">附加题</tiny-tag>
-            <img v-if="q.question != ''" :src="q.question"></img>
+            <tiny-tag v-if="q.extra" type="info">附加题</tiny-tag>
+            <img v-if="q.question" :src="q.question"></img>
           </div>
         </div>
         <div><tiny-button type="info" @click="selectAnswer(index)">选择图片</tiny-button></div>
-        <img v-if="answer.subjectiveQuestionGroup[index].answer != ''"
+        <img v-if="answer.subjectiveQuestionGroup[index].answer"
           :src="answer.subjectiveQuestionGroup[index].answer"></img>
       </div>
     </div>
