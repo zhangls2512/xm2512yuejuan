@@ -86,17 +86,6 @@ function markProgress(exam, subject) {
     backname: '考试管理'
   }))
 }
-function dealQuestion(exam, subject) {
-  router.push('/dealquestion?info=' + encode({
-    examId: exam.examId,
-    examName: exam.name,
-    examType: exam.type,
-    examTime: exam.time,
-    subject: subject,
-    backpath: '/endexam',
-    backname: '考试管理'
-  }))
-}
 async function getAnswerCsv(exam, subject) {
   const res = await request({
     apiPath: '/getAnswerCsv',
@@ -133,17 +122,6 @@ function updatescore(exam, subject) {
     examType: exam.type,
     examTime: exam.time,
     subject: subject.name,
-    backpath: '/endexam',
-    backname: '考试管理'
-  }))
-}
-function markqualitymonitor(exam, subject) {
-  router.push('/markqualitymonitor?info=' + encode({
-    examId: exam.examId,
-    examName: exam.name,
-    examType: exam.type,
-    examTime: exam.time,
-    subject: subject,
     backpath: '/endexam',
     backname: '考试管理'
   }))
