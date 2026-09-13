@@ -128,7 +128,7 @@ async function deleteClass(id) {
         <template #default="{ row }">
           <div class="czsp">
             <tiny-button type="info" @click="info(row)">详情</tiny-button>
-            <tiny-button type="info" @click="updateClass(row.classId)">选择配置文件修改</tiny-button>
+            <div><tiny-button type="info" @click="updateClass(row.classId)">选择配置文件修改</tiny-button></div>
             <tiny-popconfirm title="提示" message="删除成功后无法恢复，确定删除？" type="warning" trigger="hover"
               @confirm="deleteClass(row.classId)">
               <template #reference>

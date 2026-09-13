@@ -215,7 +215,7 @@ function markqualitymonitor(param) {
               <div>科组长</div>
               <div class="sp">
                 <tiny-button type="success" @click="markProgress(item)">阅卷进度</tiny-button>
-                <tiny-button type="warning" @click="dealQuestion(item)">处理问题卷</tiny-button>
+                <div><tiny-button type="warning" @click="dealQuestion(item)">处理问题卷</tiny-button></div>
                 <tiny-dropdown type="info" :show-icon="false">
                   <template #default>
                     <tiny-button type="info">工具箱</tiny-button>
@@ -246,7 +246,7 @@ function markqualitymonitor(param) {
               <div>题组长【{{ item.adminmarkgroupname }}】</div>
               <div class="sp">
                 <tiny-button type="success" @click="markProgress(item)">阅卷进度</tiny-button>
-                <tiny-button type="warning" @click="dealQuestion(item)">处理问题卷</tiny-button>
+                <div><tiny-button type="warning" @click="dealQuestion(item)">处理问题卷</tiny-button></div>
                 <tiny-dropdown type="info" :show-icon="false">
                   <template #default>
                     <tiny-button type="info">工具箱</tiny-button>

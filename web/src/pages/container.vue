@@ -113,7 +113,7 @@ function clearHistory() {
         <div class="sp">
           <tiny-input v-model="question" clearable minlength="1" maxlength="100" placeholder="请输入问题"></tiny-input>
           <tiny-button type="success" :disabled="disabled" @click="send">发送</tiny-button>
-          <tiny-button type="danger" :disabled="disabled" @click="clearHistory">清除历史</tiny-button>
+          <div><tiny-button type="danger" :disabled="disabled" @click="clearHistory">清除历史</tiny-button></div>
         </div>
       </template>
     </tiny-dialog-box>

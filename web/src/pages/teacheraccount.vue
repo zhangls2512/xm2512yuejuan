@@ -167,7 +167,7 @@ async function deleteAccount(account) {
         <template #default="{ row }">
           <div class="czsp">
             <tiny-button type="info" @click="openDialog(row.account, row.name)">修改姓名</tiny-button>
-            <tiny-button type="warning" @click="resetAccountPassword(row.account)">重置密码</tiny-button>
+            <div><tiny-button type="warning" @click="resetAccountPassword(row.account)">重置密码</tiny-button></div>
             <tiny-popconfirm title="提示" message="删除成功后无法恢复，确定删除？" type="warning" trigger="hover"
               @confirm="deleteAccount(row.account)">
               <template #reference>

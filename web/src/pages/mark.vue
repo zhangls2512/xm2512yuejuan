@@ -318,7 +318,7 @@ async function mark(id) {
             </div>
             <div class="sp">
               <tiny-button type="info" @click="selectTraceimage(index)">设置留痕</tiny-button>
-              <tiny-button type="danger" @click="deleteTraceimage(index)">删除留痕</tiny-button>
+              <div><tiny-button type="danger" @click="deleteTraceimage(index)">删除留痕</tiny-button></div>
             </div>
           </div>
           <div v-if="!item" class="large-text" style="color:red">图片数据异常，可提交问题卷</div>
@@ -353,7 +353,7 @@ async function mark(id) {
           </div>
           <div class="sp">
             <tiny-button type="success" @click="submit">提交</tiny-button>
-            <tiny-button type="warning" @click="openDialog">提交问题卷</tiny-button>
+            <div><tiny-button type="warning" @click="openDialog">提交问题卷</tiny-button></div>
           </div>
           <div v-if="type == 'arbitrate' && scorehistory" class="cz">
             <div class="bold-text">历史分数</div>

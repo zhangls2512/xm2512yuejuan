@@ -207,7 +207,7 @@ async function mark(id) {
             </div>
             <div class="sp">
               <tiny-button type="info" @click="selectTraceimage(index)">设置留痕</tiny-button>
-              <tiny-button type="danger" @click="deleteTraceimage(index)">删除留痕</tiny-button>
+              <div><tiny-button type="danger" @click="deleteTraceimage(index)">删除留痕</tiny-button></div>
             </div>
           </div>
           <div v-if="!item" class="large-text" style="color:red">图片数据异常</div>

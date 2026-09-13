@@ -91,7 +91,7 @@ function download() {
     </div>
     <div class="sp">
       <tiny-button type="success" @click="upload">上传CSV文件</tiny-button>
-      <tiny-button type="info" @click="download">下载CSV文件模板</tiny-button>
+      <div><tiny-button type="info" @click="download">下载CSV文件模板</tiny-button></div>
     </div>
     <div class="bold-text">注意事项</div>
     <div>1.不要修改第一行。</div>
