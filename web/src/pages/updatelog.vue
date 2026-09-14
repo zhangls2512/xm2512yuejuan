@@ -2,6 +2,20 @@
 document.title = '智能阅卷系统 - 更新日志'
 const data = [
   {
+    versionNumber: '1.3.0',
+    releaseDate: '2026-09-14',
+    logs: [
+      {
+        type: 'U',
+        content: '底部新增答题卡制作工具、二维码生成工具'
+      },
+      {
+        type: 'F',
+        content: '修复了一些已知的问题'
+      }
+    ]
+  },
+  {
     versionNumber: '1.2.1',
     releaseDate: '2026-09-10',
     logs: [

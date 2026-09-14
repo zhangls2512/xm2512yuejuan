@@ -133,6 +133,14 @@ const router = createRouter({
     {
       path: '/updatelog',
       component: () => import('/src/pages/updatelog.vue')
+    },
+    {
+      path: '/answersheetmaketool',
+      component: () => import('/src/pages/answersheetmaketool.vue')
+    },
+    {
+      path: '/qrcodegeneratetool',
+      component: () => import('/src/pages/qrcodegeneratetool.vue')
     }
   ]
 })

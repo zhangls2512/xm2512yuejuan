@@ -9,6 +9,8 @@
   "dependencies": {
     "@opentiny/vue": "latest",
     "@opentiny/vue-huicharts": "latest",
+    "jspdf": "latest",
+    "qrcode": "latest",
     "vue": "latest",
     "vue-router": "latest"
   },
