@@ -15,11 +15,17 @@ const sheet = ref({
 let ttfbase64
 let doc
 async function loadTtf() {
+  const loading = TinyLoading.service({
+    lock: true,
+    size: 'large',
+    background: 'rgba(0, 0, 0, 0.5)'
+  })
   const response = await fetch('/HarmonyOS_Sans_SC.ttf')
   const blob = await response.blob()
   const reader = new FileReader()
   reader.onloadend = () => {
     ttfbase64 = reader.result.split(',')[1]
+    loading.close()
     preview()
   }
   reader.readAsDataURL(blob)
@@ -48,10 +54,10 @@ function grouparr(arr, count) {
   }
   return result
 }
-function textarrwidth(textarr) {
+function textarrwidth(textarr, size) {
   const result = []
   textarr.forEach(item => {
-    result.push(doc.getTextWidth(item))
+    result.push(getTextWidth(item, size))
   })
   return result
 }
@@ -78,15 +84,32 @@ function maxoptioncount(group) {
   })
   return result
 }
+const textwidthcache = {}
+function getTextWidth(text, size) {
+  const sizekey = String(size)
+  if (!textwidthcache[sizekey]) {
+    textwidthcache[sizekey] = {}
+  }
+  let width = textwidthcache[sizekey][text]
+  if (width == undefined) {
+    doc.setFontSize(size)
+    width = doc.getTextWidth(text)
+    textwidthcache[String(size)][text] = width
+  }
+  return width
+}
+function splitTextToSize(text, maxwidth, size) {
+  doc.setFontSize(size)
+  return doc.splitTextToSize(text, maxwidth)
+}
 let optionwidth = 0
 function getObjectiveGroupSize(group) {
   const result = {
     width: 0,
     height: 0
   }
-  doc.setFontSize(namefontsize)
   if (!optionwidth) {
-    optionwidth = doc.getTextWidth('[ W ]')
+    optionwidth = getTextWidth('[ W ]', namefontsize)
   }
   if (sheetconfig.meta.optionDirection == 'column') {
     result.width = optionwidth * group.length + textrowgap * (group.length - 1)
@@ -95,7 +118,7 @@ function getObjectiveGroupSize(group) {
   }
   if (sheetconfig.meta.optionDirection == 'row') {
     const names = group.map(item => item.name)
-    const namewidtharr = textarrwidth(names)
+    const namewidtharr = textarrwidth(names, namefontsize)
     const rowwidtharr = group.map((item, index) => namewidtharr[index] + (optionwidth + textrowgap) * item.optionCount).sort((a, b) => b - a)
     result.width = rowwidtharr[0]
     result.height = namefontsize * group.length + textrowgap * (group.length - 1)
@@ -108,7 +131,9 @@ function getCommands(pageheight, pagewidth) {
   const columnwidth = (pagewidth - 2 * (pagepadding + archorwidth + inpadding) - (sheetconfig.meta.columnCount - 1) * columngap) / sheetconfig.meta.columnCount
   const columnheight = pageheight - (pagepadding + archorheight + inpadding) * 2
   const columnbottomy = pageheight - pagepadding - archorheight - inpadding
-  const linewidth = columnwidth - 2 - inpadding * 2
+  const lineandinpaddinglength = 1 + inpadding
+  const lineandinpaddingdoublelength = lineandinpaddinglength * 2
+  const linewidth = columnwidth - lineandinpaddingdoublelength
   let cursorx = 0
   let cursory = 0
   let columncount = 1
@@ -148,11 +173,17 @@ function getCommands(pageheight, pagewidth) {
     cursorx = pagepadding + archorwidth + inpadding
     cursory = pagepadding + archorheight + inpadding
     if (result.length % 2 == 1) {
-      doc.setFontSize(titlefontsize)
-      const lines = doc.splitTextToSize(sheetconfig.meta.title, columnwidth)
+      const lines = splitTextToSize(sheetconfig.meta.title, columnwidth, titlefontsize)
+      if (lines.length > 2) {
+        TinyModal.message({
+          message: '标题过长',
+          status: 'warning'
+        })
+        return result
+      }
       for (let i = 0; i < lines.length; i++) {
         const item = lines[i]
-        const width = doc.getTextWidth(item)
+        const width = getTextWidth(item, titlefontsize)
         if (i > 0) {
           cursory += textrowgap
         }
@@ -168,7 +199,6 @@ function getCommands(pageheight, pagewidth) {
       cursory += itemgap
       const rectwidth = 100
       const basex = cursorx + columnwidth - rectwidth
-      doc.setFontSize(subtitlefontsize)
       const infolength = sheetconfig.meta.info.length
       const basey = cursory + (rectwidth - subtitlefontsize * infolength - textrowgap * (infolength - 1)) / 2
       const rowheight = subtitlefontsize + textrowgap
@@ -182,7 +212,7 @@ function getCommands(pageheight, pagewidth) {
           y: basey + rowheight * i,
           size: subtitlefontsize
         })
-        const textwidth = doc.getTextWidth(infoitem)
+        const textwidth = getTextWidth(infoitem, subtitlefontsize)
         addItem({
           type: 'line',
           x: cursorx + textwidth,
@@ -200,16 +230,18 @@ function getCommands(pageheight, pagewidth) {
       addItem({
         type: 'text',
         content: '贴二',
-        x: basex + 1 + (rectwidth - 2 - doc.getTextWidth('贴二')) / 2,
+        x: basex + 1 + (rectwidth - 2 - getTextWidth('贴二', subtitlefontsize)) / 2,
         y: cursory + 1 + (rectwidth - 2 - subtitlefontsize * 2 - textrowgap) / 2,
-        size: subtitlefontsize
+        size: subtitlefontsize,
+        color: '#5C5C5C'
       })
       addItem({
         type: 'text',
         content: '维码区',
-        x: basex + 1 + (rectwidth - 2 - doc.getTextWidth('维码区')) / 2,
+        x: basex + 1 + (rectwidth - 2 - getTextWidth('维码区', subtitlefontsize)) / 2,
         y: cursory + 1 + (rectwidth - 2 - subtitlefontsize * 2 - textrowgap) / 2 + textrowgap + subtitlefontsize,
-        size: subtitlefontsize
+        size: subtitlefontsize,
+        color: '#5C5C5C'
       })
       cursory += rectwidth + itemgap
     }
@@ -257,8 +289,21 @@ function getCommands(pageheight, pagewidth) {
   for (let i = 0; i < sheetconfig.items.length; i++) {
     const item = sheetconfig.items[i]
     if (item.type == 'title') {
-      doc.setFontSize(subtitlefontsize)
-      const lines = doc.splitTextToSize(item.content, columnwidth)
+      if (!item.content) {
+        TinyModal.message({
+          message: '请输入标题',
+          status: 'warning'
+        })
+        return result
+      }
+      const lines = splitTextToSize(item.content, columnwidth, subtitlefontsize)
+      if (lines.length > 2) {
+        TinyModal.message({
+          message: '标题过长',
+          status: 'warning'
+        })
+        return result
+      }
       const ytotal = lines.length * subtitlefontsize + (lines.length - 1) * textrowgap
       if (columnbottomy - cursory < ytotal) {
         addColumn()
@@ -280,11 +325,25 @@ function getCommands(pageheight, pagewidth) {
       cursory += itemgap
     }
     if (item.type == 'subjective') {
+      if (item.rowType != 'noanswer' && !item.name) {
+        TinyModal.message({
+          message: '请输入题号',
+          status: 'warning'
+        })
+        return result
+      }
+      if (getTextWidth(item.name, namefontsize) > columnwidth - lineandinpaddingdoublelength) {
+        TinyModal.message({
+          message: '题号过长',
+          status: 'warning'
+        })
+        return result
+      }
       let rowcount = item.rowCount
       const rect = {
         x: cursorx,
         y: cursory,
-        h: 2 + inpadding * 2
+        h: lineandinpaddingdoublelength
       }
       while (rowcount > 0) {
         if (rowcount == item.rowCount) {
@@ -293,66 +352,119 @@ function getCommands(pageheight, pagewidth) {
             rect.x = cursorx
             rect.y = cursory
           }
-          cursory += 1 + inpadding
-          addItem({
-            type: 'text',
-            content: item.name,
-            x: cursorx + 1 + inpadding,
-            y: cursory,
-            size: namefontsize
-          })
+          cursory += lineandinpaddinglength
+          if (item.rowType != 'noanswer') {
+            addItem({
+              type: 'text',
+              content: item.name,
+              x: cursorx + lineandinpaddinglength,
+              y: cursory,
+              size: namefontsize
+            })
+          }
           cursory += namefontsize
           rect.h += namefontsize
         }
-        if (columnbottomy - cursory < rowgap + inpadding + 1) {
-          addItem({
-            type: 'rect',
-            x: rect.x,
-            y: rect.y,
-            w: columnwidth,
-            h: rect.h
-          })
+        if (columnbottomy - cursory < rowgap + lineandinpaddinglength) {
+          if (item.rowType != 'noanswer') {
+            addItem({
+              type: 'rect',
+              x: rect.x,
+              y: rect.y,
+              w: columnwidth,
+              h: rect.h
+            })
+          }
+          if (item.rowType == 'noanswer') {
+            addItem({
+              type: 'block',
+              x: rect.x,
+              y: rect.y,
+              w: columnwidth,
+              h: rect.h,
+              color: '#CBCBCB'
+            })
+            addItem({
+              type: 'text',
+              content: '禁答区',
+              x: rect.x + (columnwidth - getTextWidth('禁答区', subtitlefontsize)) / 2,
+              y: rect.y + (rect.h - subtitlefontsize) / 2,
+              size: subtitlefontsize
+            })
+          }
           addColumn()
           rect.x = cursorx
           rect.y = cursory
-          rect.h = 2 + inpadding * 2
-          cursory += 1 + inpadding
+          rect.h = lineandinpaddingdoublelength
+          cursory += lineandinpaddinglength
         }
         cursory += rowgap
         rect.h += rowgap
         if (item.rowType == 'line') {
           addItem({
             type: 'line',
-            x: cursorx + 1 + inpadding,
+            x: cursorx + lineandinpaddinglength,
             y: cursory,
             w: linewidth
           })
         }
         rowcount--
         if (rowcount == 0) {
-          addItem({
-            type: 'rect',
-            x: rect.x,
-            y: rect.y,
-            w: columnwidth,
-            h: rect.h
-          })
-          cursory += inpadding + 1
+          if (item.rowType != 'noanswer') {
+            addItem({
+              type: 'rect',
+              x: rect.x,
+              y: rect.y,
+              w: columnwidth,
+              h: rect.h
+            })
+          }
+          if (item.rowType == 'noanswer') {
+            addItem({
+              type: 'block',
+              x: rect.x,
+              y: rect.y,
+              w: columnwidth,
+              h: rect.h,
+              color: '#CBCBCB'
+            })
+            addItem({
+              type: 'text',
+              content: '禁答区',
+              x: rect.x + (columnwidth - getTextWidth('禁答区', subtitlefontsize)) / 2,
+              y: rect.y + (rect.h - subtitlefontsize) / 2,
+              size: subtitlefontsize
+            })
+          }
+          cursory += lineandinpaddinglength
         }
       }
       cursory += itemgap
     }
     if (item.type == 'fillblank') {
-      doc.setFontSize(namefontsize)
+      if (item.names.length == 0) {
+        TinyModal.message({
+          message: '请新增题目',
+          status: 'warning'
+        })
+        return result
+      }
+      if (item.names.some(item => !item)) {
+        TinyModal.message({
+          message: '请输入题号',
+          status: 'warning'
+        })
+        return result
+      }
       const groups = grouparr(item.names, item.columnCount)
       let rowcount = groups.length
       const rect = {
         x: cursorx,
         y: cursory,
-        h: 2 + inpadding * 2
+        h: lineandinpaddingdoublelength
       }
       while (rowcount > 0) {
-        if (columnbottomy - cursory < rowgap + inpadding + 1) {
+        if (columnbottomy - cursory < rowgap + lineandinpaddinglength) {
           addItem({
             type: 'rect',
             x: rect.x,
@@ -363,37 +475,37 @@ function getCommands(pageheight, pagewidth) {
           addColumn()
           rect.x = cursorx
           rect.y = cursory
-          rect.h = 2 + inpadding * 2
-          cursory += 1 + inpadding
+          rect.h = lineandinpaddingdoublelength
+          cursory += lineandinpaddinglength
         } else if (rowcount == groups.length) {
-          cursory += 1 + inpadding
+          cursory += lineandinpaddinglength
         }
         const j = groups.length - rowcount
         cursory += rowgap
         rect.h += rowgap
         const names = groups[j]
-        const textwidtharr = textarrwidth(names)
+        const textwidtharr = textarrwidth(names, namefontsize)
         const sumtextwidth = sum(textwidtharr)
-        if (sumtextwidth > linewidth) {
+        const namelinewidth = (linewidth - sumtextwidth - (2 * names.length - 1) * itemgap) / names.length
+        if (namelinewidth < 0) {
           TinyModal.message({
-            message: '填空题题号过长',
+            message: '题号过长',
             status: 'warning'
           })
           return result
         }
-        const namelinewidth = (linewidth - sumtextwidth - (2 * names.length - 1) * itemgap) / names.length
         for (let k = 0; k < names.length; k++) {
           const name = names[k]
           addItem({
             type: 'text',
             content: name,
-            x: cursorx + 1 + inpadding + sumtoindex(textwidtharr, k - 1) + namelinewidth * k + itemgap * 2 * k,
+            x: cursorx + lineandinpaddinglength + sumtoindex(textwidtharr, k - 1) + namelinewidth * k + itemgap * 2 * k,
             y: cursory - namefontsize - 1,
             size: namefontsize
           })
           addItem({
             type: 'line',
-            x: cursorx + 1 + inpadding + sumtoindex(textwidtharr, k) + namelinewidth * k + itemgap * (2 * k + 1),
+            x: cursorx + lineandinpaddinglength + sumtoindex(textwidtharr, k) + namelinewidth * k + itemgap * (2 * k + 1),
             y: cursory,
             w: namelinewidth
           })
@@ -407,12 +519,26 @@ function getCommands(pageheight, pagewidth) {
             w: columnwidth,
             h: rect.h
           })
-          cursory += inpadding + 1
+          cursory += lineandinpaddinglength
         }
       }
       cursory += itemgap
     }
     if (item.type == 'composition') {
+      if (!item.name) {
+        TinyModal.message({
+          message: '请输入题号',
+          status: 'warning'
+        })
+        return result
+      }
+      if (getTextWidth(item.name, namefontsize) > columnwidth - lineandinpaddingdoublelength) {
+        TinyModal.message({
+          message: '题号过长',
+          status: 'warning'
+        })
+        return result
+      }
       const itemwidth = rowgap - 1
       const rowitemcount = Math.floor((linewidth - 1) / itemwidth)
       const rowtotalcount = Math.ceil(item.characterCount / rowitemcount)
@@ -422,7 +548,7 @@ function getCommands(pageheight, pagewidth) {
       const rect = {
         x: cursorx,
         y: cursory,
-        h: 2 + inpadding * 2
+        h: lineandinpaddingdoublelength
       }
       while (rowcount > 0) {
         if (rowcount == rowtotalcount) {
@@ -431,19 +557,18 @@ function getCommands(pageheight, pagewidth) {
             rect.x = cursorx
             rect.y = cursory
           }
-          cursory += 1 + inpadding
+          cursory += lineandinpaddinglength
           addItem({
             type: 'text',
             content: item.name,
-            x: cursorx + 1 + inpadding,
+            x: cursorx + lineandinpaddinglength,
             y: cursory,
             size: namefontsize
           })
           cursory += namefontsize
           rect.h += namefontsize
         }
-        doc.setFontSize(6)
-        if (columnbottomy - cursory < rowgap + 8 + inpadding + 1) {
+        if (columnbottomy - cursory < rowgap + 8 + lineandinpaddinglength) {
           addItem({
             type: 'rect',
             x: rect.x,
@@ -454,13 +579,13 @@ function getCommands(pageheight, pagewidth) {
           addColumn()
           rect.x = cursorx
           rect.y = cursory
-          rect.h = 2 + inpadding * 2 + 8
-          cursory += 1 + inpadding + 8
+          rect.h = lineandinpaddingdoublelength + 8
+          cursory += lineandinpaddinglength + 8
         } else if (rowcount == rowtotalcount) {
           cursory += 8
           rect.h += 8
         }
-        const basex = cursorx + 1 + inpadding + marginleft
+        const basex = cursorx + lineandinpaddinglength + marginleft
         for (let j = 1; j <= rowitemcount && count < item.characterCount; j++) {
           addItem({
             type: 'rect',
@@ -475,7 +600,7 @@ function getCommands(pageheight, pagewidth) {
             addItem({
               type: 'text',
               content: countstr,
-              x: basex + itemwidth * (j - 1) + 1 + (rowgap - 2 - doc.getTextWidth(countstr)) / 2,
+              x: basex + itemwidth * (j - 1) + 1 + (rowgap - 2 - getTextWidth(countstr, 6)) / 2,
               y: cursory + rowgap + 1,
               size: 6
             })
@@ -492,7 +617,7 @@ function getCommands(pageheight, pagewidth) {
             w: columnwidth,
             h: rect.h
           })
-          cursory += inpadding + 1
+          cursory += lineandinpaddinglength
         }
       }
       cursory += itemgap
@@ -503,27 +628,34 @@ function getCommands(pageheight, pagewidth) {
         i++
         biggroup.push(sheetconfig.items[i])
       }
+      if (biggroup.some(item => !item.name)) {
+        TinyModal.message({
+          message: '请输入题号',
+          status: 'warning'
+        })
+        return result
+      }
       const groups = grouparr(biggroup, sheetconfig.meta.objectiveCountPerGroup)
       const rect = {
         x: cursorx,
         y: cursory,
-        h: 2 + inpadding * 2
+        h: lineandinpaddingdoublelength
       }
-      cursorx += 1 + inpadding
-      cursory += 1 + inpadding
+      cursorx += lineandinpaddinglength
+      cursory += lineandinpaddinglength
       let maxgroupheight = 0
       for (let j = 0; j < groups.length; j++) {
         const group = groups[j]
         const groupsize = getObjectiveGroupSize(group)
-        if (columnwidth - 2 - inpadding * 2 < groupsize.width || columnheight - 2 - inpadding * 2 < groupsize.height) {
+        if (columnwidth - lineandinpaddingdoublelength < groupsize.width || columnheight - lineandinpaddingdoublelength < groupsize.height) {
           TinyModal.message({
-            message: '选择题选项过多',
+            message: '选项过多',
             status: 'warning'
           })
           return result
         }
-        if (columnbottomy - cursory - 1 - inpadding < groupsize.height) {
-          if (rect.h != 2 + inpadding * 2) {
+        if (columnbottomy - cursory - lineandinpaddinglength < groupsize.height) {
+          if (rect.h != lineandinpaddingdoublelength) {
             addItem({
               type: 'rect',
               x: rect.x,
@@ -535,17 +667,17 @@ function getCommands(pageheight, pagewidth) {
           addColumn()
           rect.x = cursorx
           rect.y = cursory
-          rect.h = 2 + inpadding * 2
-          cursorx += 1 + inpadding
-          cursory += 1 + inpadding
+          rect.h = lineandinpaddingdoublelength
+          cursorx += lineandinpaddinglength
+          cursory += lineandinpaddinglength
         }
-        if (columnwidth - 1 - inpadding - (cursorx - rect.x - 1) < groupsize.width + itemgap) {
+        if (columnwidth - lineandinpaddinglength - (cursorx - rect.x - 1) < groupsize.width + itemgap) {
           rect.h += maxgroupheight
-          cursorx = rect.x + 1 + inpadding
+          cursorx = rect.x + lineandinpaddinglength
           cursory += maxgroupheight + itemgap
           maxgroupheight = 0
-          if (columnbottomy - cursory - 1 - inpadding < groupsize.height + itemgap) {
-            if (rect.h != 2 + inpadding * 2) {
+          if (columnbottomy - cursory - lineandinpaddinglength < groupsize.height + itemgap) {
+            if (rect.h != lineandinpaddingdoublelength) {
               addItem({
                 type: 'rect',
                 x: rect.x,
@@ -557,17 +689,16 @@ function getCommands(pageheight, pagewidth) {
             addColumn()
             rect.x = cursorx
             rect.y = cursory
-            rect.h = 2 + inpadding * 2
-            cursorx += 1 + inpadding
-            cursory += 1 + inpadding
+            rect.h = lineandinpaddingdoublelength
+            cursorx += lineandinpaddinglength
+            cursory += lineandinpaddinglength
           } else {
             rect.h += itemgap
           }
         }
-        if (cursorx != rect.x + 1 + inpadding) {
+        if (cursorx != rect.x + lineandinpaddinglength) {
           cursorx += itemgap
         }
-        doc.setFontSize(namefontsize)
         for (let k = 0; k < group.length; k++) {
           const groupitem = group[k]
           let options = []
@@ -577,11 +708,19 @@ function getCommands(pageheight, pagewidth) {
           if (groupitem.optionType == 'tf') {
             options = ['T', 'F']
           }
+          const nametextwidth = getTextWidth(groupitem.name, namefontsize)
+          if (nametextwidth > optionwidth) {
+            TinyModal.message({
+              message: '题号过长',
+              status: 'warning'
+            })
+            return result
+          }
           if (sheetconfig.meta.optionDirection == 'column') {
             addItem({
               type: 'text',
               content: groupitem.name,
-              x: cursorx + (optionwidth + textrowgap) * k + (optionwidth - doc.getTextWidth(groupitem.name)) / 2,
+              x: cursorx + (optionwidth + textrowgap) * k + (optionwidth - nametextwidth) / 2,
               y: cursory,
               size: namefontsize
             })
@@ -590,7 +729,7 @@ function getCommands(pageheight, pagewidth) {
               addItem({
                 type: 'text',
                 content: optiontext,
-                x: cursorx + (optionwidth + textrowgap) * k + (optionwidth - doc.getTextWidth(optiontext)) / 2,
+                x: cursorx + (optionwidth + textrowgap) * k + (optionwidth - getTextWidth(optiontext, namefontsize)) / 2,
                 y: cursory + (namefontsize + textrowgap) * (index + 1),
                 size: namefontsize
               })
@@ -600,7 +739,7 @@ function getCommands(pageheight, pagewidth) {
             addItem({
               type: 'text',
               content: groupitem.name,
-              x: cursorx + groupsize.namewidth - doc.getTextWidth(groupitem.name),
+              x: cursorx + groupsize.namewidth - nametextwidth,
               y: cursory + (namefontsize + textrowgap) * k,
               size: namefontsize
             })
@@ -609,7 +748,7 @@ function getCommands(pageheight, pagewidth) {
               addItem({
                 type: 'text',
                 content: optiontext,
-                x: cursorx + groupsize.namewidth + optionwidth * index + textrowgap * (index + 1) + (optionwidth - doc.getTextWidth(optiontext)) / 2,
+                x: cursorx + groupsize.namewidth + optionwidth * index + textrowgap * (index + 1) + (optionwidth - getTextWidth(optiontext, namefontsize)) / 2,
                 y: cursory + (namefontsize + textrowgap) * k,
                 size: namefontsize
               })
@@ -634,10 +773,9 @@ function getCommands(pageheight, pagewidth) {
       cursory += itemgap
     }
   }
-  doc.setFontSize(pagenumberfontsize)
   for (let i = 1; i <= result.length; i++) {
     const pagetext = '第' + i + '页/共' + result.length + '页'
-    const pagetextwidth = doc.getTextWidth(pagetext)
+    const pagetextwidth = getTextWidth(pagetext, pagenumberfontsize)
     result[i - 1].push({
       type: 'text',
       content: pagetext,
@@ -700,15 +838,17 @@ async function preview() {
   doc.addFont(fontname + '.ttf', fontname, 'normal')
   doc.setFont(fontname)
   doc.setLineWidth(1)
-  function setText(content, x, y, size) {
+  function setText(content, x, y, size, color) {
     doc.setFontSize(size)
+    doc.setTextColor(color ? color : '#000000')
     doc.text(content, x, y + size)
   }
   function setRect(x, y, w, h) {
     doc.rect(x + 0.5, y + 0.5, w - 1, h - 1)
   }
-  function setBlock(x, y, w, h) {
-    doc.rect(x, y, w, h, 'F')
+  function setBlock(x, y, w, h, color) {
+    doc.setFillColor(color ? color : '#000000')
+    doc.rect(x, y, w, h, color ? 'FD' : 'F')
   }
   function setLine(x, y, w) {
     doc.line(x - 0.5, y, x + w, y)
@@ -722,13 +862,13 @@ async function preview() {
     for (let j = 0; j < pagecommands.length; j++) {
       const command = pagecommands[j]
       if (command.type == 'text') {
-        setText(command.content, command.x, command.y, command.size)
+        setText(command.content, command.x, command.y, command.size, command.color)
       }
       if (command.type == 'rect') {
         setRect(command.x, command.y, command.w, command.h)
       }
       if (command.type == 'block') {
-        setBlock(command.x, command.y, command.w, command.h)
+        setBlock(command.x, command.y, command.w, command.h, command.color)
       }
       if (command.type == 'line') {
         setLine(command.x, command.y, command.w)
@@ -739,7 +879,7 @@ async function preview() {
   if (pdfurl.value) {
     URL.revokeObjectURL(pdfurl.value)
   }
-  pdfurl.value = URL.createObjectURL(blob) + '#view=FitH&toolbar=0'
+  pdfurl.value = URL.createObjectURL(blob) + '#toolbar=0'
   loading.close()
   height.value = doc.internal.pageSize.getHeight()
   width.value = doc.internal.pageSize.getWidth()
@@ -792,16 +932,44 @@ function newItem(index) {
       characterCount: 800
     }
   }
-  pushindex(sheet.value.items, typemap[newtype.value], index)
+  if (newtype.value != 'title' && newtype.value != 'fillblank' && currentnumber.value) {
+    let currentindex = index
+    for (let i = 0; i < count.value; i++) {
+      pushindex(sheet.value.items, typemap[newtype.value], currentindex)
+      currentindex++
+      sheet.value.items[currentindex].name = String(currentnumber.value)
+      if (newtype.value == 'objective') {
+        sheet.value.items[currentindex].optionType = optiontype.value
+        sheet.value.items[currentindex].optionCount = optioncount.value
+      }
+      currentnumber.value++
+    }
+    count.value = 0
+  } else {
+    pushindex(sheet.value.items, typemap[newtype.value], index)
+  }
 }
+const currentnumber = ref(0)
+const count = ref(0)
+const optiontype = ref('ab')
+const optioncount = ref(4)
 function pushindex(arr, item, index) {
-  sheet.value.items = [...arr.slice(0, index + 1), item, ...arr.slice(index + 1)]
+  const newitem = { ...item }
+  sheet.value.items = [...arr.slice(0, index + 1), newitem, ...arr.slice(index + 1)]
 }
 function deleteItem(index) {
   sheet.value.items.splice(index, 1)
 }
 function newName(index) {
-  sheet.value.items[index].names.push('')
+  if (currentnumber.value) {
+    for (let i = 0; i < count.value; i++) {
+      sheet.value.items[index].names.push(String(currentnumber.value))
+      currentnumber.value++
+    }
+    count.value = 0
+  } else {
+    sheet.value.items[index].names.push('')
+  }
 }
 function deleteName(index, indexa) {
   sheet.value.items[index].names.splice(indexa, 1)
@@ -816,10 +984,10 @@ function deleteName(index, indexa) {
         <div class="header-title">答题卡制作工具</div>
       </div>
     </div>
-    <div class="main">
-      <div class="sp">
-        <iframe v-if="pdfurl" :src="pdfurl" :style="{ height: height + 'px', width: width + 'px' }"></iframe>
-        <div class="cz" style="align-self:flex-start">
+    <div class="main" style="flex:1">
+      <div class="sp" style="flex:1">
+        <iframe v-if="pdfurl" :src="pdfurl" style="flex:1;height:100%"></iframe>
+        <div class="cz" style="align-self:flex-start;flex:1">
           <div class="large-bold-text">全局配置</div>
           <div class="sp">
             <div class="bold-text">标题</div>
@@ -859,8 +1027,9 @@ function deleteName(index, indexa) {
             <div class="bold-text">组选择数</div>
             <tiny-numeric v-model="sheet.meta.objectiveCountPerGroup" step-strictly :min="1" :max="10"></tiny-numeric>
           </div>
+          <div class="large-bold-text">题目配置</div>
           <div class="sp">
-            <div class="large-bold-text">题目配置</div>
+            <tiny-button type="success" @click="newItem(-1)">新增</tiny-button>
             <tiny-radio-group v-model="newtype">
               <tiny-radio label="title">标题</tiny-radio>
               <tiny-radio label="objective">选择</tiny-radio>
@@ -869,13 +1038,27 @@ function deleteName(index, indexa) {
               <tiny-radio label="composition">作文</tiny-radio>
             </tiny-radio-group>
           </div>
-          <div><tiny-button type="success" @click="newItem(index)">新增</tiny-button></div>
+          <div v-if="newtype != 'title'" class="sp">
+            <div class="bold-text">批量新增</div>
+            <div>起始题号</div>
+            <tiny-numeric v-model="currentnumber" step-strictly :min="0"></tiny-numeric>
+            <div>新增数量</div>
+            <tiny-numeric v-model="count" step-strictly :min="0"></tiny-numeric>
+            <div v-if="newtype == 'objective'">选项类型</div>
+            <tiny-radio-group v-if="newtype == 'objective'" v-model="optiontype">
+              <tiny-radio label="ab">AB</tiny-radio>
+              <tiny-radio label="tf">TF</tiny-radio>
+            </tiny-radio-group>
+            <div v-if="newtype == 'objective' && optiontype == 'ab'">选项数量</div>
+            <tiny-numeric v-if="newtype == 'objective' && optiontype == 'ab'" v-model="optioncount" step-strictly
+              :min="1" :max="26"></tiny-numeric>
+          </div>
           <div v-for="item, index in sheet.items">
             <div v-if="item.type == 'title'" class="sp">
               <tiny-button type="success" @click="newItem(index)">新增</tiny-button>
               <div><tiny-button type="danger" @click="deleteItem(index)">删除</tiny-button></div>
               <div class="bold-text">标题</div>
-              <div><tiny-input v-model="item.content" clearable placeholder="请输入子标题"></tiny-input></div>
+              <div><tiny-input v-model="item.content" clearable placeholder="请输入标题"></tiny-input></div>
             </div>
             <div v-if="item.type == 'objective'" class="sp">
               <tiny-button type="success" @click="newItem(index)">新增</tiny-button>
@@ -907,10 +1090,12 @@ function deleteName(index, indexa) {
               <tiny-button type="success" @click="newItem(index)">新增</tiny-button>
               <div><tiny-button type="danger" @click="deleteItem(index)">删除</tiny-button></div>
               <div class="bold-text">解答</div>
-              <div><tiny-input v-model="item.name" clearable placeholder="请输入题号"></tiny-input></div>
-              <tiny-radio-group v-model="item.rowType">
+              <div v-if="item.rowType != 'noanswer'"><tiny-input v-model="item.name" clearable
+                  placeholder="请输入题号"></tiny-input></div>
+              <tiny-radio-group v-model="item.rowType" style="flex-shrink:0">
                 <tiny-radio label="blank">空白</tiny-radio>
                 <tiny-radio label="line">横线</tiny-radio>
+                <tiny-radio label="noanswer">禁答</tiny-radio>
               </tiny-radio-group>
               <tiny-numeric v-model="item.rowCount" step-strictly :min="1"></tiny-numeric>
             </div>

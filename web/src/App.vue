@@ -128,6 +128,7 @@
 .spacebetween {
   align-items: center;
   display: flex;
+  gap: 20px;
   justify-content: space-between;
 }
 

@@ -184,7 +184,7 @@ async function mark(id) {
       <tiny-breadcrumb-item :to="{ path: '/dealquestion' }" label="处理问题卷"></tiny-breadcrumb-item>
     </tiny-breadcrumb>
     <div class="spacebetween" style="align-items:flex-start">
-      <div class="cz" style="width:50%">
+      <div class="cz" style="flex:1">
         <div class="spacebetween">
           <div class="sp">
             <div class="large-bold-text">{{ data.examName }}</div>
@@ -213,7 +213,7 @@ async function mark(id) {
           <div v-if="!item" class="large-text" style="color:red">图片数据异常</div>
         </div>
       </div>
-      <div class="sp" style="width:45%;align-items:flex-start">
+      <div class="sp" style="align-items:flex-start;flex:1">
         <div v-if="markloglist.length > 0" class="cz" style="flex:1;min-width:0">
           <div v-for="item, index in markloglist" class="cz">
             <div class="bold-text">{{ item.questionName }}</div>

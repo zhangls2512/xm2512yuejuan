@@ -81,7 +81,7 @@ function clearHistory() {
     </div>
     <router-view class="empty"></router-view>
     <div class="footer">
-      <div class="footer-text">Version 1.3.0</div>
+      <div class="footer-text">Version 1.3.1</div>
       <tiny-divider direction="vertical"></tiny-divider>
       <router-link class="footer-text" to="/answersheetmaketool" target="_blank">答题卡制作工具</router-link>
       <tiny-divider direction="vertical"></tiny-divider>
