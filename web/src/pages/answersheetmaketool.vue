@@ -211,7 +211,7 @@ function getCommands(pageheight, pagewidth) {
         y: cursory + 1 + (rectwidth - 2 - subtitlefontsize * 2 - textrowgap) / 2 + textrowgap + subtitlefontsize,
         size: subtitlefontsize
       })
-      cursory += rectwidth
+      cursory += rectwidth + itemgap
     }
   }
   function addColumn() {
@@ -252,15 +252,11 @@ function getCommands(pageheight, pagewidth) {
     if (sheetconfig.meta.paperType == 'a3' && columncount % sheetconfig.meta.columnCount != 1) {
       cursory = pagepadding + archorheight + inpadding
     }
-    if (result.length % 2 == 1 && (sheetconfig.meta.paperType == 'a4' || columncount % sheetconfig.meta.columnCount == 1)) {
-      cursory += itemgap
-    }
   }
   addPage()
   for (let i = 0; i < sheetconfig.items.length; i++) {
     const item = sheetconfig.items[i]
     if (item.type == 'title') {
-      cursory += itemgap
       doc.setFontSize(subtitlefontsize)
       const lines = doc.splitTextToSize(item.content, columnwidth)
       const ytotal = lines.length * subtitlefontsize + (lines.length - 1) * textrowgap
@@ -281,9 +277,9 @@ function getCommands(pageheight, pagewidth) {
         })
         cursory += subtitlefontsize
       }
+      cursory += itemgap
     }
     if (item.type == 'subjective') {
-      cursory += itemgap
       let rowcount = item.rowCount
       const rect = {
         x: cursorx,
@@ -344,9 +340,9 @@ function getCommands(pageheight, pagewidth) {
           cursory += inpadding + 1
         }
       }
+      cursory += itemgap
     }
     if (item.type == 'fillblank') {
-      cursory += itemgap
       doc.setFontSize(namefontsize)
       const groups = grouparr(item.names, item.columnCount)
       let rowcount = groups.length
@@ -414,9 +410,9 @@ function getCommands(pageheight, pagewidth) {
           cursory += inpadding + 1
         }
       }
+      cursory += itemgap
     }
     if (item.type == 'composition') {
-      cursory += itemgap
       const itemwidth = rowgap - 1
       const rowitemcount = Math.floor((linewidth - 1) / itemwidth)
       const rowtotalcount = Math.ceil(item.characterCount / rowitemcount)
@@ -430,7 +426,7 @@ function getCommands(pageheight, pagewidth) {
       }
       while (rowcount > 0) {
         if (rowcount == rowtotalcount) {
-          if (columnbottomy - cursory < rect.h + namefontsize) {
+          if (columnbottomy - cursory < rect.h + namefontsize + rowgap + 8) {
             addColumn()
             rect.x = cursorx
             rect.y = cursory
@@ -499,9 +495,9 @@ function getCommands(pageheight, pagewidth) {
           cursory += inpadding + 1
         }
       }
+      cursory += itemgap
     }
     if (item.type == 'objective') {
-      cursory += itemgap
       const biggroup = [item]
       while (sheetconfig.items[i + 1] && sheetconfig.items[i + 1].type == 'objective') {
         i++
@@ -635,6 +631,7 @@ function getCommands(pageheight, pagewidth) {
       })
       cursorx = rect.x
       cursory = rect.y + rect.h
+      cursory += itemgap
     }
   }
   doc.setFontSize(pagenumberfontsize)
