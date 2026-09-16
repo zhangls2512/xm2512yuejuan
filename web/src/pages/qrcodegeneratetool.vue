@@ -26,8 +26,8 @@ async function generateQrcode() {
         <div class="header-title">二维码生成工具</div>
       </div>
     </div>
-    <div class="main">
-      <div class="cz" style="align-items:center">
+    <div class="main" style="flex:1">
+      <div class="cz" style="align-items:center;justify-content:center">
         <img v-if="qrcodeimg" :src="qrcodeimg" style="height:200px;width:200px"></img>
         <div class="sp">
           <tiny-input v-model="content" clearable placeholder="请输入内容"></tiny-input>
