@@ -7,6 +7,7 @@ const sheet = ref({
     paperType: 'a4',
     columnCount: 1,
     info: ['姓名', '班级', '考场/座位号'],
+    optionBorderType: 'open',
     optionDirection: 'row',
     objectiveCountPerGroup: 5
   },
@@ -108,9 +109,11 @@ function getObjectiveGroupSize(group) {
     width: 0,
     height: 0
   }
-  if (!optionwidth) {
-    optionwidth = getTextWidth('[ W ]', namefontsize)
+  const optiontextmap = {
+    open: '[ W ]',
+    close: ' W '
   }
+  optionwidth = getTextWidth(optiontextmap[sheetconfig.meta.optionBorderType], namefontsize)
   if (sheetconfig.meta.optionDirection == 'column') {
     result.width = optionwidth * group.length + textrowgap * (group.length - 1)
     const optioncount = maxoptioncount(group)
@@ -709,14 +712,18 @@ function getCommands(pageheight, pagewidth) {
             options = ['T', 'F']
           }
           const nametextwidth = getTextWidth(groupitem.name, namefontsize)
-          if (nametextwidth > optionwidth) {
-            TinyModal.message({
-              message: '题号过长',
-              status: 'warning'
-            })
-            return result
+          const optiontextfontsizemap = {
+            open: namefontsize,
+            close: namefontsize - 2
           }
           if (sheetconfig.meta.optionDirection == 'column') {
+            if (nametextwidth > optionwidth + textrowgap) {
+              TinyModal.message({
+                message: '题号过长',
+                status: 'warning'
+              })
+              return result
+            }
             addItem({
               type: 'text',
               content: groupitem.name,
@@ -725,13 +732,26 @@ function getCommands(pageheight, pagewidth) {
               size: namefontsize
             })
             options.forEach((item, index) => {
-              const optiontext = '[ ' + item + ' ]'
+              const optiontextmap = {
+                open: '[ ' + item + ' ]',
+                close: ' ' + item + ' '
+              }
+              const optiontext = optiontextmap[sheetconfig.meta.optionBorderType]
+              if (sheetconfig.meta.optionBorderType == 'close') {
+                addItem({
+                  type: 'rect',
+                  x: cursorx + (optionwidth + textrowgap) * k,
+                  y: cursory + (namefontsize + textrowgap) * (index + 1),
+                  w: optionwidth,
+                  h: namefontsize
+                })
+              }
               addItem({
                 type: 'text',
                 content: optiontext,
-                x: cursorx + (optionwidth + textrowgap) * k + (optionwidth - getTextWidth(optiontext, namefontsize)) / 2,
+                x: cursorx + (optionwidth + textrowgap) * k + (optionwidth - getTextWidth(optiontext, optiontextfontsizemap[sheetconfig.meta.optionBorderType])) / 2,
                 y: cursory + (namefontsize + textrowgap) * (index + 1),
-                size: namefontsize
+                size: optiontextfontsizemap[sheetconfig.meta.optionBorderType]
               })
             })
           }
@@ -744,13 +764,26 @@ function getCommands(pageheight, pagewidth) {
               size: namefontsize
             })
             options.forEach((item, index) => {
-              const optiontext = '[ ' + item + ' ]'
+              const optiontextmap = {
+                open: '[ ' + item + ' ]',
+                close: ' ' + item + ' '
+              }
+              const optiontext = optiontextmap[sheetconfig.meta.optionBorderType]
+              if (sheetconfig.meta.optionBorderType == 'close') {
+                addItem({
+                  type: 'rect',
+                  x: cursorx + groupsize.namewidth + optionwidth * index + textrowgap * (index + 1),
+                  y: cursory + (namefontsize + textrowgap) * k,
+                  w: optionwidth,
+                  h: namefontsize
+                })
+              }
               addItem({
                 type: 'text',
                 content: optiontext,
-                x: cursorx + groupsize.namewidth + optionwidth * index + textrowgap * (index + 1) + (optionwidth - getTextWidth(optiontext, namefontsize)) / 2,
+                x: cursorx + groupsize.namewidth + optionwidth * index + textrowgap * (index + 1) + (optionwidth - getTextWidth(optiontext, optiontextfontsizemap[sheetconfig.meta.optionBorderType])) / 2,
                 y: cursory + (namefontsize + textrowgap) * k,
-                size: namefontsize
+                size: optiontextfontsizemap[sheetconfig.meta.optionBorderType]
               })
             })
           }
@@ -988,6 +1021,10 @@ function deleteName(index, indexa) {
       <div class="sp" style="flex:1">
         <iframe v-if="pdfurl" :src="pdfurl" style="flex:1;height:100%"></iframe>
         <div class="cz" style="align-self:flex-start;flex:1">
+          <div class="sp">
+            <tiny-button type="info" @click="preview">预览</tiny-button>
+            <div><tiny-button type="success" @click="download">下载</tiny-button></div>
+          </div>
           <div class="large-bold-text">全局配置</div>
           <div class="sp">
             <div class="bold-text">标题</div>
@@ -1015,6 +1052,13 @@ function deleteName(index, indexa) {
               <tiny-checkbox label="班级"></tiny-checkbox>
               <tiny-checkbox label="考场/座位号"></tiny-checkbox>
             </tiny-checkbox-group>
+          </div>
+          <div class="sp">
+            <div class="bold-text">选项边框</div>
+            <tiny-radio-group v-model="sheet.meta.optionBorderType">
+              <tiny-radio label="open">中括号</tiny-radio>
+              <tiny-radio label="close">矩形</tiny-radio>
+            </tiny-radio-group>
           </div>
           <div class="sp">
             <div class="bold-text">选项排列</div>
@@ -1106,10 +1150,6 @@ function deleteName(index, indexa) {
               <div><tiny-input v-model="item.name" clearable placeholder="请输入题号"></tiny-input></div>
               <tiny-numeric v-model="item.characterCount" step-strictly :min="1"></tiny-numeric>
             </div>
-          </div>
-          <div class="sp">
-            <tiny-button type="info" @click="preview">预览</tiny-button>
-            <div><tiny-button type="success" @click="download">下载</tiny-button></div>
           </div>
         </div>
       </div>

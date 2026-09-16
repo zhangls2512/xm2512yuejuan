@@ -2,6 +2,24 @@
 document.title = '智能阅卷系统 - 更新日志'
 const data = [
   {
+    versionNumber: '1.4.0',
+    releaseDate: '2026-09-16',
+    logs: [
+      {
+        type: 'U',
+        content: '底部新增坐标制作工具'
+      },
+      {
+        type: 'U',
+        content: '答题卡制作工具全局配置新增选项边框'
+      },
+      {
+        type: 'F',
+        content: '修复了一些已知的问题'
+      }
+    ]
+  },
+  {
     versionNumber: '1.3.1',
     releaseDate: '2026-09-15',
     logs: [

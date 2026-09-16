@@ -9,6 +9,7 @@
   "dependencies": {
     "@opentiny/vue": "latest",
     "@opentiny/vue-huicharts": "latest",
+    "binary-contours": "latest",
     "jspdf": "latest",
     "qrcode": "latest",
     "vue": "latest",

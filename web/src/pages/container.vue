@@ -81,20 +81,25 @@ function clearHistory() {
     </div>
     <router-view class="empty"></router-view>
     <div class="footer">
-      <div class="footer-text">Version 1.3.1</div>
-      <tiny-divider direction="vertical"></tiny-divider>
-      <router-link class="footer-text" to="/answersheetmaketool" target="_blank">答题卡制作工具</router-link>
-      <tiny-divider direction="vertical"></tiny-divider>
-      <router-link class="footer-text" to="/qrcodegeneratetool" target="_blank">二维码生成工具</router-link>
-      <tiny-divider direction="vertical"></tiny-divider>
-      <a class="footer-text" href="https://docs.qq.com/doc/p/cfe2a8b2b5709cadd6d9048aa4fd001678197397"
-        target="_blank">帮助文档</a>
-      <tiny-divider direction="vertical"></tiny-divider>
-      <router-link class="footer-text" to="/updatelog" target="_blank">更新日志</router-link>
-      <tiny-divider direction="vertical"></tiny-divider>
-      <div class="sp">
-        <img src="/ai.svg" @click="openAiDialog"></img>
-        <div class="clickwz" @click="openAiDialog">AI智能客服</div>
+      <div class="cz">
+        <div class="sp">
+          <router-link class="footer-text" to="/answersheetmaketool" target="_blank">答题卡制作工具</router-link>
+          <tiny-divider direction="vertical"></tiny-divider>
+          <router-link class="footer-text" to="/coordgeneratetool" target="_blank">坐标生成工具</router-link>
+          <tiny-divider direction="vertical"></tiny-divider>
+          <router-link class="footer-text" to="/qrcodegeneratetool" target="_blank">二维码生成工具</router-link>
+        </div>
+        <div class="sp">
+          <div class="footer-text">Version 1.4.0</div>
+          <tiny-divider direction="vertical"></tiny-divider>
+          <a class="footer-text" href="https://docs.qq.com/doc/p/cfe2a8b2b5709cadd6d9048aa4fd001678197397"
+            target="_blank">帮助文档</a>
+          <tiny-divider direction="vertical"></tiny-divider>
+          <router-link class="footer-text" to="/updatelog" target="_blank">更新日志</router-link>
+          <tiny-divider direction="vertical"></tiny-divider>
+          <img src="/ai.svg" @click="openAiDialog"></img>
+          <div class="clickwz" @click="openAiDialog">AI智能客服</div>
+        </div>
       </div>
     </div>
     <tiny-dialog-box :visible="aidialog" title="AI智能客服" right-slide @close="closeAiDialog">
