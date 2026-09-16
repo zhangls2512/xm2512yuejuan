@@ -226,7 +226,8 @@ function redraw() {
         ctx.strokeRect(m.x, m.y, m.w, m.h)
       }
     })
-  } catch { }
+  } catch {
+  }
 }
 function exportjson() {
   saveFile(JSON.stringify(result.value), '坐标.json')
