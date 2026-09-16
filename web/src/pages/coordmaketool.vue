@@ -16,12 +16,12 @@ let x = 0
 let y = 0
 let drawing = false
 let markers = []
-let rect
 let scalex = 0
 let scaley = 0
 async function chooseimage() {
   result.value = []
   markers = []
+  redraw()
   const image = await readImage()
   img = new Image()
   img.onload = () => {
@@ -32,7 +32,7 @@ async function chooseimage() {
     canvas.width = img.width
     canvas.height = img.height
     ctx.drawImage(img, 0, 0)
-    rect = canvasRef.value.getBoundingClientRect()
+    const rect = canvasRef.value.getBoundingClientRect()
     scalex = canvasRef.value.width / rect.width
     scaley = canvasRef.value.height / rect.height
     const imgdata = ctx.getImageData(0, 0, canvas.width, canvas.height)
@@ -48,8 +48,8 @@ async function chooseimage() {
 }
 function getPos(e) {
   return {
-    x: (e.pageX - rect.left) * scalex,
-    y: (e.pageY - rect.top) * scaley
+    x: e.offsetX * scalex,
+    y: e.offsetY * scaley
   }
 }
 function onMouseDown(e) {
@@ -168,7 +168,7 @@ function processZone(x, y, w, h) {
     let options = []
     contours.forEach(item => {
       const br = item.boundingRect
-      if (br.width > 8 && br.height > 8) {
+      if (br.width > 12 && br.height > 10) {
         options.push({
           rect: [Math.round(rx + br.x), Math.round(ry + br.y), Math.round(rx + br.x + br.width), Math.round(ry + br.y + br.height)],
           cx: rx + br.x + br.width / 2,
@@ -208,23 +208,25 @@ function processZone(x, y, w, h) {
   redraw()
 }
 function redraw() {
-  const ctx = canvasRef.value.getContext('2d', {
-    willReadFrequently: true
-  })
-  ctx.clearRect(0, 0, canvasRef.value.width, canvasRef.value.height)
-  ctx.drawImage(img, 0, 0)
-  markers.forEach(m => {
-    if (m.type == 'point') {
-      ctx.fillStyle = 'red'
-      ctx.beginPath()
-      ctx.arc(m.x, m.y, 5, 0, 2 * Math.PI)
-      ctx.fill()
-    } else {
-      ctx.strokeStyle = 'red'
-      ctx.lineWidth = 2
-      ctx.strokeRect(m.x, m.y, m.w, m.h)
-    }
-  })
+  try {
+    const ctx = canvasRef.value.getContext('2d', {
+      willReadFrequently: true
+    })
+    ctx.clearRect(0, 0, canvasRef.value.width, canvasRef.value.height)
+    ctx.drawImage(img, 0, 0)
+    markers.forEach(m => {
+      if (m.type == 'point') {
+        ctx.fillStyle = 'red'
+        ctx.beginPath()
+        ctx.arc(m.x, m.y, 5, 0, 2 * Math.PI)
+        ctx.fill()
+      } else {
+        ctx.strokeStyle = 'red'
+        ctx.lineWidth = 2
+        ctx.strokeRect(m.x, m.y, m.w, m.h)
+      }
+    })
+  } catch { }
 }
 function exportjson() {
   saveFile(JSON.stringify(result.value), '坐标.json')

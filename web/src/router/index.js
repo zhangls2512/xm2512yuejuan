@@ -139,8 +139,8 @@ const router = createRouter({
       component: () => import('/src/pages/answersheetmaketool.vue')
     },
     {
-      path: '/coordgeneratetool',
-      component: () => import('/src/pages/coordgeneratetool.vue')
+      path: '/coordmaketool',
+      component: () => import('/src/pages/coordmaketool.vue')
     },
     {
       path: '/qrcodegeneratetool',
