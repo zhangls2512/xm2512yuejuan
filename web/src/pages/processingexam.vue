@@ -145,9 +145,10 @@ async function updateMarkStatus(id, subject, markstatus) {
     }
   })
 }
-function config(info) {
+function config(exam, subject) {
   router.push('/examsubjectconfig?info=' + encode({
-    ...info,
+    exam: exam,
+    subject: subject,
     backpath: '/processingexam',
     backname: '考试管理'
   }))
@@ -323,7 +324,7 @@ async function endExam(id) {
               </div>
               <div class="sp">
                 <div v-if="subject.markStatus == 'end'" class="footer-text">阅卷已结束。</div>
-                <div v-if="subject.markStatus != 'end'" class="clickwz" @click="config(subject)">查看配置</div>
+                <div v-if="subject.markStatus != 'end'" class="clickwz" @click="config(item, subject)">查看配置</div>
                 <div v-if="admin && subject.markStatus != 'end'" class="clickwz"
                   @click="answer(item.examId, subject.name)">作答记录</div>
                 <div v-if="admin && subject.markStatus != 'end'" class="clickwz"

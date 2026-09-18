@@ -68,9 +68,10 @@ async function restartExam(id) {
   })
   get()
 }
-function config(info) {
+function config(exam, subject) {
   router.push('/examsubjectconfig?info=' + encode({
-    ...info,
+    exam: exam,
+    subject: subject,
     backpath: '/endexam',
     backname: '考试管理'
   }))
@@ -163,7 +164,7 @@ function updatescore(exam, subject) {
               <div class="sp">
                 <div class="footer-text">阅卷已结束。</div>
                 <div v-if="admin" class="clickwz" @click="getAnswerCsv(item, subject.name)">导出小题明细</div>
-                <div class="clickwz" @click="config(subject)">查看配置</div>
+                <div class="clickwz" @click="config(item, subject)">查看配置</div>
                 <div v-if="admin" class="clickwz" @click="markProgress(item, subject.name)">阅卷进度</div>
                 <div v-if="admin" class="clickwz" @click="scorereportconfig(item.examId, subject.name)">成绩报告配置
                 </div>

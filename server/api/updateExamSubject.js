@@ -164,6 +164,10 @@ exports.main = async (event, configfilepath) => {
             subjectiveQuestion: checkres.data.subjectiveQuestion,
             markGroup: checkres.data.markGroup,
             volume: checkres.data.volume
+          },
+          $unset: {
+            startTime: -1,
+            endTime: -1
           }
         })
       }

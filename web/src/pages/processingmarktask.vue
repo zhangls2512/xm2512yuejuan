@@ -123,7 +123,12 @@ async function updateMarkStatus(param, markstatus) {
 }
 function config(param) {
   router.push('/examsubjectconfig?info=' + encode({
-    ...param.subject,
+    exam: {
+      name: param.examName,
+      type: param.examType,
+      time: param.examTime
+    },
+    subject: param.subject,
     backpath: '/processingmarktask',
     backname: '阅卷任务'
   }))

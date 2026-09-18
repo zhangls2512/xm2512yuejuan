@@ -90,7 +90,7 @@ function clearHistory() {
           <router-link class="footer-text" to="/qrcodegeneratetool" target="_blank">二维码生成工具</router-link>
         </div>
         <div class="sp">
-          <div class="footer-text">Version 1.4.2</div>
+          <div class="footer-text">Version 1.4.3</div>
           <tiny-divider direction="vertical"></tiny-divider>
           <a class="footer-text" href="https://docs.qq.com/doc/p/cfe2a8b2b5709cadd6d9048aa4fd001678197397"
             target="_blank">帮助文档</a>

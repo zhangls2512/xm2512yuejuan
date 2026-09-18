@@ -65,9 +65,14 @@ async function updateMarkStatus(param) {
     }
   })
 }
-function config(info) {
+function config(param) {
   router.push('/examsubjectconfig?info=' + encode({
-    ...info.subject,
+    exam: {
+      name: param.examName,
+      type: param.examType,
+      time: param.examTime
+    },
+    subject: param.subject,
     backpath: '/endmarktask',
     backname: '阅卷任务'
   }))
