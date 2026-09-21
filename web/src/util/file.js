@@ -22,7 +22,7 @@ export function readImage() {
   return new Promise((resolve) => {
     const input = document.createElement('input')
     input.type = 'file'
-    input.accept = '.jpg,.jpeg,.png,.webp'
+    input.accept = '.jpg,.jpeg,.png,.webp,.heic'
     input.onchange = () => {
       const file = input.files[0]
       if (!file) {
