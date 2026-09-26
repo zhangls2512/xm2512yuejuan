@@ -2,9 +2,9 @@
 exports.main = async (event, configfilepath) => {
   const crypto = require('crypto')
   const { write } = require('../../util/file')
-  const { getAnswerIndex } = require('../util/ismarked')
   const { readConfig } = require('../../util/readconfig')
   const db = await (require('../util/db').database(configfilepath))
+  const { getAnswerIndex } = require('../util/ismarked')
   const requestdata = JSON.parse(event.body)
   if (typeof (requestdata.id) != 'string' || requestdata.id.length != 36) {
     return {

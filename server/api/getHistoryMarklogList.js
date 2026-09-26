@@ -1,6 +1,7 @@
 'use strict'
 exports.main = async (event, configfilepath) => {
   const db = await (require('../util/db').database(configfilepath))
+  const { fixtwo } = require('../util/scorereport')
   const requestdata = JSON.parse(event.body)
   if (typeof (requestdata.id) != 'string' || requestdata.id.length != 36) {
     return {
@@ -119,7 +120,7 @@ exports.main = async (event, configfilepath) => {
           return {
             id: item.marklogId,
             questionName: item.questionName,
-            totalScore: item.totalScore,
+            totalScore: fixtwo(item.totalScore),
             doubtful: item.doubtful
           }
         })
@@ -144,7 +145,7 @@ exports.main = async (event, configfilepath) => {
           return {
             id: item.marklogId,
             questionName: item.questionName,
-            totalScore: item.totalScore,
+            totalScore: fixtwo(item.totalScore),
             doubtful: item.doubtful
           }
         })

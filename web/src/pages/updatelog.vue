@@ -2,6 +2,16 @@
 document.title = '智能阅卷系统 - 更新日志'
 const data = [
   {
+    versionNumber: '1.4.5',
+    releaseDate: '2026-09-26',
+    logs: [
+      {
+        type: 'F',
+        content: '修复了一些已知的问题'
+      }
+    ]
+  },
+  {
     versionNumber: '1.4.4',
     releaseDate: '2026-09-21',
     logs: [

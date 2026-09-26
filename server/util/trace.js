@@ -1,5 +1,5 @@
 function getScanTrace(subjectconfig, marklogarr, pagesorigincoord, volume) {
-  const { calcObjectiveScore, sum } = require('./scorereport')
+  const { calcObjectiveScore, fixtwo, sum } = require('./scorereport')
   const pages = subjectconfig.volume.find(item => item.name == volume).page
   const result = Array.from({
     length: pagesorigincoord.length
@@ -71,7 +71,7 @@ function getScanTrace(subjectconfig, marklogarr, pagesorigincoord, volume) {
       const item = questions[0]
       result[coord[0].pageindex].push({
         type: 'text',
-        content: item.stepScore.length > 1 ? ['-' + (item.fullScore - item.totalScore)].concat(item.stepScore.map((s, i) => '步骤' + (i + 1) + '：' + s + '分')).join('\n') : '-' + (item.fullScore - item.totalScore),
+        content: item.stepScore.length > 1 ? ['-' + fixtwo(item.fullScore - item.totalScore)].concat(item.stepScore.map((s, i) => '步骤' + (i + 1) + '：' + s + '分')).join('\n') : '-' + fixtwo(item.fullScore - item.totalScore),
         coord: [pagesorigincoord[coord[0].pageindex][0] + coord[0].coord[2], pagesorigincoord[coord[0].pageindex][1] + coord[0].coord[1]],
         position: 'righttop',
         size: 24
@@ -96,7 +96,7 @@ function getScanTrace(subjectconfig, marklogarr, pagesorigincoord, volume) {
       result[coord[0].pageindex].push({
         type: 'text',
         content: questions.map(q => {
-          const result = [q.questionName + '：-' + (q.fullScore - q.totalScore)]
+          const result = [q.questionName + '：-' + fixtwo(q.fullScore - q.totalScore)]
           if (q.stepScore.length > 1) {
             q.stepScore.forEach((s, i) => {
               result.push('步骤' + (i + 1) + '：' + s + '分')
@@ -130,7 +130,7 @@ function getScanTrace(subjectconfig, marklogarr, pagesorigincoord, volume) {
   })
   result[0].push({
     type: 'text',
-    content: String(totalscore),
+    content: String(fixtwo(totalscore)),
     coord: [pagesorigincoord[0][0] + 10, pagesorigincoord[0][1] + 10],
     position: 'lefttop',
     size: 60
@@ -138,11 +138,10 @@ function getScanTrace(subjectconfig, marklogarr, pagesorigincoord, volume) {
   return result
 }
 function getOnlineTrace(subjectconfig, marklogarr) {
-  const { sum } = require('./scorereport')
+  const { fixtwo, sum } = require('./scorereport')
   const result = Array.from({
     length: marklogarr.length
   }, () => [])
-  const markgroups = {}
   marklogarr.forEach((item, index) => {
     result[index].push({
       type: 'image',
@@ -153,7 +152,7 @@ function getOnlineTrace(subjectconfig, marklogarr) {
     const fullscore = sum(question.stepScore.map(s => s[0]))
     result[index].push({
       type: 'text',
-      content: item.finalStepScore.length > 1 ? ['-' + (fullscore - item.finalTotalScore)].concat(item.finalStepScore.map((s, i) => '步骤' + (i + 1) + '：' + s + '分')).join('\n') : '-' + (fullscore - item.finalTotalScore),
+      content: item.finalStepScore.length > 1 ? ['-' + fixtwo(fullscore - item.finalTotalScore)].concat(item.finalStepScore.map((s, i) => '步骤' + (i + 1) + '：' + s + '分')).join('\n') : '-' + fixtwo(fullscore - item.finalTotalScore),
       position: 'righttop',
       size: 24
     })

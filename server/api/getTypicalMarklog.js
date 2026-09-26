@@ -4,6 +4,7 @@ exports.main = async (event, configfilepath) => {
   const { readConfig } = require('../../util/readconfig')
   const db = await (require('../util/db').database(configfilepath))
   const { cropImage } = require('../util/image')
+  const { fixtwo } = require('../util/scorereport')
   const requestdata = JSON.parse(event.body)
   if (typeof (requestdata.id) != 'string' || requestdata.id.length != 36) {
     return {
@@ -200,7 +201,7 @@ exports.main = async (event, configfilepath) => {
     const result = {
       answerImage: [],
       stepScore: marklogres.stepScore,
-      totalScore: marklogres.totalScore
+      totalScore: fixtwo(marklogres.totalScore)
     }
     const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + examsubjectgetres.name + '/answer/' + marklogres.studentAccount + '/'
     if (!examsubjectgetres.answerOnline) {

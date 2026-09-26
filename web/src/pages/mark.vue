@@ -133,7 +133,7 @@ async function get() {
     }
     if (item) {
       const size = await getImageSize(item)
-      const transparent = await getTransparentImage(size.width, size.height)
+      const transparent = getTransparentImage(size.width, size.height)
       traceimage.value.push({
         data: transparent,
         transparent: transparent,
@@ -209,11 +209,10 @@ async function newQuestion() {
     return
   }
   for (let i = 0; i < marklist.value.length; i++) {
-    const markitem = marklist.value[i]
     await request({
       apiPath: '/newQuestionMarklog',
       body: {
-        id: markitem.id,
+        id: markloglist.value[i].id,
         reason: reason.value
       }
     })
@@ -264,7 +263,7 @@ async function mark(id) {
     }
     if (item) {
       const size = await getImageSize(item)
-      const transparent = await getTransparentImage(size.width, size.height)
+      const transparent = getTransparentImage(size.width, size.height)
       traceimage.value.push({
         data: item,
         transparent: transparent,

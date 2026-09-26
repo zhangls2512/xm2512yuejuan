@@ -422,7 +422,7 @@ async function getScoreReport(subject, classes, marklog, config, schoolid, confi
         name: q[0],
         score: Object.entries(q[1].score).map(s => {
           return {
-            score: Number(s[0]),
+            score: fixtwo(Number(s[0])),
             student: s[1]
           }
         }).sort((a, b) => b.score - a.score),
@@ -493,7 +493,7 @@ async function getScoreReport(subject, classes, marklog, config, schoolid, confi
           name: q[0],
           score: Object.entries(q[1].score).map(s => {
             return {
-              score: Number(s[0]),
+              score: fixtwo(Number(s[0])),
               student: s[1]
             }
           }).sort((a, b) => b.score - a.score),
@@ -551,7 +551,7 @@ async function getScoreReport(subject, classes, marklog, config, schoolid, confi
           name: q[0],
           score: Object.entries(q[1].score).map(s => {
             return {
-              score: Number(s[0]),
+              score: fixtwo(Number(s[0])),
               student: s[1]
             }
           }).sort((a, b) => b.score - a.score),

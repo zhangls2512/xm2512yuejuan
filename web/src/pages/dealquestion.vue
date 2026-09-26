@@ -141,7 +141,7 @@ async function mark(id) {
       }
       if (item) {
         const size = await getImageSize(item)
-        const transparent = await getTransparentImage(size.width, size.height)
+        const transparent = getTransparentImage(size.width, size.height)
         traceimage.value.push({
           data: transparent,
           transparent: transparent,
@@ -164,7 +164,7 @@ async function mark(id) {
       }
       if (item) {
         const size = await getImageSize(item)
-        const transparent = await getTransparentImage(size.width, size.height)
+        const transparent = getTransparentImage(size.width, size.height)
         traceimage.value.push({
           data: item,
           transparent: transparent,

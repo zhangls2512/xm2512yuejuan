@@ -1,9 +1,9 @@
 'use strict'
 exports.main = async (event, configfilepath) => {
-  const db = await (require('../util/db').database(configfilepath))
   const { read } = require('../../util/file')
   const { readConfig } = require('../../util/readconfig')
-  const { sum } = require('../util/scorereport')
+  const db = await (require('../util/db').database(configfilepath))
+  const { sum, fixtwo } = require('../util/scorereport')
   const requestdata = JSON.parse(event.body)
   if (typeof (requestdata.id) != 'string' || requestdata.id.length != 36) {
     return {
@@ -120,42 +120,42 @@ exports.main = async (event, configfilepath) => {
           history.push({
             type: '一评',
             markerAccount: m.firstMarkerAccount,
-            totalScore: sum(m.firstMarkStepScore)
+            totalScore: fixtwo(sum(m.firstMarkStepScore))
           })
         }
         if (m.secondMarkerAccount) {
           history.push({
             type: '二评',
             markerAccount: m.secondMarkerAccount,
-            totalScore: sum(m.secondMarkStepScore)
+            totalScore: fixtwo(sum(m.secondMarkStepScore))
           })
         }
         if (m.thirdMarkerAccount) {
           history.push({
             type: '三评',
             markerAccount: m.thirdMarkerAccount,
-            totalScore: sum(m.thirdMarkStepScore)
+            totalScore: fixtwo(sum(m.thirdMarkStepScore))
           })
         }
         if (m.arbitrateMarkerAccount) {
           history.push({
             type: '仲裁',
             markerAccount: m.arbitrateMarkerAccount,
-            totalScore: sum(m.arbitrateMarkStepScore)
+            totalScore: fixtwo(sum(m.arbitrateMarkStepScore))
           })
         }
         if (m.questionMarkerAccount) {
           history.push({
             type: '问题卷',
             markerAccount: m.questionMarkerAccount,
-            totalScore: sum(m.questionMarkStepScore)
+            totalScore: fixtwo(sum(m.questionMarkStepScore))
           })
         }
         if (m.updateMarkerAccount) {
           history.push({
             type: '修改/补录',
             markerAccount: m.updateMarkerAccount,
-            totalScore: sum(m.updateMarkStepScore)
+            totalScore: fixtwo(sum(m.updateMarkStepScore))
           })
         }
         result.marklog.push({
