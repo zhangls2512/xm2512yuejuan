@@ -37,17 +37,18 @@ const height = ref(0)
 const width = ref(0)
 const sheetconfig = sheet.value
 const pagepadding = 20
-const pagenumberfontsize = 10
-const namefontsize = 12
 const archorheight = 15
 const archorwidth = 15
 const inpadding = 5
 const columngap = 20
 const rowgap = 25
-const titlefontsize = 24
-const subtitlefontsize = 16
 const textrowgap = 6
 const itemgap = 10
+const titlefontsize = 20
+const subtitlefontsize = 12
+const namefontsize = 8
+const pagenumberfontsize = 10
+const optionwidth = 14
 function grouparr(arr, count) {
   const result = []
   for (let i = 0; i < arr.length; i += count) {
@@ -103,17 +104,11 @@ function splitTextToSize(text, maxwidth, size) {
   doc.setFontSize(size)
   return doc.splitTextToSize(text, maxwidth)
 }
-let optionwidth = 0
 function getObjectiveGroupSize(group) {
   const result = {
     width: 0,
     height: 0
   }
-  const optiontextmap = {
-    open: '[ W ]',
-    close: ' W '
-  }
-  optionwidth = getTextWidth(optiontextmap[sheetconfig.meta.optionBorderType], namefontsize)
   if (sheetconfig.meta.optionDirection == 'column') {
     result.width = optionwidth * group.length + textrowgap * (group.length - 1)
     const optioncount = maxoptioncount(group)
@@ -732,11 +727,29 @@ function getCommands(pageheight, pagewidth) {
               size: namefontsize
             })
             options.forEach((item, index) => {
-              const optiontextmap = {
-                open: '[ ' + item + ' ]',
-                close: ' ' + item + ' '
+              addItem({
+                type: 'text',
+                content: item,
+                x: cursorx + (optionwidth + textrowgap) * k + (optionwidth - getTextWidth(item, optiontextfontsizemap[sheetconfig.meta.optionBorderType])) / 2,
+                y: cursory + (namefontsize + textrowgap) * (index + 1),
+                size: optiontextfontsizemap[sheetconfig.meta.optionBorderType]
+              })
+              if (sheetconfig.meta.optionBorderType == 'open') {
+                addItem({
+                  type: 'text',
+                  content: '[',
+                  x: cursorx + (optionwidth + textrowgap) * k,
+                  y: cursory + (namefontsize + textrowgap) * (index + 1),
+                  size: namefontsize
+                })
+                addItem({
+                  type: 'text',
+                  content: ']',
+                  x: cursorx + (optionwidth + textrowgap) * k + optionwidth - getTextWidth(']', namefontsize),
+                  y: cursory + (namefontsize + textrowgap) * (index + 1),
+                  size: namefontsize
+                })
               }
-              const optiontext = optiontextmap[sheetconfig.meta.optionBorderType]
               if (sheetconfig.meta.optionBorderType == 'close') {
                 addItem({
                   type: 'rect',
@@ -746,13 +759,6 @@ function getCommands(pageheight, pagewidth) {
                   h: namefontsize
                 })
               }
-              addItem({
-                type: 'text',
-                content: optiontext,
-                x: cursorx + (optionwidth + textrowgap) * k + (optionwidth - getTextWidth(optiontext, optiontextfontsizemap[sheetconfig.meta.optionBorderType])) / 2,
-                y: cursory + (namefontsize + textrowgap) * (index + 1),
-                size: optiontextfontsizemap[sheetconfig.meta.optionBorderType]
-              })
             })
           }
           if (sheetconfig.meta.optionDirection == 'row') {
@@ -764,11 +770,29 @@ function getCommands(pageheight, pagewidth) {
               size: namefontsize
             })
             options.forEach((item, index) => {
-              const optiontextmap = {
-                open: '[ ' + item + ' ]',
-                close: ' ' + item + ' '
+              addItem({
+                type: 'text',
+                content: item,
+                x: cursorx + groupsize.namewidth + optionwidth * index + textrowgap * (index + 1) + (optionwidth - getTextWidth(item, optiontextfontsizemap[sheetconfig.meta.optionBorderType])) / 2,
+                y: cursory + (namefontsize + textrowgap) * k,
+                size: optiontextfontsizemap[sheetconfig.meta.optionBorderType]
+              })
+              if (sheetconfig.meta.optionBorderType == 'open') {
+                addItem({
+                  type: 'text',
+                  content: '[',
+                  x: cursorx + groupsize.namewidth + optionwidth * index + textrowgap * (index + 1),
+                  y: cursory + (namefontsize + textrowgap) * k,
+                  size: namefontsize
+                })
+                addItem({
+                  type: 'text',
+                  content: ']',
+                  x: cursorx + groupsize.namewidth + optionwidth * index + textrowgap * (index + 1) + optionwidth - getTextWidth(']', namefontsize),
+                  y: cursory + (namefontsize + textrowgap) * k,
+                  size: namefontsize
+                })
               }
-              const optiontext = optiontextmap[sheetconfig.meta.optionBorderType]
               if (sheetconfig.meta.optionBorderType == 'close') {
                 addItem({
                   type: 'rect',
@@ -778,13 +802,6 @@ function getCommands(pageheight, pagewidth) {
                   h: namefontsize
                 })
               }
-              addItem({
-                type: 'text',
-                content: optiontext,
-                x: cursorx + groupsize.namewidth + optionwidth * index + textrowgap * (index + 1) + (optionwidth - getTextWidth(optiontext, optiontextfontsizemap[sheetconfig.meta.optionBorderType])) / 2,
-                y: cursory + (namefontsize + textrowgap) * k,
-                size: optiontextfontsizemap[sheetconfig.meta.optionBorderType]
-              })
             })
           }
         }
