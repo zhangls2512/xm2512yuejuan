@@ -142,7 +142,7 @@ function uploadanswer(param) {
       time: param.examTime
     },
     subject: param.subject,
-    backpath: '/uploadanswer',
+    backpath: '/processingmarktask',
     backname: '阅卷任务'
   }))
 }

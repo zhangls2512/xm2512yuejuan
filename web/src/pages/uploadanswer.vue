@@ -32,13 +32,7 @@ function setCanvasRef(element, index) {
   canvasref.value[index] = element
 }
 async function chooseimage() {
-  answerimage.value = []
-  imgref.value = []
-  canvasref.value = []
-  origincoord.value = []
-  optionalquestions.value = []
-  optionalquestion.value = []
-  studentaccount.value = ''
+  clear()
   const volumeitem = data.value.subject.volume.find(item => item.name == volume.value)
   answerimage.value = await readImageDirectory(volumeitem.page.length)
   origincoord.value = Array.from({ length: volumeitem.page.length }, () => [0, 0])
@@ -114,6 +108,9 @@ async function upload() {
     message: '上传成功',
     status: 'success'
   })
+  clear()
+}
+function clear() {
   answerimage.value = []
   imgref.value = []
   canvasref.value = []
@@ -151,7 +148,7 @@ async function upload() {
         <div><tiny-button type="info" @click="chooseimage">选择图片文件夹</tiny-button></div>
         <div class="sp">
           <div class="bold-text">分卷</div>
-          <tiny-radio-group v-model="volume">
+          <tiny-radio-group v-model="volume" @change="clear">
             <tiny-radio v-for="item in volumes" :label="item">{{ item }}</tiny-radio>
           </tiny-radio-group>
         </div>
