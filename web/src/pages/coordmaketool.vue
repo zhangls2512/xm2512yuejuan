@@ -3,7 +3,7 @@ document.title = '智能阅卷系统 - 坐标制作工具'
 import { ref } from 'vue'
 import { findContours } from 'binary-contours'
 import { readImage, saveFile } from '../util/file'
-const canvasRef = ref(null)
+const canvasref = ref(null)
 const type = ref('anchor')
 const optiondirection = ref('row')
 const questioncount = ref(5)
@@ -25,16 +25,16 @@ async function chooseimage() {
   const image = await readImage()
   img = new Image()
   img.onload = () => {
-    const canvas = canvasRef.value
+    const canvas = canvasref.value
     const ctx = canvas.getContext('2d', {
       willReadFrequently: true
     })
     canvas.width = img.width
     canvas.height = img.height
     ctx.drawImage(img, 0, 0)
-    const rect = canvasRef.value.getBoundingClientRect()
-    scalex = canvasRef.value.width / rect.width
-    scaley = canvasRef.value.height / rect.height
+    const rect = canvasref.value.getBoundingClientRect()
+    scalex = canvasref.value.width / rect.width
+    scaley = canvasref.value.height / rect.height
     const imgdata = ctx.getImageData(0, 0, canvas.width, canvas.height)
     width = canvas.width
     height = canvas.height
@@ -62,7 +62,7 @@ function onMouseMove(e) {
   if (drawing) {
     redraw()
     const p = getPos(e)
-    const ctx = canvasRef.value.getContext('2d', {
+    const ctx = canvasref.value.getContext('2d', {
       willReadFrequently: true
     })
     ctx.strokeStyle = '#FF0000'
@@ -209,10 +209,10 @@ function processZone(x, y, w, h) {
 }
 function redraw() {
   try {
-    const ctx = canvasRef.value.getContext('2d', {
+    const ctx = canvasref.value.getContext('2d', {
       willReadFrequently: true
     })
-    ctx.clearRect(0, 0, canvasRef.value.width, canvasRef.value.height)
+    ctx.clearRect(0, 0, canvasref.value.width, canvasref.value.height)
     ctx.drawImage(img, 0, 0)
     markers.forEach(m => {
       if (m.type == 'point') {
@@ -262,7 +262,7 @@ function deleteItem(index) {
     </div>
     <div class="main" style="flex:1">
       <div class="sp" style="flex:1">
-        <canvas ref="canvasRef" @mousedown="onMouseDown" @mousemove="onMouseMove" @mouseup="onMouseUp"
+        <canvas ref="canvasref" @mousedown="onMouseDown" @mousemove="onMouseMove" @mouseup="onMouseUp"
           style="flex:1;min-width:0"></canvas>
         <div class="cz" style="align-self:flex-start;flex:1">
           <div class="sp">

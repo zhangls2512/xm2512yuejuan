@@ -145,6 +145,14 @@ async function updateMarkStatus(id, subject, markstatus) {
     }
   })
 }
+function uploadanswer(exam, subject) {
+  router.push('/uploadanswer?info=' + encode({
+    exam: exam,
+    subject: subject,
+    backpath: '/processingexam',
+    backname: '考试管理'
+  }))
+}
 function config(exam, subject) {
   router.push('/examsubjectconfig?info=' + encode({
     exam: exam,
@@ -306,11 +314,15 @@ async function endExam(id) {
           <div class="spacebetween">
             <div class="wide-sp">
               <div style="width:150px">【{{ subject.name }}】</div>
-              <div v-if="admin" class="sp" style="width:400px">
+              <div v-if="admin" class="sp" style="width:600px">
                 <div v-if="subject.markStatus != 'end'" class="clickwz"
-                  @click="updateSubject(item.examId, subject.name)">○
-                  编辑配置</div>
+                  @click="updateSubject(item.examId, subject.name)">○ 编辑配置</div>
                 <div v-if="subject.markStatus == 'end'" class="disabledwz" style="cursor:not-allowed">☑ 编辑配置</div>
+                <div v-if="!subject.answerOnline" class="disabledwz">····</div>
+                <div v-if="!subject.answerOnline && subject.markStatus != 'end'" class="clickwz"
+                  @click="uploadanswer(item, subject)">○ 上传作答</div>
+                <div v-if="!subject.answerOnline && subject.markStatus == 'end'" class="disabledwz"
+                  style="cursor:not-allowed">☑ 上传作答</div>
                 <div class="disabledwz">····</div>
                 <div v-if="subject.markStatus == 'paused'" class="clickwz"
                   @click="updateMarkStatus(item.examId, subject.name, 'processing')">○ 开始阅卷</div>

@@ -1,10 +1,8 @@
 <script setup>
 document.title = '智能阅卷系统 - 登录'
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
 import request from '../util/request'
 import router from '../router'
-const route = useRoute()
 const account = ref('')
 const password = ref('')
 function routePush() {
@@ -32,7 +30,6 @@ async function login() {
     apiPath: '/getAccountInfo',
     authorization: 'Basic ' + btoa(account.value + ':' + password.value)
   })
-  const expires = new Date(Date.now() + 604800000)
   localStorage.setItem('authorization', 'Basic ' + btoa(account.value + ':' + password.value))
   localStorage.setItem('accountinfo', JSON.stringify(res.data))
   routePush()

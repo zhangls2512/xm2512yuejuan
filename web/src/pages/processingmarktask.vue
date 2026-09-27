@@ -133,6 +133,19 @@ function config(param) {
     backname: '阅卷任务'
   }))
 }
+function uploadanswer(param) {
+  router.push('/uploadanswer?info=' + encode({
+    exam: {
+      examId: param.examId,
+      name: param.examName,
+      type: param.examType,
+      time: param.examTime
+    },
+    subject: param.subject,
+    backpath: '/uploadanswer',
+    backname: '阅卷任务'
+  }))
+}
 function answer(param) {
   router.push('/examsubjectanswer?info=' + encode({
     examId: param.examId,
@@ -235,6 +248,8 @@ function markqualitymonitor(param) {
                         @click="updateMarkStatus(item, 'paused')">暂停阅卷</tiny-dropdown-item>
                       <tiny-dropdown-item v-if="item.markStatus == 'processing'"
                         @click="updateMarkStatus(item, 'end')">结束阅卷</tiny-dropdown-item>
+                      <tiny-dropdown-item v-if="!item.subject.answerOnline"
+                        @click="uploadanswer(item)">上传作答</tiny-dropdown-item>
                       <tiny-dropdown-item @click="answer(item)">作答记录</tiny-dropdown-item>
                       <tiny-dropdown-item @click="markqualitymonitor(item)">阅卷质量监控</tiny-dropdown-item>
                       <tiny-dropdown-item @click="scorereportconfig(item)">成绩报告配置</tiny-dropdown-item>

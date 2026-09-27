@@ -125,6 +125,10 @@ const router = createRouter({
             {
               path: '/updatescore',
               component: () => import('/src/pages/updatescore.vue')
+            },
+            {
+              path: '/uploadanswer',
+              component: () => import('/src/pages/uploadanswer.vue')
             }
           ]
         }

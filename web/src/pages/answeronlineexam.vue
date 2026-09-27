@@ -101,19 +101,19 @@ async function submit() {
       <div class="bold-text">作答结束时间</div>
       <div>{{ data.endTime }}</div>
     </div>
-    <div v-for="(item, index) in question.objectiveQuestion" class="kuang">
+    <div v-for="item, index in question.objectiveQuestion" class="kuang">
       <div class="sp" style="width:100%">
         <div style="flex-shrink:0">{{ item.name }}</div>
         <div class="cz">
           <img v-if="item.question" :src="item.question"></img>
           <tiny-tag v-if="item.extra" type="info">附加题</tiny-tag>
           <tiny-checkbox-group v-model="answer.objectiveQuestion[index].answer">
-            <tiny-checkbox v-for="(i, j) in item.option" :label="j">{{ i }}</tiny-checkbox>
+            <tiny-checkbox v-for="i, j in item.option" :label="j">{{ i }}</tiny-checkbox>
           </tiny-checkbox-group>
         </div>
       </div>
     </div>
-    <div v-for="(item, index) in question.subjectiveQuestionGroup" class="kuang">
+    <div v-for="item, index in question.subjectiveQuestionGroup" class="kuang">
       <div class="cz" style="width:100%">
         <div v-for="q in item.question" class="sp" style="width:100%">
           <div style="flex-shrink:0">{{ q.name }}</div>
@@ -129,10 +129,12 @@ async function submit() {
     </div>
     <div v-if="question.optionalQuestion.length > 0" class="sp">
       <div class="bold-text">选做题号</div>
-      <div v-for="(item, index) in question.optionalQuestion">
-        <tiny-checkbox-group v-model="answer.optionalQuestion[index]" :max="item.selectCount">
-          <tiny-checkbox v-for="i in item.name" :label="i">{{ i }}</tiny-checkbox>
-        </tiny-checkbox-group>
+      <div class="cz">
+        <div v-for="item, index in question.optionalQuestion">
+          <tiny-checkbox-group v-model="answer.optionalQuestion[index]" :max="item.selectCount">
+            <tiny-checkbox v-for="i in item.name" :label="i">{{ i }}</tiny-checkbox>
+          </tiny-checkbox-group>
+        </div>
       </div>
     </div>
     <div><tiny-button type="success" @click="submit">提交</tiny-button></div>

@@ -102,7 +102,7 @@ async function submit(item) {
             <div class="bold-text">{{ item.questionName }}</div>
             <div class="cz">
               <tiny-checkbox-group v-if="item.option" v-model="item.answer">
-                <tiny-checkbox v-for="(i, j) in item.option" :label="j">{{ i }}</tiny-checkbox>
+                <tiny-checkbox v-for="i, j in item.option" :label="j">{{ i }}</tiny-checkbox>
               </tiny-checkbox-group>
               <div v-if="item.stepScoreRule && item.stepScoreRule.length == 1">
                 <tiny-radio v-for="ii in item.stepScoreRule[0]" v-model="item.stepScore[0]" :label="ii">{{ ii

@@ -2,6 +2,20 @@
 document.title = '智能阅卷系统 - 更新日志'
 const data = [
   {
+    versionNumber: '1.5.0',
+    releaseDate: '2026-09-27',
+    logs: [
+      {
+        type: 'U',
+        content: '扫描作答模式考试科目新增上传作答'
+      },
+      {
+        type: 'F',
+        content: '修复了一些已知的问题'
+      }
+    ]
+  },
+  {
     versionNumber: '1.4.6',
     releaseDate: '2026-09-27',
     logs: [
@@ -85,7 +99,7 @@ const data = [
     logs: [
       {
         type: 'U',
-        content: '答题卡制作工具支持批量新增非“标题”类型题目、“解答题”类型题目新增“禁答”类型'
+        content: '答题卡制作工具支持批量新增非标题类型题目、解答题类型题目新增禁答类型'
       },
       {
         type: 'F',
@@ -362,7 +376,7 @@ const data = [
       <div class="cz">
         <div v-for="item in data" class="cz">
           <div class="large-bold-text">Version {{ item.versionNumber }}（发布日期：{{ item.releaseDate }}）</div>
-          <div v-for="(item, index) in item.logs" class="cz">
+          <div v-for="item, index in item.logs" class="cz">
             <div class="sp">
               <div>{{ index + 1 }}.</div>
               <tiny-tag v-if="item.type == 'A'" type="success">A</tiny-tag>

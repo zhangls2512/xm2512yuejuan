@@ -4,7 +4,6 @@ import { useRoute } from 'vue-router'
 import { decode } from '../util/code'
 import request from '../util/request'
 import time from '../util/time'
-import router from '../router'
 const param = ref({})
 const data = ref([])
 const currentpage = ref(1)

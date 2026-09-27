@@ -15,6 +15,39 @@ export function readFile(houzhui = 'json') {
         reader.onerror = () => resolve('')
       }
     }
+    input.oncancel = () => resolve('')
+    input.click()
+  })
+}
+function readFileBase64(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = () => resolve('')
+  })
+}
+export function readImageDirectory(count = 0) {
+  return new Promise((resolve) => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.webkitdirectory = true
+    input.onchange = async () => {
+      const files = [...input.files].filter(item => item.type.startsWith('image/')).sort((a, b) => a.name.localeCompare(b.name))
+      const result = []
+      for (let i = 0; i < count; i++) {
+        const file = files[i]
+        if (!file) {
+          result.push('')
+        }
+        if (file) {
+          const base64 = await readFileBase64(file)
+          result.push(base64)
+        }
+      }
+      resolve(result)
+    }
+    input.oncancel = () => resolve([])
     input.click()
   })
 }
@@ -35,6 +68,7 @@ export function readImage() {
         reader.onerror = () => resolve('')
       }
     }
+    input.oncancel = () => resolve('')
     input.click()
   })
 }
@@ -54,8 +88,7 @@ export function getTransparentImage(width, height) {
   const canvas = document.createElement('canvas')
   canvas.width = width
   canvas.height = height
-  const base64 = canvas.toDataURL('image/png')
-  return base64
+  return canvas.toDataURL('image/png')
 }
 export function saveFile(content, filename) {
   const blob = new Blob([content])
