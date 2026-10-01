@@ -2,7 +2,7 @@ const { spawn } = require('child_process')
 const fs = require('fs')
 const { readConfig } = require('../../util/readconfig')
 function batchIsMarkedPerPage(page, questions, configfilepath) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const py = spawn(readConfig(configfilepath, 'pythonVenvPath'), [__dirname + '/ismarked.py'])
     py.stdin.write(JSON.stringify({
       img: page.image,
