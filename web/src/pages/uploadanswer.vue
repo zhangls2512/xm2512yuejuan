@@ -9,6 +9,8 @@ const info = route.query.info
 const data = ref({})
 const volumes = ref([])
 const volume = ref('')
+let allimage = []
+const index = ref(0)
 const answerimage = ref([])
 const imgref = ref([])
 const canvasref = ref([])
@@ -16,6 +18,7 @@ const origincoord = ref([])
 const optionalquestions = ref([])
 const optionalquestion = ref([])
 const studentaccount = ref('')
+const uploadlist = ref([])
 if (info) {
   try {
     data.value = decode(info)
@@ -34,10 +37,15 @@ function setCanvasRef(element, index) {
 async function chooseimage() {
   clear()
   const volumeitem = data.value.subject.volume.find(item => item.name == volume.value)
-  answerimage.value = await readImageDirectory(volumeitem.page.length)
-  origincoord.value = Array.from({ length: volumeitem.page.length }, () => [0, 0])
   optionalquestions.value = volumeitem.optionalQuestion
-  optionalquestion.value = Array.from({ length: volumeitem.optionalQuestion.length }, () => [])
+  const loading = TinyLoading.service({
+    lock: true,
+    size: 'large',
+    background: 'rgba(0, 0, 0, 0.5)'
+  })
+  allimage = await readImageDirectory(volumeitem.page.length)
+  loading.close()
+  load()
 }
 async function preview() {
   for (let i = 0; i < answerimage.value.length; i++) {
@@ -108,16 +116,45 @@ async function upload() {
     message: '上传成功',
     status: 'success'
   })
-  clear()
+  uploadlist.value.push(studentaccount.value)
+  next()
 }
-function clear() {
-  answerimage.value = []
+function clear(all = true) {
+  if (all) {
+    allimage = []
+    index.value = 0
+    answerimage.value = []
+    optionalquestions.value = []
+  }
   imgref.value = []
   canvasref.value = []
   origincoord.value = []
-  optionalquestions.value = []
   optionalquestion.value = []
   studentaccount.value = ''
+}
+function load() {
+  clear(false)
+  const volumeitem = data.value.subject.volume.find(item => item.name == volume.value)
+  answerimage.value = allimage.slice(index.value, index.value + volumeitem.page.length)
+  origincoord.value = Array.from({ length: volumeitem.page.length }, () => [0, 0])
+  optionalquestion.value = Array.from({ length: volumeitem.optionalQuestion.length }, () => [])
+}
+function prev() {
+  const volumeitem = data.value.subject.volume.find(item => item.name == volume.value)
+  index.value -= volumeitem.page.length
+  load()
+}
+function next() {
+  const volumeitem = data.value.subject.volume.find(item => item.name == volume.value)
+  if (index.value + volumeitem.page.length > allimage.length - 1) {
+    TinyModal.message({
+      message: '已是最后一个',
+      status: 'warning'
+    })
+    return
+  }
+  index.value += volumeitem.page.length
+  load()
 }
 </script>
 
@@ -145,13 +182,14 @@ function clear() {
         </div>
       </div>
       <div class="cz" style="flex:1">
-        <div><tiny-button type="info" @click="chooseimage">选择图片文件夹</tiny-button></div>
+        <div class="large-bold-text">待上传</div>
         <div class="sp">
           <div class="bold-text">分卷</div>
           <tiny-radio-group v-model="volume" @change="clear">
             <tiny-radio v-for="item in volumes" :label="item">{{ item }}</tiny-radio>
           </tiny-radio-group>
         </div>
+        <div><tiny-button type="info" @click="chooseimage">选择图片文件夹</tiny-button></div>
         <div v-if="answerimage.length > 0" class="sp">
           <div class="bold-text">原点</div>
           <div class="cz">
@@ -181,8 +219,16 @@ function clear() {
             placeholder="请输入学生账号"></tiny-input>
         </div>
         <div v-if="answerimage.length > 0" class="sp">
+          <tiny-button v-if="index != 0" type="info" @click="prev">上一个</tiny-button>
+          <div><tiny-button type="info" @click="next">下一个</tiny-button></div>
+        </div>
+        <div v-if="answerimage.length > 0" class="sp">
           <tiny-button type="info" @click="preview">预览</tiny-button>
           <div><tiny-button type="success" @click="upload">上传</tiny-button></div>
+        </div>
+        <div class="large-bold-text">已上传</div>
+        <div v-for="item, index in uploadlist" class="sp">
+          <div>{{ index + 1 }}：{{ item }}</div>
         </div>
       </div>
     </div>

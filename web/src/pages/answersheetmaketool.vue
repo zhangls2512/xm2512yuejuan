@@ -43,7 +43,7 @@ const inpadding = 5
 const columngap = 20
 const rowgap = 25
 const textrowgap = 6
-const itemgap = 10
+const itemgap = 6
 const titlefontsize = 20
 const subtitlefontsize = 12
 const namefontsize = 8
@@ -953,6 +953,10 @@ function changePaperType(label) {
   }
 }
 const newtype = ref('title')
+const currentnumber = ref(0)
+const count = ref(1)
+const optiontype = ref('ab')
+const optioncount = ref(4)
 function newItem(index) {
   const typemap = {
     title: {
@@ -994,15 +998,11 @@ function newItem(index) {
       }
       currentnumber.value++
     }
-    count.value = 0
+    count.value = 1
   } else {
     pushindex(sheet.value.items, typemap[newtype.value], index)
   }
 }
-const currentnumber = ref(0)
-const count = ref(0)
-const optiontype = ref('ab')
-const optioncount = ref(4)
 function pushindex(arr, item, index) {
   const newitem = { ...item }
   sheet.value.items = [...arr.slice(0, index + 1), newitem, ...arr.slice(index + 1)]
@@ -1016,7 +1016,7 @@ function newName(index) {
       sheet.value.items[index].names.push(String(currentnumber.value))
       currentnumber.value++
     }
-    count.value = 0
+    count.value = 1
   } else {
     sheet.value.items[index].names.push('')
   }
@@ -1104,7 +1104,7 @@ function deleteName(index, indexa) {
             <div>起始题号</div>
             <tiny-numeric v-model="currentnumber" step-strictly :min="0"></tiny-numeric>
             <div>新增数量</div>
-            <tiny-numeric v-model="count" step-strictly :min="0"></tiny-numeric>
+            <tiny-numeric v-model="count" step-strictly :min="1"></tiny-numeric>
             <div v-if="newtype == 'objective'">选项类型</div>
             <tiny-radio-group v-if="newtype == 'objective'" v-model="optiontype">
               <tiny-radio label="ab">AB</tiny-radio>

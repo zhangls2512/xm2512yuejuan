@@ -2,6 +2,24 @@
 document.title = '智能阅卷系统 - 更新日志'
 const data = [
   {
+    versionNumber: '1.5.2',
+    releaseDate: '2026-10-01',
+    logs: [
+      {
+        type: 'U',
+        content: '上传作答支持连续上传多个'
+      },
+      {
+        type: 'U',
+        content: '坐标制作工具客观题类型新增选项去重偏差、选项最小宽度、选项最小高度'
+      },
+      {
+        type: 'F',
+        content: '修复了一些已知的问题'
+      }
+    ]
+  },
+  {
     versionNumber: '1.5.1',
     releaseDate: '2026-09-27',
     logs: [

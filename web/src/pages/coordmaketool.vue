@@ -5,6 +5,9 @@ import { findContours } from 'binary-contours'
 import { readImage, saveFile } from '../util/file'
 const canvasref = ref(null)
 const type = ref('anchor')
+const optiondeviation = ref(3)
+const optionminwidth = ref(12)
+const optionminheight = ref(10)
 const optiondirection = ref('row')
 const questioncount = ref(5)
 const result = ref([])
@@ -84,7 +87,7 @@ function onMouseUp(e) {
 function filterSimilarBoxes(arr) {
   const result = []
   arr.forEach(item => {
-    if (!result.some(existing => Math.abs(item.rect[0] - existing.rect[0]) < 2 && Math.abs(item.rect[1] - existing.rect[1]) < 2 && Math.abs(item.rect[2] - existing.rect[2]) < 2 && Math.abs(item.rect[3] - existing.rect[3]) < 2)) {
+    if (!result.some(existing => Math.abs(item.rect[0] - existing.rect[0]) < optiondeviation.value && Math.abs(item.rect[1] - existing.rect[1]) < optiondeviation.value && Math.abs(item.rect[2] - existing.rect[2]) < optiondeviation.value && Math.abs(item.rect[3] - existing.rect[3]) < optiondeviation.value)) {
       result.push(item)
     }
   })
@@ -168,7 +171,7 @@ function processZone(x, y, w, h) {
     let options = []
     contours.forEach(item => {
       const br = item.boundingRect
-      if (br.width > 12 && br.height > 10) {
+      if (br.width > optionminwidth.value && br.height > optionminheight.value) {
         options.push({
           rect: [Math.round(rx + br.x), Math.round(ry + br.y), Math.round(rx + br.x + br.width), Math.round(ry + br.y + br.height)],
           cx: rx + br.x + br.width / 2,
@@ -277,6 +280,18 @@ function deleteItem(index) {
               <tiny-radio label="objective">客观题</tiny-radio>
               <tiny-radio label="subjective">主观题</tiny-radio>
             </tiny-radio-group>
+          </div>
+          <div v-if="type == 'objective'" class="sp">
+            <div class="bold-text">选项去重偏差</div>
+            <tiny-numeric v-model="optiondeviation" step-strictly :min="1"></tiny-numeric>
+          </div>
+          <div v-if="type == 'objective'" class="sp">
+            <div class="bold-text">选项最小宽度</div>
+            <tiny-numeric v-model="optionminwidth" step-strictly :min="1"></tiny-numeric>
+          </div>
+          <div v-if="type == 'objective'" class="sp">
+            <div class="bold-text">选项最小高度</div>
+            <tiny-numeric v-model="optionminheight" step-strictly :min="1"></tiny-numeric>
           </div>
           <div v-if="type == 'objective'" class="sp">
             <div class="bold-text">选项排列</div>

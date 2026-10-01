@@ -35,7 +35,7 @@ export function readImageDirectory(count = 0) {
     input.onchange = async () => {
       const files = [...input.files].filter(item => item.type.startsWith('image/')).sort((a, b) => a.name.localeCompare(b.name))
       const result = []
-      for (let i = 0; i < count; i++) {
+      for (let i = 0; i < count * Math.ceil(files.length / count); i++) {
         const file = files[i]
         if (!file) {
           result.push('')
