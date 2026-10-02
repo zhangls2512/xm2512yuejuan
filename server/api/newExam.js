@@ -70,6 +70,11 @@ exports.main = async (event, configfilepath) => {
           type: {
             $ne: 'student'
           }
+        }, {
+          projection: {
+            _id: false,
+            account: true
+          }
         }).toArray()
       }
       if (account.schoolId) {
@@ -77,6 +82,11 @@ exports.main = async (event, configfilepath) => {
           schoolId: account.schoolId,
           type: {
             $ne: 'student'
+          }
+        }, {
+          projection: {
+            _id: false,
+            account: true
           }
         }).toArray()
       }
