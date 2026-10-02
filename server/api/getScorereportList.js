@@ -109,7 +109,7 @@ exports.main = async (event, configfilepath) => {
       }
       if (requestdata.type == 'school') {
         const schoolId = account.schoolId ? account.schoolId : requestdata.id
-        if (!schoolId) {
+        if (typeof (schoolId) != 'string' || schoolId.length != 36) {
           return {
             errCode: 400,
             errMsg: '请求参数错误',
