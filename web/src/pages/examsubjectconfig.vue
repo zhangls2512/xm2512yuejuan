@@ -17,6 +17,24 @@ if (info) {
   } catch {
   }
 }
+function formatCorrectOptionIndex(a) {
+  return a.cellValue.map(index => data.value.subject.objectiveQuestion[a.$rowIndex].option[index]).join('')
+}
+function formatSpecialOptionIndex(a, i) {
+  return a.map(index => data.value.subject.objectiveQuestion[i].option[index]).join('')
+}
+function formatPage(p) {
+  const result = []
+  p.forEach(item => {
+    if (item.objectiveQuestionName) {
+      result.push(item.objectiveQuestionName)
+    }
+    if (item.markGroupName) {
+      result.push(item.markGroupName)
+    }
+  })
+  return result.join()
+}
 </script>
 
 <template>
@@ -61,22 +79,103 @@ if (info) {
     </div>
     <div class="sp">
       <div class="bold-text">客观题</div>
-      <div>{{ data.subject.objectiveQuestion }}</div>
+      <tiny-grid :data="data.subject.objectiveQuestion" style="flex:1">
+        <tiny-grid-column field="name" title="题号" align="center"></tiny-grid-column>
+        <tiny-grid-column v-if="data.subject.subSubject.length > 0" field="subject" title="科目"
+          align="center"></tiny-grid-column>
+        <tiny-grid-column field="option" title="选项" align="center"></tiny-grid-column>
+        <tiny-grid-column field="questionId" title="题目ID" align="center"></tiny-grid-column>
+        <tiny-grid-column field="extra" title="附加题" align="center" format-text="boole"></tiny-grid-column>
+        <tiny-grid-column field="correctOptionIndex" title="正确选项" align="center"
+          :format-text="formatCorrectOptionIndex"></tiny-grid-column>
+        <tiny-grid-column title="正确选项个数规则" align="center">
+          <template #default="{ row }">
+            <tiny-grid :data="row.correctOptionCountRule" style="flex:1">
+              <tiny-grid-column field="count" title="个数" align="center"></tiny-grid-column>
+              <tiny-grid-column field="score" title="分数" align="center"></tiny-grid-column>
+            </tiny-grid>
+          </template>
+        </tiny-grid-column>
+        <tiny-grid-column title="特殊选项组合规则" align="center">
+          <template #default="{ row, $rowIndex }">
+            <tiny-grid :data="row.specialOptionGroupRule" style="flex:1">
+              <tiny-grid-column field="optionIndex" title="选项" align="center">
+                <template #default="{ row: rule }">
+                  <div>{{ formatSpecialOptionIndex(rule.optionIndex, $rowIndex) }}</div>
+                </template>
+              </tiny-grid-column>
+              <tiny-grid-column field="score" title="分数" align="center"></tiny-grid-column>
+            </tiny-grid>
+          </template>
+        </tiny-grid-column>
+      </tiny-grid>
     </div>
     <div class="line"></div>
     <div class="sp">
       <div class="bold-text">主观题</div>
-      <div>{{ data.subject.subjectiveQuestion }}</div>
+      <tiny-grid :data="data.subject.subjectiveQuestion" style="flex:1">
+        <tiny-grid-column field="name" title="题号" align="center"></tiny-grid-column>
+        <tiny-grid-column v-if="data.subject.subSubject.length > 0" field="subject" title="科目"
+          align="center"></tiny-grid-column>
+        <tiny-grid-column field="questionId" title="题目ID" align="center"></tiny-grid-column>
+        <tiny-grid-column field="extra" title="附加题" align="center" format-text="boole"></tiny-grid-column>
+        <tiny-grid-column field="arbitrateScoreDiff" title="仲裁分差" align="center"></tiny-grid-column>
+        <tiny-grid-column title="步骤分" align="center">
+          <template #default="{ row }">
+            <div v-for="item, index in row.stepScore">步骤{{ index + 1 }}：{{ item.join() }}</div>
+          </template>
+        </tiny-grid-column>
+      </tiny-grid>
     </div>
     <div class="line"></div>
     <div class="sp">
       <div class="bold-text">阅卷组</div>
-      <div>{{ data.subject.markGroup }}</div>
+      <tiny-grid :data="data.subject.markGroup" style="flex:1">
+        <tiny-grid-column field="name" title="名称" align="center"></tiny-grid-column>
+        <tiny-grid-column field="questionName" title="题号" align="center"></tiny-grid-column>
+        <tiny-grid-column title="管理员" align="center">
+          <template #default="{ row }">
+            <tiny-grid :data="row.admin" style="flex:1">
+              <tiny-grid-column field="account" title="账号" align="center"></tiny-grid-column>
+              <tiny-grid-column field="permission" title="权限" align="center" show-overflow></tiny-grid-column>
+            </tiny-grid>
+          </template>
+        </tiny-grid-column>
+        <tiny-grid-column title="阅卷人" align="center">
+          <template #default="{ row }">
+            <tiny-grid :data="row.member" style="flex:1">
+              <tiny-grid-column field="account" title="账号" align="center"></tiny-grid-column>
+              <tiny-grid-column field="quota" title="任务量" align="center"></tiny-grid-column>
+              <tiny-grid-column field="allowExceedQuota" title="允许超任务量" align="center"
+                format-text="boole"></tiny-grid-column>
+            </tiny-grid>
+          </template>
+        </tiny-grid-column>
+        <tiny-grid-column field="consistencyCheckPercent" title="分数一致性检测比例" align="center"></tiny-grid-column>
+        <tiny-grid-column field="time" title="评数" align="center"></tiny-grid-column>
+        <tiny-grid-column field="secondMarkPercent" title="双评比例" align="center"></tiny-grid-column>
+        <tiny-grid-column field="arbitrator" title="仲裁人" align="center"></tiny-grid-column>
+      </tiny-grid>
     </div>
     <div class="line"></div>
     <div class="sp">
       <div class="bold-text">分卷</div>
-      <div>{{ data.subject.volume }}</div>
+      <tiny-grid :data="data.subject.volume" style="flex:1">
+        <tiny-grid-column field="name" title="名称" align="center"></tiny-grid-column>
+        <tiny-grid-column title="各页题号/阅卷组名称" align="center">
+          <template #default="{ row }">
+            <div v-for="item, index in row.page">第{{ index + 1 }}页：{{ formatPage(item) }}</div>
+          </template>
+        </tiny-grid-column>
+        <tiny-grid-column title="选做题" align="center">
+          <template #default="{ row }">
+            <tiny-grid :data="row.optionalQuestion" style="flex:1">
+              <tiny-grid-column field="name" title="题号" align="center"></tiny-grid-column>
+              <tiny-grid-column field="selectCount" title="选择数量" align="center"></tiny-grid-column>
+            </tiny-grid>
+          </template>
+        </tiny-grid-column>
+      </tiny-grid>
     </div>
   </div>
 </template>

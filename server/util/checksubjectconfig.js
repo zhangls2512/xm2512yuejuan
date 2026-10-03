@@ -104,7 +104,7 @@ function checkSubjectConfig(requestdata, olddata) {
         errFix: '传递有效的objectiveQuestion参数'
       }
     }
-    if (!Array.isArray(questionitem.option) || questionitem.option.length == 0 || !questionitem.option.every(item => typeof (item) == 'string' && item.length == 1)) {
+    if (!Array.isArray(questionitem.option) || questionitem.option.length == 0 || !questionitem.option.every(item => typeof (item) == 'string' && item.length == 1) || !checkArrNotHaveSameItem(questionitem.option)) {
       return {
         errCode: 400,
         errMsg: '请求参数错误',
@@ -173,7 +173,7 @@ function checkSubjectConfig(requestdata, olddata) {
         score: item.score
       }
     })
-    if (!checkArrNotHaveSameItem(questionitem.specialOptionGroupRule.map(item => item.optionIndex.join(',')))) {
+    if (!checkArrNotHaveSameItem(questionitem.specialOptionGroupRule.map(item => item.optionIndex.join()))) {
       return {
         errCode: 400,
         errMsg: '请求参数错误',

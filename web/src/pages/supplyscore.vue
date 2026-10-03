@@ -67,7 +67,7 @@ function generateExampleCsv(subjectconfig) {
       }
     }
   })
-  return header.join(',') + '\r\n' + row.join(',')
+  return header.join() + '\r\n' + row.join()
 }
 function download() {
   const examplecsv = generateExampleCsv(data.value.subject)

@@ -74,7 +74,7 @@ exports.main = async (event, configfilepath) => {
     function generatecsv(subject, marklog) {
       const rows = []
       const questionnamearr = subject.objectiveQuestion.map(item => item.name).concat(subject.subjectiveQuestion.map(item => item.name))
-      rows.push(['学生账号'].concat(questionnamearr.map(item => '第' + item + '题')).join(','))
+      rows.push(['学生账号'].concat(questionnamearr.map(item => '第' + item + '题')).join())
       const studentmap = {}
       marklog.forEach(item => {
         const student = item.studentAccount;
@@ -105,7 +105,7 @@ exports.main = async (event, configfilepath) => {
             row.push(answer)
           }
         })
-        rows.push(row.join(','))
+        rows.push(row.join())
       })
       return rows.join('\r\n')
     }

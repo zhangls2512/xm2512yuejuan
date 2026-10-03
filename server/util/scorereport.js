@@ -38,11 +38,11 @@ function calcDiscrimination(scorearr, fullscore = 0) {
 function calcObjectiveScore(config, answer) {
   const specialrules = config.specialOptionGroupRule.map(item => {
     return {
-      rule: item.optionIndex.join(','),
+      rule: item.optionIndex.join(),
       score: item.score
     }
   })
-  const specialanswer = answer.join(',')
+  const specialanswer = answer.join()
   const exist = specialrules.find(item => item.rule == specialanswer)
   if (exist) {
     return exist.score

@@ -79,7 +79,7 @@ exports.main = async (event, configfilepath) => {
     examsubjectgetres.sort((a, b) => a.name.localeCompare(b.name))
     examsubjectgetres.forEach(item => {
       const index = examids.indexOf(item.examId)
-      const deletekeys = ['_id', 'examId', 'adminAccount', 'subSubject', 'createTime']
+      const deletekeys = ['_id', 'examId', 'adminAccount', 'createTime']
       deletekeys.forEach(key => {
         delete item[key]
       })

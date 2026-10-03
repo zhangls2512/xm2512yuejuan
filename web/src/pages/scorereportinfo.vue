@@ -378,7 +378,7 @@ function downloadScore() {
       hangs.push(hang)
     })
   }
-  saveFile(hangs.map(item => item.join(',')).join('\r\n'), data.value.examName + '（' + subject + '）成绩单.csv')
+  saveFile(hangs.map(item => item.join()).join('\r\n'), data.value.examName + '（' + subject + '）成绩单.csv')
 }
 </script>
 
