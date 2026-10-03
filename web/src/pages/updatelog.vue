@@ -2,6 +2,24 @@
 document.title = '智能阅卷系统 - 更新日志'
 const data = [
   {
+    versionNumber: '1.5.3',
+    releaseDate: '2026-10-03',
+    logs: [
+      {
+        type: 'U',
+        content: '考试科目查看配置界面用户友好化'
+      },
+      {
+        type: 'U',
+        content: '成绩报告配置列表新增详情'
+      },
+      {
+        type: 'F',
+        content: '修复了一些已知的问题'
+      }
+    ]
+  },
+  {
     versionNumber: '1.5.2',
     releaseDate: '2026-10-01',
     logs: [
