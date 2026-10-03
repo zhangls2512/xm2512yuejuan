@@ -262,7 +262,7 @@ function closeDialog() {
           <div>{{ dialoginfo.config.scoreTimes }}</div>
         </div>
         <div v-if="dialoginfo.subject != '多学科'" class="sp">
-          <div class="bold-text">计分题目</div>
+          <div class="bold-text">计分题号</div>
           <div>{{ dialoginfo.config.scoringQuestionNames }}</div>
         </div>
         <div v-if="dialoginfo.subject != '多学科' && dialoginfo.config.fuScoreRule.length > 0" class="sp">
