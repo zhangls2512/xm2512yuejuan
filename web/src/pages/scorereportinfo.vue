@@ -265,7 +265,7 @@ function buildColumns(students) {
   return result
 }
 function formatQuestionName(a) {
-  return a.cellValue.join('、')
+  return a.cellValue.join()
 }
 function formatScoringRate(a) {
   return a.cellValue + '%'

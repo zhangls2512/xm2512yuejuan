@@ -171,7 +171,7 @@ function openDialog(info) {
   dialoginfo.value.schoolVisibleAccount = dialoginfo.value.schoolVisibleAccount.join('、')
   dialoginfo.value.classVisibleAccount = dialoginfo.value.classVisibleAccount.join('、')
   if (dialoginfo.value.subject != '多学科') {
-    dialoginfo.value.config.scoringQuestionNames = dialoginfo.value.config.scoringQuestionNames.join('、')
+    dialoginfo.value.config.scoringQuestionNames = dialoginfo.value.config.scoringQuestionNames.join()
   }
   dialog.value = true
 }
