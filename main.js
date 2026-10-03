@@ -1,7 +1,7 @@
 const fs = require('fs')
 const http = require('http')
 const https = require('https')
-const { read, contenttype } = require('./util/file')
+const { contenttype } = require('./util/file')
 const { readConfig } = require('./util/readconfig')
 let webvalidpaths = new Set(fs.readdirSync(__dirname + '/web/dist').filter(item => item != 'assets').map(item => __dirname + '/web/dist/' + item).concat(fs.readdirSync(__dirname + '/web/dist/assets').map(item => __dirname + '/web/dist/assets/' + item)))
 let apivalidpaths = new Set(fs.readdirSync(__dirname + '/server/api').map(item => '/api/' + item.replace('.js', '')))
