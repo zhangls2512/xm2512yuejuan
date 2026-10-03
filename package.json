@@ -21,6 +21,9 @@
     "mongodb": "latest",
     "sharp": "latest"
   },
+  "devDependencies": {
+    "eslint": "latest"
+  },
   "publishConfig": {
     "access": "public"
   },

@@ -1,7 +1,6 @@
 'use strict'
 exports.main = async (event, configfilepath) => {
   const db = await (require('../util/db').database(configfilepath))
-  const { calcObjectiveScore, sum } = require('../util/scorereport')
   const requestdata = JSON.parse(event.body)
   if (typeof (requestdata.id) != 'string' || requestdata.id.length != 36) {
     return {

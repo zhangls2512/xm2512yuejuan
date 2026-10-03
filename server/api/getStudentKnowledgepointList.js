@@ -158,7 +158,6 @@ exports.main = async (event, configfilepath) => {
     questions.forEach(item => {
       questionmap[item.name] = item
     })
-    const questionnames = questions.filter(item => item.questionId)
     const marklogquestionids = marklogres.map(item => questionmap[item.questionName].questionId).filter(item => item)
     const questionidknowledgepointmap = {}
     const qa = await db.collection('question').find({

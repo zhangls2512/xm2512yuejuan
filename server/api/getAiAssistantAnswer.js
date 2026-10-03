@@ -3,7 +3,6 @@ exports.main = async (event, configfilepath) => {
   const axios = require('axios')
   const fs = require('fs')
   const { readConfig } = require('../../util/readconfig')
-  const db = await (require('../util/db').database(configfilepath))
   const requestdata = JSON.parse(event.body)
   if (typeof (requestdata.question) != 'string' || !requestdata.question || requestdata.question.length > 100) {
     return {

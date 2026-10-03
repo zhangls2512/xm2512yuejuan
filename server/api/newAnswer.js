@@ -75,7 +75,9 @@ exports.main = async (event, configfilepath) => {
       }
       const result = {
         volume: requestdata.answer.volume,
-        page: volume.page.map(item => {
+        page: Array.from({
+          length: volume.page.length
+        }, () => {
           return {
             image: '',
             originCoord: []
