@@ -186,9 +186,9 @@ exports.main = async (event, configfilepath) => {
         student: [],
         studentVisible: false,
         classTeacherVisible: requestdata.classTeacherVisible,
-        jointVisibleAccount: requestdata.jointVisibleAccount,
-        schoolVisibleAccount: requestdata.schoolVisibleAccount,
-        classVisibleAccount: requestdata.classVisibleAccount,
+        jointVisibleAccount: [...new Set(requestdata.jointVisibleAccount)],
+        schoolVisibleAccount: [...new Set(requestdata.schoolVisibleAccount)],
+        classVisibleAccount: [...new Set(requestdata.classVisibleAccount)],
         status: 'pending',
         updateTime: -1
       })
@@ -358,9 +358,9 @@ exports.main = async (event, configfilepath) => {
         student: [],
         studentVisible: false,
         classTeacherVisible: requestdata.classTeacherVisible,
-        jointVisibleAccount: requestdata.jointVisibleAccount,
-        schoolVisibleAccount: requestdata.schoolVisibleAccount,
-        classVisibleAccount: requestdata.classVisibleAccount,
+        jointVisibleAccount: [...new Set(requestdata.jointVisibleAccount)],
+        schoolVisibleAccount: [...new Set(requestdata.schoolVisibleAccount)],
+        classVisibleAccount: [...new Set(requestdata.classVisibleAccount)],
         status: 'pending',
         updateTime: -1
       })
