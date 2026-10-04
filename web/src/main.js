@@ -24,12 +24,7 @@ themeTool.changeTheme({
   data: {
     'tv-font-family': 'HarmonyOS_Sans',
     'tv-font-family-1': 'HarmonyOS_Sans'
-  },
-  css: `
-    .tiny-button {
-      --tv-Button-margin-left-btn-to-btn-md: 0;
-    }
-  `
+  }
 })
 const app = createApp(App)
 app.use(router)

@@ -49,17 +49,23 @@
   }
 }
 
-.sp {
+.sp,
+.czsp {
   align-items: center;
   display: flex;
   gap: 10px;
 }
 
 .czsp {
-  align-items: center;
-  display: flex;
-  gap: 10px;
   justify-content: center;
+}
+
+.sp .tiny-button+.tiny-button {
+  margin-left: 0;
+}
+
+.czsp .tiny-button+.tiny-button {
+  margin-left: 0;
 }
 
 .cz {
