@@ -1040,7 +1040,7 @@ function deleteName(index, indexa) {
         <div class="cz" style="align-self:flex-start;flex:1">
           <div class="sp">
             <tiny-button type="info" @click="preview">预览</tiny-button>
-            <div><tiny-button type="success" @click="download">下载</tiny-button></div>
+            <tiny-button type="success" @click="download">下载</tiny-button>
           </div>
           <div class="large-bold-text">全局配置</div>
           <div class="sp">
@@ -1117,13 +1117,13 @@ function deleteName(index, indexa) {
           <div v-for="item, index in sheet.items">
             <div v-if="item.type == 'title'" class="sp">
               <tiny-button type="success" @click="newItem(index)">新增</tiny-button>
-              <div><tiny-button type="danger" @click="deleteItem(index)">删除</tiny-button></div>
+              <tiny-button type="danger" @click="deleteItem(index)">删除</tiny-button>
               <div class="bold-text">标题</div>
               <div><tiny-input v-model="item.content" clearable placeholder="请输入标题"></tiny-input></div>
             </div>
             <div v-if="item.type == 'objective'" class="sp">
               <tiny-button type="success" @click="newItem(index)">新增</tiny-button>
-              <div><tiny-button type="danger" @click="deleteItem(index)">删除</tiny-button></div>
+              <tiny-button type="danger" @click="deleteItem(index)">删除</tiny-button>
               <div class="bold-text">选择</div>
               <div><tiny-input v-model="item.name" clearable placeholder="请输入题号"></tiny-input></div>
               <tiny-radio-group v-model="item.optionType">
@@ -1135,7 +1135,7 @@ function deleteName(index, indexa) {
             </div>
             <div v-if="item.type == 'fillblank'" class="sp">
               <tiny-button type="success" @click="newItem(index)">新增</tiny-button>
-              <div><tiny-button type="danger" @click="deleteItem(index)">删除</tiny-button></div>
+              <tiny-button type="danger" @click="deleteItem(index)">删除</tiny-button>
               <div class="bold-text">填空</div>
               <tiny-numeric v-model="item.columnCount" step-strictly :min="1" :max="5"
                 style="width:auto"></tiny-numeric>
@@ -1149,7 +1149,7 @@ function deleteName(index, indexa) {
             </div>
             <div v-if="item.type == 'subjective'" class="sp">
               <tiny-button type="success" @click="newItem(index)">新增</tiny-button>
-              <div><tiny-button type="danger" @click="deleteItem(index)">删除</tiny-button></div>
+              <tiny-button type="danger" @click="deleteItem(index)">删除</tiny-button>
               <div class="bold-text">解答</div>
               <div v-if="item.rowType != 'noanswer'"><tiny-input v-model="item.name" clearable
                   placeholder="请输入题号"></tiny-input></div>
@@ -1162,7 +1162,7 @@ function deleteName(index, indexa) {
             </div>
             <div v-if="item.type == 'composition'" class="sp">
               <tiny-button type="success" @click="newItem(index)">新增</tiny-button>
-              <div><tiny-button type="danger" @click="deleteItem(index)">删除</tiny-button></div>
+              <tiny-button type="danger" @click="deleteItem(index)">删除</tiny-button>
               <div class="bold-text">作文</div>
               <div><tiny-input v-model="item.name" clearable placeholder="请输入题号"></tiny-input></div>
               <tiny-numeric v-model="item.characterCount" step-strictly :min="1"></tiny-numeric>

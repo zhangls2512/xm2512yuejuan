@@ -189,7 +189,7 @@ function closeDialog() {
     </tiny-breadcrumb>
     <div class="sp">
       <tiny-button type="success" @click="newScorereportconfig">选择配置文件新增</tiny-button>
-      <div><tiny-button type="info" @click="get">刷新</tiny-button></div>
+      <tiny-button type="info" @click="get">刷新</tiny-button>
     </div>
     <div v-for="item in data" class="kuang">
       <div class="cz">
@@ -221,10 +221,8 @@ function closeDialog() {
           </div>
           <div v-if="item.status != 'processing'" class="sp">
             <tiny-button type="info" @click="openDialog(item)">详情</tiny-button>
-            <div><tiny-button type="success" :disabled="item.status == 'processing'"
-                @click="generateScorereportconfig(item.scorereportconfigId)">生成</tiny-button></div>
-            <div><tiny-button type="info"
-                @click="updateScorereportconfig(item.scorereportconfigId)">选择配置文件修改</tiny-button></div>
+            <tiny-button type="success" @click="generateScorereportconfig(item.scorereportconfigId)">生成</tiny-button>
+            <tiny-button type="info" @click="updateScorereportconfig(item.scorereportconfigId)">选择配置文件修改</tiny-button>
             <tiny-popconfirm title="提示" message="删除成功后无法恢复，确定删除？" type="warning" trigger="hover"
               @confirm="deleteScorereportconfig(item.scorereportconfigId)">
               <template #reference>

@@ -66,9 +66,7 @@ function answer(info) {
               <div>{{ item.endTime }}</div>
             </div>
           </div>
-          <div class="sp">
-            <tiny-button type="success" @click="answer(item)" :disabled="item.disabled">作答</tiny-button>
-          </div>
+          <div><tiny-button type="success" @click="answer(item)" :disabled="item.disabled">作答</tiny-button></div>
         </div>
       </div>
     </div>

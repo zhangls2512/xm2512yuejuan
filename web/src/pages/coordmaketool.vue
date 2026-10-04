@@ -270,7 +270,7 @@ function deleteItem(index) {
         <div class="cz" style="align-self:flex-start;flex:1">
           <div class="sp">
             <tiny-button type="info" @click="chooseimage">选择图片</tiny-button>
-            <div><tiny-button type="success" @click="exportjson">导出JSON</tiny-button></div>
+            <tiny-button type="success" @click="exportjson">导出JSON</tiny-button>
           </div>
           <div class="large-bold-text">配置</div>
           <div class="sp">

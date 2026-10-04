@@ -220,11 +220,11 @@ function next() {
         </div>
         <div v-if="answerimage.length > 0" class="sp">
           <tiny-button v-if="index != 0" type="info" @click="prev">上一个</tiny-button>
-          <div><tiny-button type="info" @click="next">下一个</tiny-button></div>
+          <tiny-button type="info" @click="next">下一个</tiny-button>
         </div>
         <div v-if="answerimage.length > 0" class="sp">
           <tiny-button type="info" @click="preview">预览</tiny-button>
-          <div><tiny-button type="success" @click="upload">上传</tiny-button></div>
+          <tiny-button type="success" @click="upload">上传</tiny-button>
         </div>
         <div class="large-bold-text">已上传</div>
         <div v-for="item, index in uploadlist" class="sp">
