@@ -90,7 +90,7 @@ function checkSubjectConfig(requestdata, olddata) {
   }
   for (let i = 0; i < requestdata.objectiveQuestion.length; i++) {
     const questionitem = requestdata.objectiveQuestion[i]
-    if (typeof (questionitem.name) != 'string' || !questionitem.name || ['/', ','].some(ch => questionitem.name.includes(ch)) || questionitem.name.length > 255) {
+    if (typeof (questionitem.name) != 'string' || !questionitem.name || ['/', ','].some(ch => questionitem.name.includes(ch))) {
       return {
         errCode: 400,
         errMsg: '请求参数错误',
@@ -231,7 +231,7 @@ function checkSubjectConfig(requestdata, olddata) {
   }
   for (let i = 0; i < requestdata.subjectiveQuestion.length; i++) {
     const questionitem = requestdata.subjectiveQuestion[i]
-    if (typeof (questionitem.name) != 'string' || !questionitem.name || ['/', ','].some(ch => questionitem.name.includes(ch)) || questionitem.name.length > 255) {
+    if (typeof (questionitem.name) != 'string' || !questionitem.name || ['/', ','].some(ch => questionitem.name.includes(ch)) || questionitem.name.length > 200) {
       return {
         errCode: 400,
         errMsg: '请求参数错误',
