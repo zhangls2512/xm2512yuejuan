@@ -355,6 +355,10 @@ async function endExam(id) {
                     <tiny-dropdown-menu placement="bottom-start">
                       <tiny-dropdown-item v-if="subject.markStatus != 'end'"
                         @click="markqualitymonitor(item, subject)">阅卷质量监控</tiny-dropdown-item>
+                      <tiny-dropdown-item v-if="subject.markStatus == 'end'"
+                        @click="config(item, subject)">查看配置</tiny-dropdown-item>
+                      <tiny-dropdown-item v-if="subject.markStatus == 'end'"
+                        @click="markProgress(item, subject.name)">阅卷进度</tiny-dropdown-item>
                       <tiny-dropdown-item v-if="subject.markStatus != 'end'"
                         @click="scorereportconfig(item.examId, subject.name)">成绩报告配置</tiny-dropdown-item>
                       <tiny-dropdown-item @click="supplyscore(item, subject)">成绩补录</tiny-dropdown-item>
