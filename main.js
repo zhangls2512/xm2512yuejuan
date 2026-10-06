@@ -3,8 +3,8 @@ const http = require('http')
 const https = require('https')
 const { contenttype } = require('./util/file')
 const { readConfig } = require('./util/readconfig')
-let webvalidpaths = new Set(fs.readdirSync(__dirname + '/web/dist').filter(item => item != 'assets').map(item => __dirname + '/web/dist/' + item).concat(fs.readdirSync(__dirname + '/web/dist/assets').map(item => __dirname + '/web/dist/assets/' + item)))
-let apivalidpaths = new Set(fs.readdirSync(__dirname + '/server/api').map(item => '/api/' + item.replace('.js', '')))
+const webvalidpaths = new Set(fs.readdirSync(__dirname + '/web/dist').filter(item => item != 'assets').map(item => __dirname + '/web/dist/' + item).concat(fs.readdirSync(__dirname + '/web/dist/assets').map(item => __dirname + '/web/dist/assets/' + item)))
+const apivalidpaths = new Set(fs.readdirSync(__dirname + '/server/api').map(item => '/api/' + item.replace('.js', '')))
 async function dealRequest(event, configfilepath) {
   if (!event.path.startsWith('/api')) {
     const realpath = __dirname + '/web/dist' + event.path
