@@ -1,7 +1,10 @@
 node_modules
 /web/**/*
 !/web/dist/**
+*.md
+.gitattributes
 .gitignore
 a.js
 a.json
+eslint.config.js
 package-lock.json
