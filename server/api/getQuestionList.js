@@ -4,39 +4,48 @@ exports.main = async (event, configfilepath) => {
   const { readConfig } = require('../../util/readconfig')
   const db = await (require('../util/db').database(configfilepath))
   const requestdata = JSON.parse(event.body)
-  if (typeof (requestdata.type) != 'string' || !requestdata.type) {
+  if (!['all', 'filter'].includes(requestdata.scope)) {
     return {
       errCode: 400,
       errMsg: '请求参数错误',
-      errFix: '传递有效的type参数'
+      errFix: '传递有效的scope参数'
     }
   }
-  if (typeof (requestdata.difficulty) != 'number' || requestdata.difficulty < 0) {
-    return {
-      errCode: 400,
-      errMsg: '请求参数错误',
-      errFix: '传递有效的difficulty参数'
+  if (requestdata.scope == 'filter') {
+    if (typeof (requestdata.type) != 'string' || !requestdata.type) {
+      return {
+        errCode: 400,
+        errMsg: '请求参数错误',
+        errFix: '传递有效的type参数'
+      }
     }
-  }
-  if (typeof (requestdata.subject) != 'string' || !requestdata.subject) {
-    return {
-      errCode: 400,
-      errMsg: '请求参数错误',
-      errFix: '传递有效的subject参数'
+    if (typeof (requestdata.difficulty) != 'number' || requestdata.difficulty < 0) {
+      return {
+        errCode: 400,
+        errMsg: '请求参数错误',
+        errFix: '传递有效的difficulty参数'
+      }
     }
-  }
-  if (typeof (requestdata.grade) != 'string') {
-    return {
-      errCode: 400,
-      errMsg: '请求参数错误',
-      errFix: '传递有效的grade参数'
+    if (typeof (requestdata.subject) != 'string' || !requestdata.subject) {
+      return {
+        errCode: 400,
+        errMsg: '请求参数错误',
+        errFix: '传递有效的subject参数'
+      }
     }
-  }
-  if (!Array.isArray(requestdata.knowledgepoint) || requestdata.knowledgepoint.length == 0 || !requestdata.knowledgepoint.every(item => typeof (item) == 'string' && item)) {
-    return {
-      errCode: 400,
-      errMsg: '请求参数错误',
-      errFix: '传递有效的knowledgepoint参数'
+    if (typeof (requestdata.grade) != 'string') {
+      return {
+        errCode: 400,
+        errMsg: '请求参数错误',
+        errFix: '传递有效的grade参数'
+      }
+    }
+    if (!Array.isArray(requestdata.knowledgepoint) || requestdata.knowledgepoint.length == 0 || !requestdata.knowledgepoint.every(item => typeof (item) == 'string' && item)) {
+      return {
+        errCode: 400,
+        errMsg: '请求参数错误',
+        errFix: '传递有效的knowledgepoint参数'
+      }
     }
   }
   let skip = 0
@@ -59,23 +68,38 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const data = await db.collection('question').find({
-      schoolId: account.schoolId,
-      type: requestdata.type,
-      difficulty: requestdata.difficulty,
-      subject: requestdata.subject,
-      grade: requestdata.grade,
-      knowledgepoint: {
-        $all: [...new Set(requestdata.knowledgepoint)]
-      }
-    }, {
-      projection: {
-        _id: false,
-        schoolId: false
-      }
-    }).sort({
-      updateTime: -1
-    }).skip(skip).limit(limit).toArray()
+    let data
+    if (requestdata.scope == 'all') {
+      data = await db.collection('question').find({
+        schoolId: account.schoolId
+      }, {
+        projection: {
+          _id: false,
+          schoolId: false
+        }
+      }).sort({
+        updateTime: -1
+      }).skip(skip).limit(limit).toArray()
+    }
+    if (requestdata.scope == 'filter') {
+      data = await db.collection('question').find({
+        schoolId: account.schoolId,
+        type: requestdata.type,
+        difficulty: requestdata.difficulty,
+        subject: requestdata.subject,
+        grade: requestdata.grade,
+        knowledgepoint: {
+          $all: [...new Set(requestdata.knowledgepoint)]
+        }
+      }, {
+        projection: {
+          _id: false,
+          schoolId: false
+        }
+      }).sort({
+        updateTime: -1
+      }).skip(skip).limit(limit).toArray()
+    }
     const dir = readConfig(configfilepath, 'dataRootPath') + '/question/'
     data.forEach(item => {
       item.question = read(dir + item.questionId + '-question')

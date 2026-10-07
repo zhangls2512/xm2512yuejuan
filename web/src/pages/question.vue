@@ -8,6 +8,7 @@ const data = ref([])
 const currentpage = ref(1)
 const pagesize = ref(10)
 const total = ref(0)
+const scope = ref('all')
 const type = ref('')
 const difficulty = ref('0')
 const subject = ref('')
@@ -43,30 +44,33 @@ function remove(index) {
   knowledgepoint.value.splice(index, 1)
 }
 async function get() {
-  if (!type.value) {
-    TinyModal.message({
-      message: '请输入类型',
-      status: 'warning'
-    })
-    return
-  }
-  if (!subject.value) {
-    TinyModal.message({
-      message: '请输入科目',
-      status: 'warning'
-    })
-    return
-  }
-  if (knowledgepoint.value.length == 0) {
-    TinyModal.message({
-      message: '请新增知识点',
-      status: 'warning'
-    })
-    return
+  if (scope.value == 'filter') {
+    if (!type.value) {
+      TinyModal.message({
+        message: '请输入类型',
+        status: 'warning'
+      })
+      return
+    }
+    if (!subject.value) {
+      TinyModal.message({
+        message: '请输入科目',
+        status: 'warning'
+      })
+      return
+    }
+    if (knowledgepoint.value.length == 0) {
+      TinyModal.message({
+        message: '请新增知识点',
+        status: 'warning'
+      })
+      return
+    }
   }
   const countres = await request({
     apiPath: '/getQuestionCount',
     body: {
+      scope: scope.value,
       type: type.value,
       difficulty: Number(difficulty.value),
       subject: subject.value,
@@ -78,6 +82,7 @@ async function get() {
   const res = await request({
     apiPath: '/getQuestionList',
     body: {
+      scope: scope.value,
       type: type.value,
       difficulty: Number(difficulty.value),
       subject: subject.value,
@@ -89,6 +94,7 @@ async function get() {
   })
   data.value = res.data
 }
+get()
 async function currentpageChange(t) {
   currentpage.value = t
   get()
@@ -122,19 +128,25 @@ async function deleteQuestion(id) {
   <div class="cz">
     <div><tiny-button type="success" @click="newQuestion">新增</tiny-button></div>
     <tiny-form>
-      <tiny-form-item label="类型">
+      <tiny-form-item label="范围">
+        <tiny-radio-group v-model="scope">
+          <tiny-radio label="all">全部</tiny-radio>
+          <tiny-radio label="filter">筛选</tiny-radio>
+        </tiny-radio-group>
+      </tiny-form-item>
+      <tiny-form-item v-if="scope == 'filter'" label="类型">
         <tiny-input v-model="type" clearable placeholder="请输入类型"></tiny-input>
       </tiny-form-item>
-      <tiny-form-item label="难度">
+      <tiny-form-item v-if="scope == 'filter'" label="难度">
         <tiny-numeric v-model="difficulty" min="0"></tiny-numeric>
       </tiny-form-item>
-      <tiny-form-item label="科目">
+      <tiny-form-item v-if="scope == 'filter'" label="科目">
         <tiny-input v-model="subject" clearable placeholder="请输入科目"></tiny-input>
       </tiny-form-item>
-      <tiny-form-item label="年级">
+      <tiny-form-item v-if="scope == 'filter'" label="年级">
         <tiny-input v-model="grade" clearable placeholder="请输入年级"></tiny-input>
       </tiny-form-item>
-      <tiny-form-item label="知识点">
+      <tiny-form-item v-if="scope == 'filter'" label="知识点">
         <div class="cz">
           <div class="sp">
             <tiny-input v-model="knowledgepointwz" clearable placeholder="请输入知识点名称"></tiny-input>
