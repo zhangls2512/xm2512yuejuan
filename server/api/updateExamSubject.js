@@ -117,7 +117,9 @@ exports.main = async (event, configfilepath) => {
         let validadmins = []
         if (!examgetres.schoolId) {
           validadmins = await db.collection('account').find({
-            type: 'teacher'
+            type: {
+              $ne: 'student'
+            }
           }, {
             projection: {
               _id: false,
@@ -128,7 +130,9 @@ exports.main = async (event, configfilepath) => {
         if (examgetres.schoolId) {
           validadmins = await db.collection('account').find({
             schoolId: examgetres.schoolId,
-            type: 'teacher'
+            type: {
+              $ne: 'student'
+            }
           }, {
             projection: {
               _id: false,
