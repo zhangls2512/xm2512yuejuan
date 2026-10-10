@@ -44,7 +44,6 @@ exports.main = async (event, configfilepath) => {
       projection: {
         _id: false,
         account: true,
-        type: true,
         name: true
       }
     }).toArray()
