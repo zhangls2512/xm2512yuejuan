@@ -75,7 +75,8 @@ exports.main = async (event, configfilepath) => {
       }, {
         projection: {
           _id: false,
-          schoolId: false
+          schoolId: false,
+          updateTime: false
         }
       }).sort({
         updateTime: -1
@@ -94,7 +95,8 @@ exports.main = async (event, configfilepath) => {
       }, {
         projection: {
           _id: false,
-          schoolId: false
+          schoolId: false,
+          updateTime: false
         }
       }).sort({
         updateTime: -1
