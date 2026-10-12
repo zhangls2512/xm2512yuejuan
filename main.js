@@ -11,12 +11,14 @@ async function dealRequest(event, configfilepath) {
     if (!webvalidpaths.has(realpath)) {
       return {
         data: fs.readFileSync(__dirname + '/web/dist/index.html'),
-        contentType: contenttype(__dirname + '/web/dist/index.html')
+        contentType: contenttype(__dirname + '/web/dist/index.html'),
+        cache: false
       }
     }
     return {
       data: fs.readFileSync(realpath),
-      contentType: contenttype(realpath)
+      contentType: contenttype(realpath),
+      cache: !realpath.endsWith('html')
     }
   }
   if (event.path.startsWith('/api')) {
@@ -27,7 +29,8 @@ async function dealRequest(event, configfilepath) {
           errMsg: '请求方法错误',
           errFix: '使用POST方法请求'
         }),
-        contentType: 'application/json;charset=utf-8'
+        contentType: 'application/json;charset=utf-8',
+        cache: false
       }
     }
     if (!apivalidpaths.has(event.path)) {
@@ -37,7 +40,8 @@ async function dealRequest(event, configfilepath) {
           errMsg: '请求路径错误',
           errFix: '无修复建议'
         }),
-        contentType: 'application/json;charset=utf-8'
+        contentType: 'application/json;charset=utf-8',
+        cache: false
       }
     }
     const notparsebodypaths = ['getAccountInfo', 'getClassCount', 'getOnlineExamCount', 'getSchoolOrClassList'].map(item => '/api/' + item)
@@ -51,7 +55,8 @@ async function dealRequest(event, configfilepath) {
             errMsg: '请求体解析失败',
             errFix: '无修复建议'
           }),
-          contentType: 'application/json;charset=utf-8'
+          contentType: 'application/json;charset=utf-8',
+          cache: false
         }
       }
     }
@@ -59,7 +64,8 @@ async function dealRequest(event, configfilepath) {
     const res = await require(filepath).main(event, configfilepath)
     return {
       data: JSON.stringify(res),
-      contentType: 'application/json;charset=utf-8'
+      contentType: 'application/json;charset=utf-8',
+      cache: false
     }
   }
 }
@@ -123,6 +129,9 @@ function start(configfilepath) {
             }
             const res = await dealRequest(event, configfilepath)
             response.setHeader('Content-Type', res.contentType)
+            if (res.cache) {
+              response.setHeader('Cache-Control', 'max-age=604800')
+            }
             response.setHeader('Strict-Transport-Security', 'max-age=31536000')
             response.writeHead(200)
             response.end(res.data)
