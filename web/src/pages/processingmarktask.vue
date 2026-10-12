@@ -206,8 +206,8 @@ function markqualitymonitor(param) {
             </div>
           </div>
           <div class="sp">
-            <tiny-tag v-if="item.markStatus == 'paused'" type="warning">未开始</tiny-tag>
-            <tiny-tag v-if="item.markStatus == 'processing'" type="info">阅卷中</tiny-tag>
+            <tiny-tag v-if="item.subject.markStatus == 'paused'" type="warning">未开始</tiny-tag>
+            <tiny-tag v-if="item.subject.markStatus == 'processing'" type="info">阅卷中</tiny-tag>
           </div>
         </div>
         <div class="line"></div>
@@ -215,7 +215,7 @@ function markqualitymonitor(param) {
           <div v-if="item.normalmarkgroupname" class="cz">
             <div class="spacebetween">
               <div>普通【{{ item.normalmarkgroupname }}】</div>
-              <tiny-button type="success" :disabled="item.markStatus == 'paused'"
+              <tiny-button type="success" :disabled="item.subject.markStatus == 'paused'"
                 @click="mark(item, 'normal')">阅卷</tiny-button>
             </div>
             <div class="line"></div>
@@ -223,7 +223,7 @@ function markqualitymonitor(param) {
           <div v-if="item.arbitratemarkgroupname" class="cz">
             <div class="spacebetween">
               <div>仲裁【{{ item.arbitratemarkgroupname }}】</div>
-              <tiny-button type="info" :disabled="item.markStatus == 'paused'"
+              <tiny-button type="info" :disabled="item.subject.markStatus == 'paused'"
                 @click="mark(item, 'arbitrate')">仲裁</tiny-button>
             </div>
             <div class="line"></div>
@@ -242,11 +242,11 @@ function markqualitymonitor(param) {
                     <tiny-dropdown-menu placement="bottom-start">
                       <tiny-dropdown-item @click="updateSubject(item)">编辑配置</tiny-dropdown-item>
                       <tiny-dropdown-item @click="config(item)">查看配置</tiny-dropdown-item>
-                      <tiny-dropdown-item v-if="item.markStatus == 'paused'"
+                      <tiny-dropdown-item v-if="item.subject.markStatus == 'paused'"
                         @click="updateMarkStatus(item, 'processing')">开始阅卷</tiny-dropdown-item>
-                      <tiny-dropdown-item v-if="item.markStatus == 'processing'"
+                      <tiny-dropdown-item v-if="item.subject.markStatus == 'processing'"
                         @click="updateMarkStatus(item, 'paused')">暂停阅卷</tiny-dropdown-item>
-                      <tiny-dropdown-item v-if="item.markStatus == 'processing'"
+                      <tiny-dropdown-item v-if="item.subject.markStatus == 'processing'"
                         @click="updateMarkStatus(item, 'end')">结束阅卷</tiny-dropdown-item>
                       <tiny-dropdown-item v-if="!item.subject.answerOnline"
                         @click="uploadanswer(item)">上传作答</tiny-dropdown-item>

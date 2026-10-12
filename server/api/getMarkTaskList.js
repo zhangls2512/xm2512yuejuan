@@ -59,7 +59,6 @@ exports.main = async (event, configfilepath) => {
           examType: exam.type,
           examTime: exam.time,
           subject: item,
-          markStatus: item.markStatus,
           admin: false,
           normalMarkGroupName: [],
           arbitrateMarkGroupName: [],
