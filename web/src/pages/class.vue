@@ -9,6 +9,7 @@ const data = ref([])
 const currentpage = ref(1)
 const pagesize = ref(10)
 const total = ref(0)
+const id = ref('')
 async function get() {
   const countres = await request({
     apiPath: '/getClassCount'
@@ -38,6 +39,26 @@ async function copy(value) {
     message: '内容已复制',
     status: 'success'
   })
+}
+async function search() {
+  if (!id.value) {
+    get()
+    return
+  }
+  if (id.value && id.value.length != 36) {
+    TinyModal.message({
+      message: '请输入有效的ID',
+      status: 'warning'
+    })
+    return
+  }
+  const res = await request({
+    apiPath: '/searchClass',
+    body: {
+      id: id.value
+    }
+  })
+  data.value = res.data
 }
 async function newClass() {
   const content = await readFile()
@@ -115,6 +136,10 @@ async function deleteClass(id) {
 <template>
   <div class="cz">
     <div><tiny-button type="success" @click="newClass">选择配置文件新增</tiny-button></div>
+    <div class="sp">
+      <tiny-input v-model="id" clearable minlength="36" maxlength="36" placeholder="请输入ID"></tiny-input>
+      <tiny-button type="info" @click="search">搜索</tiny-button>
+    </div>
     <tiny-grid :data="data">
       <tiny-grid-column title="ID" align="center">
         <template #default="{ row }">

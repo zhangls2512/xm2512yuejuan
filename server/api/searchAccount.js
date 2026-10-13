@@ -36,7 +36,7 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const getres = await db.collection('account').find({
+    const getres = await db.collection('account').findOne({
       account: requestdata.account,
       schoolId: account.schoolId,
       type: requestdata.type
@@ -46,11 +46,11 @@ exports.main = async (event, configfilepath) => {
         account: true,
         name: true
       }
-    }).toArray()
+    })
     return {
       errCode: 0,
       errMsg: '成功',
-      data: getres
+      data: getres ? [getres] : []
     }
   }
 }

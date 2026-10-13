@@ -111,14 +111,14 @@ async function search() {
     })
     return
   }
-  const userres = await request({
+  const res = await request({
     apiPath: '/searchAccount',
     body: {
       type: 'teacher',
       account: account.value
     }
   })
-  data.value = userres.data
+  data.value = res.data
 }
 async function resetAccountPassword(account) {
   await request({

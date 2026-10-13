@@ -9,6 +9,7 @@ const data = ref([])
 const currentpage = ref(1)
 const pagesize = ref(10)
 const total = ref(0)
+const studentaccount = ref('')
 async function get() {
   const countres = await request({
     apiPath: '/getAnswerCount',
@@ -52,6 +53,33 @@ async function pagesizeChange(t) {
   pagesize.value = t
   get()
 }
+async function search() {
+  if (!studentaccount.value) {
+    get()
+    return
+  }
+  if (studentaccount.value && studentaccount.value.length != 36) {
+    TinyModal.message({
+      message: '请输入有效的学生账号',
+      status: 'warning'
+    })
+    return
+  }
+  const res = await request({
+    apiPath: '/searchAnswer',
+    body: {
+      id: param.value.examId,
+      subject: param.value.subject,
+      studentAccount: studentaccount.value
+    }
+  })
+  data.value = res.data.map(item => {
+    return {
+      ...item,
+      createTime: time(item.createTime)
+    }
+  })
+}
 async function deleteAnswer(id) {
   await request({
     apiPath: '/deleteAnswer',
@@ -75,6 +103,10 @@ async function deleteAnswer(id) {
       <tiny-breadcrumb-item :to="{ path: param.backpath }" :label="param.backname"></tiny-breadcrumb-item>
       <tiny-breadcrumb-item :to="{ path: '/examsubjectanswer' }" label="作答记录"></tiny-breadcrumb-item>
     </tiny-breadcrumb>
+    <div class="sp">
+      <tiny-input v-model="studentaccount" clearable minlength="36" maxlength="36" placeholder="请输入学生账号"></tiny-input>
+      <tiny-button type="info" @click="search">搜索</tiny-button>
+    </div>
     <tiny-grid :data="data">
       <tiny-grid-column field="studentAccount" title="学生账号" align="center"></tiny-grid-column>
       <tiny-grid-column field="createTime" title="时间" align="center"></tiny-grid-column>

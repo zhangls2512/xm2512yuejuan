@@ -2,6 +2,20 @@
 document.title = '智能阅卷系统 - 更新日志'
 const data = [
   {
+    versionNumber: '1.5.8',
+    releaseDate: '2026-10-13',
+    logs: [
+      {
+        type: 'U',
+        content: '班级、作答记录支持搜索'
+      },
+      {
+        type: 'F',
+        content: '修复了一些已知的问题'
+      }
+    ]
+  },
+  {
     versionNumber: '1.5.7',
     releaseDate: '2026-10-07',
     logs: [

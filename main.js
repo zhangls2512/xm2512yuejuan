@@ -90,6 +90,9 @@ function start(configfilepath) {
             }
             const res = await dealRequest(event, configfilepath)
             response.setHeader('Content-Type', res.contentType)
+            if (res.cache) {
+              response.setHeader('Cache-Control', 'max-age=604800')
+            }
             response.writeHead(200)
             response.end(res.data)
           } catch (err) {
