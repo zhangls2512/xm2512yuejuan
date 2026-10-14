@@ -23,7 +23,7 @@ async function get() {
   })
   const currenttime = Date.now()
   data.value = res.data.map(item => {
-    item.disabled = !(item.startTime <= currenttime && item.endTime >= currenttime)
+    item.disabled = item.startTime > currenttime
     item.startTime = time(item.startTime)
     item.endTime = time(item.endTime)
     return item
