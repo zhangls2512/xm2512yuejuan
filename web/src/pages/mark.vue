@@ -66,6 +66,8 @@ if (info) {
   }
 }
 async function get() {
+  markgroupfinished.value = 0
+  markgroupquota.value = 0
   huiping.value = false
   answerimage.value = []
   traceimage.value = []
