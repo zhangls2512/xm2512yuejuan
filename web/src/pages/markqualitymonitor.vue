@@ -32,7 +32,7 @@ async function getMarkCurve() {
   }
   if (markeraccount.value && markeraccount.value.length != 36) {
     TinyModal.message({
-      message: '请输入有效的阅卷老师账号',
+      message: '请输入有效的阅卷人账号',
       status: 'warning'
     })
     return
@@ -87,7 +87,7 @@ async function get() {
   }
   if (markeraccount.value && markeraccount.value.length != 36) {
     TinyModal.message({
-      message: '请输入有效的阅卷老师账号',
+      message: '请输入有效的阅卷人账号',
       status: 'warning'
     })
     return
@@ -143,7 +143,7 @@ async function newQuestion() {
               <tiny-base-select v-model="questionname" style="width:150px">
                 <tiny-option v-for="item in questionnamearr" :value="item"></tiny-option>
               </tiny-base-select>
-              <tiny-input v-model="markeraccount" clearable maxlength="36" placeholder="请输入阅卷老师账号"></tiny-input>
+              <tiny-input v-model="markeraccount" clearable maxlength="36" placeholder="请输入阅卷人账号"></tiny-input>
               <tiny-button type="info" @click="getMarkCurve">获取</tiny-button>
             </div>
             <tiny-chart-line :options="markcurve"></tiny-chart-line>
@@ -185,7 +185,7 @@ async function newQuestion() {
               <tiny-base-select v-model="questionname" style="width:150px">
                 <tiny-option v-for="item in questionnamearr" :value="item"></tiny-option>
               </tiny-base-select>
-              <tiny-input v-model="markeraccount" clearable maxlength="36" placeholder="请输入阅卷老师账号"></tiny-input>
+              <tiny-input v-model="markeraccount" clearable maxlength="36" placeholder="请输入阅卷人账号"></tiny-input>
               <tiny-button type="info" @click="get">抽取</tiny-button>
             </div>
             <div class="spacebetween" style="align-items:flex-start">
