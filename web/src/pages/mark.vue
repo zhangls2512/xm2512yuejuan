@@ -291,7 +291,7 @@ async function mark(id) {
       <div class="bold-text">科目</div>
       <div>{{ data.subject.name }}</div>
       <div class="bold-text">阅卷类型</div>
-      <div v-if="type == 'normal'">正常</div>
+      <div v-if="type == 'normal'">普通</div>
       <div v-if="type == 'arbitrate'">仲裁</div>
     </div>
     <div class="spacebetween" style="align-items:flex-start">
