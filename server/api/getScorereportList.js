@@ -225,6 +225,7 @@ exports.main = async (event, configfilepath) => {
       item.examType = exammap[item.examId].type
       item.id = item.scorereportId
       item.name = confignamemap[item.scorereportconfigId]
+      delete item.examId
       delete item.scorereportId
       delete item.scorereportconfigId
     })
