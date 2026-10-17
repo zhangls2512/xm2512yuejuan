@@ -46,7 +46,7 @@ exports.main = async (event, configfilepath) => {
         }
       }).sort({
         createTime: -1
-      }).skip(skip).limit(limit).toArray()
+      }).toArray()
       data = data.map(item => {
         const student = item.student.find(i => i.account == account.account)
         delete student.account
@@ -105,7 +105,7 @@ exports.main = async (event, configfilepath) => {
           }
         }).sort({
           createTime: -1
-        }).skip(skip).limit(limit).toArray()
+        }).toArray()
       }
       if (requestdata.type == 'school') {
         const schoolId = account.schoolId ? account.schoolId : requestdata.id
@@ -139,7 +139,7 @@ exports.main = async (event, configfilepath) => {
           }
         }).sort({
           createTime: -1
-        }).skip(skip).limit(limit).toArray()
+        }).toArray()
       }
       if (requestdata.type == 'class') {
         if (typeof (requestdata.id) != 'string' || requestdata.id.length != 36) {
@@ -208,7 +208,7 @@ exports.main = async (event, configfilepath) => {
           }
         }).sort({
           createTime: -1
-        }).skip(skip).limit(limit).toArray()
+        }).toArray()
       }
     }
     const exammap = {}
