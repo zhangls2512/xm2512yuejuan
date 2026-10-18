@@ -305,7 +305,7 @@ exports.main = async (event, configfilepath) => {
                           }
                         ]
                       }
-                    ].cancat([sanping])
+                    ].concat([sanping])
                   }
                 },
                 {

@@ -12,6 +12,7 @@ const questionnamearr = ref([])
 const markeraccount = ref('')
 const markcurve = ref({})
 const markconsistency = ref([])
+const markarbitraterate = ref([])
 const answer = ref({})
 const info = route.query.info
 if (info) {
@@ -76,6 +77,16 @@ async function getMarkConsistency() {
     }
   })
   markconsistency.value = res.data
+}
+async function getMarkArbitrateRate() {
+  const res = await request({
+    apiPath: '/getMarkArbitrateRate',
+    body: {
+      id: data.value.examId,
+      subject: data.value.subject.name
+    }
+  })
+  markarbitraterate.value = res.data
 }
 async function get() {
   if (!questionname.value) {
@@ -165,11 +176,35 @@ async function newQuestion() {
               <div class="line"></div>
               <div class="wide-sp">
                 <div>{{ item.markerAccount }}</div>
-                <div class="cz" v-for="i in item.questions">
-                  <div class="wide-sp">
+                <div class="cz">
+                  <div v-for="i in item.questions" class="sp">
                     <div>{{ i.name }}</div>
                     <div>{{ i.averageScoreDiff }}</div>
                     <div>{{ i.diffPercent }}%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </tiny-tab-item>
+      <tiny-tab-item title="仲裁率" name="仲裁率">
+        <template #default>
+          <div class="cz">
+            <div><tiny-button type="info" @click="getMarkArbitrateRate">获取</tiny-button></div>
+            <div class="wide-sp">
+              <div class="bold-text">题号</div>
+              <div class="bold-text">阅卷人账号</div>
+              <div class="bold-text">仲裁率</div>
+            </div>
+            <div v-for="item in markarbitraterate" class="cz">
+              <div class="line"></div>
+              <div class="wide-sp">
+                <div>{{ item.questionName }}</div>
+                <div class="cz">
+                  <div v-for="i in item.list" class="sp">
+                    <div>{{ i.account }}</div>
+                    <div>{{ i.rate }}%</div>
                   </div>
                 </div>
               </div>

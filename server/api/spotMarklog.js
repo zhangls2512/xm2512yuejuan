@@ -165,30 +165,29 @@ exports.main = async (event, configfilepath) => {
       totalScore: marklogres.finalTotalScore,
       history: []
     }
-    const history = []
     if (marklogres.firstMarkerAccount) {
-      history.push({
+      result.history.push({
         type: '一评',
         markerAccount: marklogres.firstMarkerAccount,
         totalScore: sum(marklogres.firstMarkStepScore)
       })
     }
     if (marklogres.secondMarkerAccount) {
-      history.push({
+      result.history.push({
         type: '二评',
         markerAccount: marklogres.secondMarkerAccount,
         totalScore: sum(marklogres.secondMarkStepScore)
       })
     }
     if (marklogres.thirdMarkerAccount) {
-      history.push({
+      result.history.push({
         type: '三评',
         markerAccount: marklogres.thirdMarkerAccount,
         totalScore: sum(marklogres.thirdMarkStepScore)
       })
     }
     if (marklogres.arbitrateMarkerAccount) {
-      history.push({
+      result.history.push({
         type: '仲裁',
         markerAccount: marklogres.arbitrateMarkerAccount,
         totalScore: sum(marklogres.arbitrateMarkStepScore)
