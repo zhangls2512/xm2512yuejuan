@@ -101,7 +101,7 @@ function closeSa() {
   </tiny-dialog-box>
   <tiny-dialog-box class="dialog" :visible="sadialog" title="作答" @close="closeSa">
     <div class="cz">
-      <div class="large-text" style="color:red">总分：{{ answer.totalScore }}</div>
+      <div class="large-text" style="color:red">得分：{{ answer.totalScore }}</div>
       <div v-for="item, index in answer.stepScore" v-if="answer.stepScore.length > 1" style="color:red">步骤{{ index + 1
       }}：{{ item }}分</div>
       <div v-for="item in answer.answerImage">
