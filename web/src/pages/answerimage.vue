@@ -12,10 +12,8 @@ function draw() {
   const img = i.value
   const canvas = c.value
   const ctx = canvas.getContext('2d')
-  const w = img.naturalWidth
-  const h = img.naturalHeight
-  canvas.width = w
-  canvas.height = h
+  canvas.width = img.naturalWidth
+  canvas.height = img.naturalHeight
   canvas.style.width = '100%'
   canvas.style.height = 'auto'
   ctx.drawImage(img, 0, 0)
@@ -32,17 +30,19 @@ function draw() {
   })
 }
 function drawImage(ctx, item) {
-  const [x, y] = getCoord(item)
-  const img = new Image()
-  img.src = item.content ? item.content : '/transparent.png'
-  img.onload = () => {
-    const w = img.naturalWidth
-    const h = img.naturalHeight
-    const {
-      x: ox,
-      y: oy
-    } = offset(item, w, h)
-    ctx.drawImage(img, x + ox, y + oy)
+  if (item.content) {
+    const [x, y] = getCoord(item)
+    const img = new Image()
+    img.src = item.content
+    img.onload = () => {
+      const w = img.naturalWidth
+      const h = img.naturalHeight
+      const {
+        x: ox,
+        y: oy
+      } = offset(item, w, h)
+      ctx.drawImage(img, x + ox, y + oy)
+    }
   }
 }
 function drawText(ctx, item) {
@@ -68,39 +68,37 @@ function drawRect(ctx, item) {
   ctx.strokeRect(x1, y1, x2 - x1, y2 - y1)
 }
 function offset(item, w = 0, h = 0) {
-  switch (item.position) {
-    case 'righttop':
-      return {
-        x: -w,
-        y: 0
-      }
-    case 'rightbottom':
-      return {
-        x: -w,
-        y: -h
-      }
-    default:
-      return {
-        x: 0,
-        y: 0
-      }
+  if (item.position == 'righttop') {
+    return {
+      x: -w,
+      y: 0
+    }
+  }
+  if (item.position == 'rightbottom') {
+    return {
+      x: -w,
+      y: -h
+    }
+  }
+  return {
+    x: 0,
+    y: 0
   }
 }
-function getCoord(item, w = 0, h = 0) {
+function getCoord(item) {
   if (item.coord) {
     return item.coord
   }
   const canvas = c.value
   const cw = canvas.width
   const ch = canvas.height
-  switch (item.position) {
-    case 'righttop':
-      return [cw, 0]
-    case 'rightbottom':
-      return [cw, ch]
-    default:
-      return [0, 0]
+  if (item.position == 'righttop') {
+    return [cw, 0]
   }
+  if (item.position == 'rightbottom') {
+    return [cw, ch]
+  }
+  return [0, 0]
 }
 </script>
 
