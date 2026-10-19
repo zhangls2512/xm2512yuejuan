@@ -555,7 +555,7 @@ function downloadScore() {
           <div class="bold-text">赋分等级</div>
           <div>{{ data.info.level }}</div>
         </div>
-        <div><tiny-button type="info" @click="openAa">查看原卷</tiny-button></div>
+        <div><tiny-button type="info" @click="openAa('')">查看原卷</tiny-button></div>
         <tiny-tabs v-if="data.subject != '多学科'" v-model="tabnameb">
           <tiny-tab-item title="小题作答情况" name="小题作答情况">
             <template #default>
