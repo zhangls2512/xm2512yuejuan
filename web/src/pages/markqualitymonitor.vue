@@ -129,6 +129,36 @@ async function newQuestion() {
   })
   get()
 }
+async function clearMarklog() {
+  if (!questionname.value) {
+    TinyModal.message({
+      message: '请选择题号',
+      status: 'warning'
+    })
+    return
+  }
+  TinyModal.confirm({
+    status: 'error',
+    title: '高危操作警告',
+    message: '将清空一评、二评、三评、仲裁、问题卷阅卷记录，清空成功后无法恢复，确定清空？',
+    events: {
+      async confirm() {
+        await request({
+          apiPath: '/clearMarklog',
+          body: {
+            id: data.value.examId,
+            subject: data.value.subject.name,
+            questionName: questionname.value
+          }
+        })
+        TinyModal.message({
+          message: '清空成功',
+          status: 'success'
+        })
+      }
+    }
+  })
+}
 </script>
 
 <template>
@@ -246,6 +276,17 @@ async function newQuestion() {
                 </div>
               </div>
             </div>
+          </div>
+        </template>
+      </tiny-tab-item>
+      <tiny-tab-item title="阅卷记录清空" name="阅卷记录清空">
+        <template #default>
+          <div class="sp">
+            <div class="bold-text">题号</div>
+            <tiny-base-select v-model="questionname" style="width:150px">
+              <tiny-option v-for="item in questionnamearr" :value="item"></tiny-option>
+            </tiny-base-select>
+            <tiny-button type="danger" @click="clearMarklog">清空</tiny-button>
           </div>
         </template>
       </tiny-tab-item>

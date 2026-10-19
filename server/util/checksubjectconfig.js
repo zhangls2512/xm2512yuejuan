@@ -61,7 +61,7 @@ function checkSubjectConfig(requestdata, olddata) {
   }
   const admin = []
   const adminaccount = []
-  const validpermissions = ['dealQuestion', 'updateMarkStatus', 'getMarkProgress', 'getMarkCurve', 'getMarkConsistency', 'getMarkArbitrateRate', 'spotMarklog', 'updateScore', 'manageAnswer', 'manageScorereportconfig', 'getAnswerCsv', 'updateConfig', 'supplyScore']
+  const validpermissions = ['dealQuestion', 'updateMarkStatus', 'getMarkProgress', 'getMarkCurve', 'getMarkConsistency', 'getMarkArbitrateRate', 'spotMarklog', 'clearMarklog', 'updateScore', 'manageAnswer', 'manageScorereportconfig', 'getAnswerCsv', 'updateConfig', 'supplyScore']
   for (let i = 0; i < requestdata.admin.length; i++) {
     const item = requestdata.admin[i]
     if (typeof (item.account) != 'string' || item.account.length != 36 || !Array.isArray(item.permission) || !item.permission.every(p => validpermissions.includes(p))) {
@@ -90,7 +90,7 @@ function checkSubjectConfig(requestdata, olddata) {
   }
   for (let i = 0; i < requestdata.objectiveQuestion.length; i++) {
     const questionitem = requestdata.objectiveQuestion[i]
-    if (typeof (questionitem.name) != 'string' || !questionitem.name || ['/', ','].some(ch => questionitem.name.includes(ch))) {
+    if (typeof (questionitem.name) != 'string' || !questionitem.name || questionitem.name.length > 200 || ['/', '.', ','].some(ch => questionitem.name.includes(ch))) {
       return {
         errCode: 400,
         errMsg: '请求参数错误',
@@ -231,7 +231,7 @@ function checkSubjectConfig(requestdata, olddata) {
   }
   for (let i = 0; i < requestdata.subjectiveQuestion.length; i++) {
     const questionitem = requestdata.subjectiveQuestion[i]
-    if (typeof (questionitem.name) != 'string' || !questionitem.name || ['/', ','].some(ch => questionitem.name.includes(ch)) || questionitem.name.length > 200) {
+    if (typeof (questionitem.name) != 'string' || !questionitem.name || questionitem.name.length > 200 || ['/', '.', ','].some(ch => questionitem.name.includes(ch))) {
       return {
         errCode: 400,
         errMsg: '请求参数错误',
@@ -376,7 +376,7 @@ function checkSubjectConfig(requestdata, olddata) {
   const subjectivequestionnamearray = result.subjectiveQuestion.map(item => item.name)
   for (let i = 0; i < requestdata.markGroup.length; i++) {
     const questionitem = requestdata.markGroup[i]
-    if (typeof (questionitem.name) != 'string' || !questionitem.name || (result.answerOnline && (questionitem.name.includes('/') || questionitem.name.length > 255))) {
+    if (typeof (questionitem.name) != 'string' || !questionitem.name || questionitem.name.length > 200 || ['/', '.', ','].some(ch => questionitem.name.includes(ch))) {
       return {
         errCode: 400,
         errMsg: '请求参数错误',
@@ -391,7 +391,7 @@ function checkSubjectConfig(requestdata, olddata) {
       }
     }
     questionitem.questionName = [...new Set(questionitem.questionName)]
-    const validpermissions = ['dealQuestion', 'getMarkProgress', 'getMarkCurve', 'getMarkConsistency', 'getMarkArbitrateRate', 'spotMarklog']
+    const validpermissions = ['dealQuestion', 'getMarkProgress', 'getMarkCurve', 'getMarkConsistency', 'getMarkArbitrateRate', 'spotMarklog', 'clearMarklog']
     const tempadmin = []
     const tempadminaccount = []
     for (let i = 0; i < questionitem.admin.length; i++) {

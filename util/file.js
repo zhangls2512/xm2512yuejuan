@@ -27,9 +27,22 @@ function rmdir(dir) {
     })
   }
 }
+function rmstartswith(rootdir, startswith) {
+  if (fs.existsSync(rootdir)) {
+    const paths = fs.readdirSync(rootdir)
+    paths.forEach(item => {
+      const files = fs.readdirSync(rootdir + item)
+      const validfiles = files.filter(item => startswith.some(start => item.startsWith(start)))
+      validfiles.forEach(file => {
+        fs.unlinkSync(rootdir + item + '/' + file)
+      })
+    })
+  }
+}
 module.exports = {
   read,
   write,
   rmdir,
+  rmstartswith,
   contenttype
 }
