@@ -61,9 +61,9 @@ function closeSa() {
     </tiny-grid-column>
     <tiny-grid-column title="作答" align="center">
       <template #default="{ row }">
-        <div v-if="row.correctAnswer !== undefined">{{ row.answer }}</div>
-        <div v-if="row.correctAnswer === undefined && click" class="clickwz" @click="openSa(row.questionName)">查看</div>
-        <div v-if="row.correctAnswer === undefined && !click">-</div>
+        <div v-if="row.answer !== undefined">{{ row.answer }}</div>
+        <div v-if="row.answer === undefined && click" class="clickwz" @click="openSa(row.questionName)">查看</div>
+        <div v-if="row.answer === undefined && !click">-</div>
       </template>
     </tiny-grid-column>
     <tiny-grid-column title="答案" align="center">
