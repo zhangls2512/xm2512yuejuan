@@ -61,16 +61,16 @@ function closeSa() {
     </tiny-grid-column>
     <tiny-grid-column title="作答" align="center">
       <template #default="{ row }">
-        <div v-if="row.correctAnswer">{{ row.answer }}</div>
-        <div v-if="!row.correctAnswer && click" class="clickwz" @click="openSa(row.questionName)">查看</div>
-        <div v-if="!row.correctAnswer && !click">-</div>
+        <div v-if="row.correctAnswer !== undefined">{{ row.answer }}</div>
+        <div v-if="row.correctAnswer === undefined && click" class="clickwz" @click="openSa(row.questionName)">查看</div>
+        <div v-if="row.correctAnswer === undefined && !click">-</div>
       </template>
     </tiny-grid-column>
     <tiny-grid-column title="答案" align="center">
       <template #default="{ row }">
-        <div v-if="row.correctAnswer">{{ row.correctAnswer }}</div>
-        <div v-if="!row.correctAnswer && click" class="clickwz" @click="openQa(row.questionName)">查看</div>
-        <div v-if="!row.correctAnswer && !click">-</div>
+        <div v-if="row.correctAnswer !== undefined">{{ row.correctAnswer }}</div>
+        <div v-if="row.correctAnswer === undefined && click" class="clickwz" @click="openQa(row.questionName)">查看</div>
+        <div v-if="row.correctAnswer === undefined && !click">-</div>
       </template>
     </tiny-grid-column>
     <tiny-grid-column field="score" title="得分" align="center"></tiny-grid-column>

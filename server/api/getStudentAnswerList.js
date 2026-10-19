@@ -160,8 +160,6 @@ exports.main = async (event, configfilepath) => {
       } else {
         result.push({
           questionName: item.questionName,
-          answer: '',
-          correctAnswer: '',
           score: fixtwo(item.finalTotalScore),
           totalScore: sum(question.stepScore.map(i => i[0]))
         })
