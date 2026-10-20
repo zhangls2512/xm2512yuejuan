@@ -145,7 +145,7 @@ exports.main = async (event, configfilepath) => {
         $in: ['first', 'second', 'third', 'arbitrate', 'question']
       }
     })
-    const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/marktraceimage/'
+    const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/marktrace/'
     const startswith = ['first', 'second', 'third', 'arbitrate', 'question'].map(item => requestdata.questionName + '-' + item)
     rmstartswith(rootdir, startswith)
     return {

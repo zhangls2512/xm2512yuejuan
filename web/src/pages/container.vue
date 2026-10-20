@@ -88,9 +88,12 @@ function clearHistory() {
           <router-link class="footer-text" to="/coordmaketool" target="_blank">坐标制作工具</router-link>
           <tiny-divider direction="vertical"></tiny-divider>
           <router-link class="footer-text" to="/qrcodegeneratetool" target="_blank">二维码生成工具</router-link>
+          <tiny-divider direction="vertical"></tiny-divider>
+          <img src="/hmos.png"></img>
+          <a class="footer-text" href="https://appgallery.huawei.com/apptest/AbN5vJgP7M2" target="_blank">鸿蒙App</a>
         </div>
         <div class="sp">
-          <div class="footer-text">Version 1.5.12</div>
+          <div class="footer-text">Version 1.6.0</div>
           <tiny-divider direction="vertical"></tiny-divider>
           <a class="footer-text" href="https://docs.qq.com/doc/p/cfe2a8b2b5709cadd6d9048aa4fd001678197397"
             target="_blank">帮助文档</a>

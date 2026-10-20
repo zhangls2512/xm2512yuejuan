@@ -205,7 +205,7 @@ exports.main = async (event, configfilepath) => {
           if (marktype) {
             const traceimage = []
             for (let i = 0; i < coordcount; i++) {
-              traceimage.push(read(rootdir + '/marktraceimage/' + studentAccount + '/' + item.questionName + '-' + marktype + '-' + i))
+              traceimage.push(read(rootdir + '/marktrace/' + studentAccount + '/' + item.questionName + '-' + marktype + '-' + i))
             }
             marklogarr.push({
               questionName: item.questionName,
@@ -237,7 +237,7 @@ exports.main = async (event, configfilepath) => {
           })
         }
         if (marktype) {
-          const traceimage = read(rootdir + '/marktraceimage/' + studentAccount + '/' + item.questionName + '-' + marktype + '-0')
+          const traceimage = read(rootdir + '/marktrace/' + studentAccount + '/' + item.questionName + '-' + marktype + '-0')
           marklogarr.push({
             questionName: item.questionName,
             finalStepScore: item.finalStepScore,

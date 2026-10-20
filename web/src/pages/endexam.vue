@@ -68,9 +68,27 @@ async function restartExam(id) {
   })
   get()
 }
+async function getAnswerCsv(exam, subject) {
+  const res = await request({
+    apiPath: '/getAnswerCsv',
+    body: {
+      id: exam.examId,
+      name: subject
+    }
+  })
+  saveFile(res.data, exam.name + '（' + subject + '）小题明细.csv')
+}
 function config(exam, subject) {
   router.push('/examsubjectconfig?info=' + encode({
     exam: exam,
+    subject: subject,
+    backpath: '/endexam',
+    backname: '考试管理'
+  }))
+}
+function answer(id, subject) {
+  router.push('/examsubjectanswer?info=' + encode({
+    examId: id,
     subject: subject,
     backpath: '/endexam',
     backname: '考试管理'
@@ -86,16 +104,6 @@ function markProgress(exam, subject) {
     backpath: '/endexam',
     backname: '考试管理'
   }))
-}
-async function getAnswerCsv(exam, subject) {
-  const res = await request({
-    apiPath: '/getAnswerCsv',
-    body: {
-      id: exam.examId,
-      name: subject
-    }
-  })
-  saveFile(res.data, exam.name + '（' + subject + '）小题明细.csv')
 }
 function scorereportconfig(examid, subject) {
   router.push('/scorereportconfig?info=' + encode({
@@ -165,6 +173,7 @@ function updatescore(exam, subject) {
                 <div class="footer-text">阅卷已结束。</div>
                 <div v-if="admin" class="clickwz" @click="getAnswerCsv(item, subject.name)">导出小题明细</div>
                 <div class="clickwz" @click="config(item, subject)">查看配置</div>
+                <div v-if="admin" class="clickwz" @click="answer(item.examId, subject.name)">作答记录</div>
                 <div v-if="admin" class="clickwz" @click="markProgress(item, subject.name)">阅卷进度</div>
                 <div v-if="admin" class="clickwz" @click="scorereportconfig(item.examId, subject.name)">成绩报告配置
                 </div>

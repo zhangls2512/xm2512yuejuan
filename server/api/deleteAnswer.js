@@ -48,6 +48,13 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
+    if (examsubjectgetres.markStatus == 'processing') {
+      return {
+        errCode: 400,
+        errMsg: '阅卷进行中',
+        errFix: '无修复建议'
+      }
+    }
     if (examsubjectgetres.markStatus == 'end') {
       return {
         errCode: 400,
@@ -107,7 +114,7 @@ exports.main = async (event, configfilepath) => {
       if (!examsubjectgetres.answerOnline || (examsubjectgetres.answerOnline && examsubjectgetres.markGroup.length > 0)) {
         const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject
         rmdir(rootdir + '/answer/' + requestdata.studentAccount)
-        rmdir(rootdir + '/marktraceimage/' + requestdata.studentAccount)
+        rmdir(rootdir + '/marktrace/' + requestdata.studentAccount)
       }
       await db.collection('marklog').deleteMany({
         examId: requestdata.id,

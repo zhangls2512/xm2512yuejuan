@@ -620,7 +620,7 @@ exports.main = async (event, configfilepath) => {
           })
         }
       }
-      const dir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + marklogres.examId + '/' + marklogres.subject + '/marktraceimage/' + marklogres.studentAccount + '/' + marklogres.questionName + '-' + marktype + '-'
+      const dir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + marklogres.examId + '/' + marklogres.subject + '/marktrace/' + marklogres.studentAccount + '/' + marklogres.questionName + '-' + marktype + '-'
       for (let i = 0; i < requestdata.traceImage.length; i++) {
         const item = requestdata.traceImage[i]
         write(dir + i, item)

@@ -65,6 +65,16 @@ async function updateMarkStatus(param) {
     }
   })
 }
+async function getAnswerCsv(param) {
+  const res = await request({
+    apiPath: '/getAnswerCsv',
+    body: {
+      id: param.examId,
+      name: param.subject.name
+    }
+  })
+  saveFile(res.data, param.examName + '（' + param.subject.name + '）小题明细.csv')
+}
 function config(param) {
   router.push('/examsubjectconfig?info=' + encode({
     exam: {
@@ -73,6 +83,14 @@ function config(param) {
       time: param.examTime
     },
     subject: param.subject,
+    backpath: '/endmarktask',
+    backname: '阅卷任务'
+  }))
+}
+function answer(param) {
+  router.push('/examsubjectanswer?info=' + encode({
+    examId: param.examId,
+    subject: param.subject.name,
     backpath: '/endmarktask',
     backname: '阅卷任务'
   }))
@@ -87,16 +105,6 @@ function markProgress(param) {
     backpath: '/endmarktask',
     backname: '阅卷任务'
   }))
-}
-async function getAnswerCsv(param) {
-  const res = await request({
-    apiPath: '/getAnswerCsv',
-    body: {
-      id: param.examId,
-      name: param.subject.name
-    }
-  })
-  saveFile(res.data, param.examName + '（' + param.subject.name + '）小题明细.csv')
 }
 function scorereportconfig(param) {
   router.push('/scorereportconfig?info=' + encode({
@@ -159,6 +167,7 @@ function updatescore(param) {
                   <tiny-dropdown-item @click="updateMarkStatus(item)">重新阅卷</tiny-dropdown-item>
                   <tiny-dropdown-item @click="getAnswerCsv(item)">导出小题明细</tiny-dropdown-item>
                   <tiny-dropdown-item @click="config(item)">查看配置</tiny-dropdown-item>
+                  <tiny-dropdown-item @click="answer(item)">作答记录</tiny-dropdown-item>
                   <tiny-dropdown-item @click="markProgress(item)">阅卷进度</tiny-dropdown-item>
                   <tiny-dropdown-item @click="scorereportconfig(item)">成绩报告配置</tiny-dropdown-item>
                   <tiny-dropdown-item @click="supplyscore(item)">成绩补录</tiny-dropdown-item>

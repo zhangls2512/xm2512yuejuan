@@ -130,7 +130,7 @@ exports.main = async (event, configfilepath) => {
           result.traceImage.push('')
         }
         if (answerimage) {
-          result.traceImage.push(read(rootdir + '/marktraceimage/' + marklogres.studentAccount + '/' + marklogres.questionName + '-question-' + i))
+          result.traceImage.push(read(rootdir + '/marktrace/' + marklogres.studentAccount + '/' + marklogres.questionName + '-question-' + i))
         }
       }
     }

@@ -10,6 +10,8 @@ const currentpage = ref(1)
 const pagesize = ref(10)
 const total = ref(0)
 const studentaccount = ref('')
+const dialog = ref(false)
+const answer = ref([])
 async function get() {
   const countres = await request({
     apiPath: '/getAnswerCount',
@@ -80,6 +82,25 @@ async function search() {
     }
   })
 }
+async function openDialog(stu) {
+  await getAnswerInfo(stu)
+  dialog.value = true
+}
+function closeDialog() {
+  dialog.value = false
+  answer.value = []
+}
+async function getAnswerInfo(id) {
+  const res = await request({
+    apiPath: '/getAnswerInfo',
+    body: {
+      id: param.value.examId,
+      subject: param.value.subject,
+      studentAccount: id
+    }
+  })
+  answer.value = res.data
+}
 async function deleteAnswer(id) {
   await request({
     apiPath: '/deleteAnswer',
@@ -112,16 +133,30 @@ async function deleteAnswer(id) {
       <tiny-grid-column field="createTime" title="时间" align="center"></tiny-grid-column>
       <tiny-grid-column title="操作" align="center">
         <template #default="{ row }">
-          <tiny-popconfirm title="提示" message="删除成功后会同步清空其阅卷记录且无法恢复，确定删除？" type="warning" trigger="hover"
-            @confirm="deleteAnswer(row.studentAccount)">
-            <template #reference>
-              <tiny-button type="danger">删除</tiny-button>
-            </template>
-          </tiny-popconfirm>
+          <div class="czsp">
+            <tiny-button type="info" @click="openDialog(row.studentAccount)">查看</tiny-button>
+            <tiny-popconfirm title="提示" message="删除成功后会同步清空其阅卷记录且无法恢复，确定删除？" type="warning" trigger="hover"
+              @confirm="deleteAnswer(row.studentAccount)">
+              <template #reference>
+                <tiny-button type="danger">删除</tiny-button>
+              </template>
+            </tiny-popconfirm>
+          </div>
         </template>
       </tiny-grid-column>
     </tiny-grid>
     <tiny-pager mode="number" :current-page="currentpage" :page-size="pagesize" :page-sizes="[5, 10, 15, 20]"
       :total="total" @current-change="currentpageChange" @size-change="pagesizeChange"></tiny-pager>
+    <tiny-dialog-box class="dialog" :visible="dialog" title="作答" @close="closeDialog">
+      <div class="cz">
+        <div v-for="item in answer">
+          <img v-if="item" :src="item"></img>
+          <img v-if="!item" src="/noimage.png"></img>
+        </div>
+      </div>
+      <template #footer>
+        <tiny-button type="info" @click="closeDialog">确定</tiny-button>
+      </template>
+    </tiny-dialog-box>
   </div>
 </template>

@@ -14,6 +14,8 @@ const markcurve = ref({})
 const markconsistency = ref([])
 const markarbitraterate = ref([])
 const answer = ref({})
+const objectivequestioncheckdata = ref({})
+const objectivequestionchecktabname = ref('未选')
 const info = route.query.info
 if (info) {
   try {
@@ -159,6 +161,16 @@ async function clearMarklog() {
     }
   })
 }
+async function checkObjectiveQuestionMarklog() {
+  const res = await request({
+    apiPath: '/checkObjectiveQuestionMarklog',
+    body: {
+      id: data.value.examId,
+      subject: data.value.subject.name
+    }
+  })
+  objectivequestioncheckdata.value = res.data
+}
 </script>
 
 <template>
@@ -287,6 +299,51 @@ async function clearMarklog() {
               <tiny-option v-for="item in questionnamearr" :value="item"></tiny-option>
             </tiny-base-select>
             <tiny-button type="danger" @click="clearMarklog">清空</tiny-button>
+          </div>
+        </template>
+      </tiny-tab-item>
+      <tiny-tab-item title="客观题核查" name="客观题核查">
+        <template #default>
+          <div class="cz">
+            <div><tiny-button type="info" @click="checkObjectiveQuestionMarklog">核查</tiny-button></div>
+            <tiny-tabs v-model="objectivequestionchecktabname">
+              <tiny-tab-item v-if="objectivequestioncheckdata" title="未选" name="未选">
+                <template #default>
+                  <div class="cz">
+                    <div class="wide-sp">
+                      <div class="bold-text">题号</div>
+                      <div class="bold-text">学生账号</div>
+                    </div>
+                    <div v-for="item in objectivequestioncheckdata.empty" class="cz">
+                      <div class="line"></div>
+                      <div class="wide-sp">
+                        <div>{{ item.questionName }}</div>
+                        <div>{{ item.studentAccount }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </tiny-tab-item>
+              <tiny-tab-item v-if="objectivequestioncheckdata" title="单选题多选" name="单选题多选">
+                <template #default>
+                  <div class="cz">
+                    <div class="wide-sp">
+                      <div class="bold-text">题号</div>
+                      <div class="bold-text">学生账号</div>
+                      <div class="bold-text">作答</div>
+                    </div>
+                    <div v-for="item in objectivequestioncheckdata.multiple" class="cz">
+                      <div class="line"></div>
+                      <div class="wide-sp">
+                        <div>{{ item.questionName }}</div>
+                        <div>{{ item.studentAccount }}</div>
+                        <div>{{ item.answer }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </tiny-tab-item>
+            </tiny-tabs>
           </div>
         </template>
       </tiny-tab-item>

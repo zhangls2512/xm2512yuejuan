@@ -58,6 +58,35 @@ async function copy(value) {
 function newExam() {
   router.push('/newexam')
 }
+function updateExam(info) {
+  router.push('/updateexam?info=' + encode(info))
+}
+async function deleteExam(id) {
+  await request({
+    apiPath: '/deleteExam',
+    body: {
+      id: id
+    }
+  })
+  TinyModal.message({
+    message: '删除成功',
+    status: 'success'
+  })
+  get()
+}
+async function endExam(id) {
+  await request({
+    apiPath: '/endExam',
+    body: {
+      id: id
+    }
+  })
+  TinyModal.message({
+    message: '结束成功',
+    status: 'success'
+  })
+  get()
+}
 async function newSubject(id) {
   const content = await readFile()
   let info
@@ -191,6 +220,17 @@ function dealQuestion(exam, subject) {
     backname: '考试管理'
   }))
 }
+function markqualitymonitor(exam, subject) {
+  router.push('/markqualitymonitor?info=' + encode({
+    examId: exam.examId,
+    examName: exam.name,
+    examType: exam.type,
+    examTime: exam.time,
+    subject: subject,
+    backpath: '/processingexam',
+    backname: '考试管理'
+  }))
+}
 async function getAnswerCsv(exam, subject) {
   const res = await request({
     apiPath: '/getAnswerCsv',
@@ -230,46 +270,6 @@ function updatescore(exam, subject) {
     backpath: '/processingexam',
     backname: '考试管理'
   }))
-}
-function markqualitymonitor(exam, subject) {
-  router.push('/markqualitymonitor?info=' + encode({
-    examId: exam.examId,
-    examName: exam.name,
-    examType: exam.type,
-    examTime: exam.time,
-    subject: subject,
-    backpath: '/processingexam',
-    backname: '考试管理'
-  }))
-}
-function updateExam(info) {
-  router.push('/updateexam?info=' + encode(info))
-}
-async function deleteExam(id) {
-  await request({
-    apiPath: '/deleteExam',
-    body: {
-      id: id
-    }
-  })
-  TinyModal.message({
-    message: '删除成功',
-    status: 'success'
-  })
-  get()
-}
-async function endExam(id) {
-  await request({
-    apiPath: '/endExam',
-    body: {
-      id: id
-    }
-  })
-  TinyModal.message({
-    message: '结束成功',
-    status: 'success'
-  })
-  get()
 }
 </script>
 
@@ -357,6 +357,8 @@ async function endExam(id) {
                         @click="markqualitymonitor(item, subject)">阅卷质量监控</tiny-dropdown-item>
                       <tiny-dropdown-item v-if="subject.markStatus == 'end'"
                         @click="config(item, subject)">查看配置</tiny-dropdown-item>
+                      <tiny-dropdown-item v-if="subject.markStatus == 'end'"
+                        @click="answer(item, subject.name)">作答记录</tiny-dropdown-item>
                       <tiny-dropdown-item v-if="subject.markStatus == 'end'"
                         @click="markProgress(item, subject.name)">阅卷进度</tiny-dropdown-item>
                       <tiny-dropdown-item v-if="subject.markStatus != 'end'"

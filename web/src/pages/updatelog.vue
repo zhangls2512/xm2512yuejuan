@@ -2,6 +2,28 @@
 document.title = '智能阅卷系统 - 更新日志'
 const data = [
   {
+    versionNumber: '1.6.0',
+    releaseDate: '2026-10-20',
+    logs: [
+      {
+        type: 'U',
+        content: '作答记录支持查看'
+      },
+      {
+        type: 'U',
+        content: '阅卷质量监控新增客观题核查'
+      },
+      {
+        type: 'U',
+        content: '底部新增鸿蒙App'
+      },
+      {
+        type: 'F',
+        content: '修复了一些已知的问题'
+      }
+    ]
+  },
+  {
     versionNumber: '1.5.12',
     releaseDate: '2026-10-19',
     logs: [

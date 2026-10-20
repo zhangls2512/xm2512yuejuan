@@ -97,6 +97,18 @@ async function updateSubject(param) {
     get()
   }
 }
+function config(param) {
+  router.push('/examsubjectconfig?info=' + encode({
+    exam: {
+      name: param.examName,
+      type: param.examType,
+      time: param.examTime
+    },
+    subject: param.subject,
+    backpath: '/processingmarktask',
+    backname: '阅卷任务'
+  }))
+}
 async function updateMarkStatus(param, markstatus) {
   TinyModal.confirm({
     status: 'info',
@@ -121,18 +133,6 @@ async function updateMarkStatus(param, markstatus) {
     }
   })
 }
-function config(param) {
-  router.push('/examsubjectconfig?info=' + encode({
-    exam: {
-      name: param.examName,
-      type: param.examType,
-      time: param.examTime
-    },
-    subject: param.subject,
-    backpath: '/processingmarktask',
-    backname: '阅卷任务'
-  }))
-}
 function uploadanswer(param) {
   router.push('/uploadanswer?info=' + encode({
     exam: {
@@ -154,6 +154,17 @@ function answer(param) {
     backname: '阅卷任务'
   }))
 }
+function markqualitymonitor(param) {
+  router.push('/markqualitymonitor?info=' + encode({
+    examId: param.examId,
+    examName: param.examName,
+    examType: param.examType,
+    examTime: param.examTime,
+    subject: param.subject,
+    backpath: '/processingmarktask',
+    backname: '阅卷任务'
+  }))
+}
 function scorereportconfig(param) {
   router.push('/scorereportconfig?info=' + encode({
     examId: param.examId,
@@ -164,17 +175,6 @@ function scorereportconfig(param) {
 }
 function supplyscore(param) {
   router.push('/supplyscore?info=' + encode({
-    examId: param.examId,
-    examName: param.examName,
-    examType: param.examType,
-    examTime: param.examTime,
-    subject: param.subject,
-    backpath: '/processingmarktask',
-    backname: '阅卷任务'
-  }))
-}
-function markqualitymonitor(param) {
-  router.push('/markqualitymonitor?info=' + encode({
     examId: param.examId,
     examName: param.examName,
     examType: param.examType,

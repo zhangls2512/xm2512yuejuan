@@ -46,13 +46,6 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    if (examsubjectgetres.markStatus == 'end') {
-      return {
-        errCode: 400,
-        errMsg: '阅卷已结束',
-        errFix: '无修复建议'
-      }
-    }
     const examgetres = await db.collection('exam').findOne({
       examId: requestdata.id
     }, {

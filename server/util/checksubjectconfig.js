@@ -61,7 +61,7 @@ function checkSubjectConfig(requestdata, olddata) {
   }
   const admin = []
   const adminaccount = []
-  const validpermissions = ['dealQuestion', 'updateMarkStatus', 'getMarkProgress', 'getMarkCurve', 'getMarkConsistency', 'getMarkArbitrateRate', 'spotMarklog', 'clearMarklog', 'updateScore', 'manageAnswer', 'manageScorereportconfig', 'getAnswerCsv', 'updateConfig', 'supplyScore']
+  const validpermissions = ['dealQuestion', 'updateMarkStatus', 'getMarkProgress', 'getMarkCurve', 'getMarkConsistency', 'getMarkArbitrateRate', 'spotMarklog', 'clearMarklog', 'checkObjectiveQuestionMarklog', 'updateScore', 'manageAnswer', 'manageScorereportconfig', 'getAnswerCsv', 'updateConfig', 'supplyScore']
   for (let i = 0; i < requestdata.admin.length; i++) {
     const item = requestdata.admin[i]
     if (typeof (item.account) != 'string' || item.account.length != 36 || !Array.isArray(item.permission) || !item.permission.every(p => validpermissions.includes(p))) {
