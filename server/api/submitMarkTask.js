@@ -81,14 +81,14 @@ exports.main = async (event, configfilepath) => {
     if (marklogres.questionReason && !requestdata.consistencyCheck) {
       return {
         errCode: 403,
-        errMsg: '无权限阅问题卷',
+        errMsg: '无权限',
         errFix: '无修复建议'
       }
     }
     if (marklogres.updateMarkerAccount && !requestdata.consistencyCheck) {
       return {
         errCode: 403,
-        errMsg: '无权限阅修改/补录卷',
+        errMsg: '无权限',
         errFix: '无修复建议'
       }
     }
