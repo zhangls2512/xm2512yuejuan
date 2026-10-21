@@ -66,14 +66,12 @@ exports.main = async (event, configfilepath) => {
     }
     const noemptyquestionnames = []
     const singlequestionnames = []
-    const singlequestionoptionmap = {}
     examsubjectres.objectiveQuestion.forEach(item => {
       if (item.correctOptionIndex.length > 0) {
         noemptyquestionnames.push(item.name)
       }
       if (item.correctOptionIndex.length == 1) {
         singlequestionnames.push(item.name)
-        singlequestionoptionmap[item.name] = item.option
       }
     })
     const result = {
@@ -138,7 +136,7 @@ exports.main = async (event, configfilepath) => {
         result.multiple.push({
           questionName: item.questionName,
           studentAccount: item.studentAccount,
-          answer: item.answer.map(optionindex => singlequestionoptionmap[item.questionName][optionindex]).join('')
+          answer: item.answer
         })
       }
     })

@@ -16,12 +16,18 @@ const markarbitraterate = ref([])
 const answer = ref({})
 const objectivequestioncheckdata = ref({})
 const objectivequestionchecktabname = ref('未选')
+const objectivequestionmap = {}
+const dialog = ref(false)
+const answerimage = ref([])
 const info = route.query.info
 if (info) {
   try {
     data.value = decode(info)
     document.title = '智能阅卷系统 - ' + data.value.backname + ' - 阅卷质量监控'
     questionnamearr.value = data.value.subject.subjectiveQuestion.map(item => item.name)
+    data.value.subject.objectiveQuestion.forEach(item => {
+      objectivequestionmap[item.name] = item
+    })
   } catch {
   }
 }
@@ -171,6 +177,42 @@ async function checkObjectiveQuestionMarklog() {
   })
   objectivequestioncheckdata.value = res.data
 }
+async function openDialog(stu) {
+  await getAnswerInfo(stu)
+  dialog.value = true
+}
+function closeDialog() {
+  dialog.value = false
+  answerimage.value = []
+}
+async function getAnswerInfo(id) {
+  const res = await request({
+    apiPath: '/getAnswerInfo',
+    body: {
+      id: data.value.examId,
+      subject: data.value.subject.name,
+      studentAccount: id
+    }
+  })
+  answerimage.value = res.data
+}
+async function submit(item) {
+  await request({
+    apiPath: '/updateScore',
+    body: {
+      id: data.value.examId,
+      subject: data.value.subject.name,
+      studentAccount: item.studentAccount,
+      questionName: item.questionName,
+      answer: item.answer
+    }
+  })
+  TinyModal.message({
+    message: '提交成功',
+    status: 'success'
+  })
+  checkObjectiveQuestionMarklog()
+}
 </script>
 
 <template>
@@ -313,12 +355,22 @@ async function checkObjectiveQuestionMarklog() {
                     <div class="wide-sp">
                       <div class="bold-text">题号</div>
                       <div class="bold-text">学生账号</div>
+                      <div class="bold-text">操作</div>
                     </div>
                     <div v-for="item in objectivequestioncheckdata.empty" class="cz">
                       <div class="line"></div>
                       <div class="wide-sp">
                         <div>{{ item.questionName }}</div>
                         <div>{{ item.studentAccount }}</div>
+                        <div class="sp">
+                          <tiny-checkbox-group v-model="item.answer">
+                            <tiny-checkbox v-for="i, j in objectivequestionmap[item.questionName].option" :label="j">{{
+                              i }}</tiny-checkbox>
+                          </tiny-checkbox-group>
+                          <tiny-button type="success" @click="submit(item)">提交</tiny-button>
+                          <tiny-button v-if="!data.subject.answerOnline" type="info"
+                            @click="openDialog(item.studentAccount)">查看原卷</tiny-button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -331,13 +383,24 @@ async function checkObjectiveQuestionMarklog() {
                       <div class="bold-text">题号</div>
                       <div class="bold-text">学生账号</div>
                       <div class="bold-text">作答</div>
+                      <div class="bold-text">操作</div>
                     </div>
                     <div v-for="item in objectivequestioncheckdata.multiple" class="cz">
                       <div class="line"></div>
                       <div class="wide-sp">
                         <div>{{ item.questionName }}</div>
                         <div>{{ item.studentAccount }}</div>
-                        <div>{{ item.answer }}</div>
+                        <div>{{item.answer.map(index => objectivequestionmap[item.questionName].option[index]).join('')
+                        }}</div>
+                        <div class="sp">
+                          <tiny-checkbox-group v-model="item.answer">
+                            <tiny-checkbox v-for="i, j in objectivequestionmap[item.questionName].option" :label="j">{{
+                              i }}</tiny-checkbox>
+                          </tiny-checkbox-group>
+                          <tiny-button type="success" @click="submit(item)">提交</tiny-button>
+                          <tiny-button v-if="!data.subject.answerOnline" type="info"
+                            @click="openDialog(item.studentAccount)">查看原卷</tiny-button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -348,5 +411,16 @@ async function checkObjectiveQuestionMarklog() {
         </template>
       </tiny-tab-item>
     </tiny-tabs>
+    <tiny-dialog-box class="dialog" :visible="dialog" title="作答" @close="closeDialog">
+      <div class="cz">
+        <div v-for="item in answerimage">
+          <img v-if="item" :src="item"></img>
+          <img v-if="!item" src="/noimage.png"></img>
+        </div>
+      </div>
+      <template #footer>
+        <tiny-button type="info" @click="closeDialog">确定</tiny-button>
+      </template>
+    </tiny-dialog-box>
   </div>
 </template>

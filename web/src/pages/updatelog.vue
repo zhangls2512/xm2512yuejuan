@@ -2,6 +2,20 @@
 document.title = '智能阅卷系统 - 更新日志'
 const data = [
   {
+    versionNumber: '1.6.1',
+    releaseDate: '2026-10-21',
+    logs: [
+      {
+        type: 'U',
+        content: '阅卷质量监控客观题核查支持修改并提交作答选项、查看原卷'
+      },
+      {
+        type: 'F',
+        content: '修复了一些已知的问题'
+      }
+    ]
+  },
+  {
     versionNumber: '1.6.0',
     releaseDate: '2026-10-20',
     logs: [
