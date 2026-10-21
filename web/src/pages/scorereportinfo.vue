@@ -61,7 +61,7 @@ if (info) {
               schoolId: accountinfo.value.schoolId ? accountinfo.value.schoolName : schoolmap.value[item.id],
               '平均分': item.averageScore,
               '标准差': item.scoreStandardDeviation,
-              '原始区分度': item.discrimination
+              '区分度': item.discrimination
             }
           }),
           xAxis: {
@@ -77,7 +77,7 @@ if (info) {
               classId: classmap.value[item.id],
               '平均分': item.averageScore,
               '标准差': item.scoreStandardDeviation,
-              '原始区分度': item.discrimination
+              '区分度': item.discrimination
             }
           }),
           xAxis: {
@@ -408,7 +408,7 @@ function downloadScore() {
         <div>{{ data.scoreStandardDeviation }}</div>
       </div>
       <div class="sp">
-        <div class="bold-text">原始区分度</div>
+        <div class="bold-text">区分度</div>
         <div>{{ data.discrimination }}</div>
       </div>
       <div v-if="data.type == 'joint'" class="cz">
@@ -417,7 +417,7 @@ function downloadScore() {
           <tiny-grid-column field="id" title="名称" :format-text="formatSchoolId" align="center"></tiny-grid-column>
           <tiny-grid-column field="averageScore" title="平均分" sortable align="center"></tiny-grid-column>
           <tiny-grid-column field="scoreStandardDeviation" title="标准差" sortable align="center"></tiny-grid-column>
-          <tiny-grid-column field="discrimination" title="原始区分度" sortable align="center"></tiny-grid-column>
+          <tiny-grid-column field="discrimination" title="区分度" sortable align="center"></tiny-grid-column>
         </tiny-grid>
         <tiny-chart-histogram :options="chartdata"></tiny-chart-histogram>
       </div>
@@ -427,7 +427,7 @@ function downloadScore() {
           <tiny-grid-column field="id" title="名称" :format-text="formatClassId" align="center"></tiny-grid-column>
           <tiny-grid-column field="averageScore" title="平均分" sortable align="center"></tiny-grid-column>
           <tiny-grid-column field="scoreStandardDeviation" title="标准差" sortable align="center"></tiny-grid-column>
-          <tiny-grid-column field="discrimination" title="原始区分度" sortable align="center"></tiny-grid-column>
+          <tiny-grid-column field="discrimination" title="区分度" sortable align="center"></tiny-grid-column>
         </tiny-grid>
         <tiny-chart-histogram :options="chartdata"></tiny-chart-histogram>
       </div>
@@ -444,7 +444,7 @@ function downloadScore() {
               <tiny-grid-column field="scoringRate" title="得分率" :format-text="formatScoringRate" sortable
                 align="center"></tiny-grid-column>
               <tiny-grid-column field="scoreStandardDeviation" title="标准差" sortable align="center"></tiny-grid-column>
-              <tiny-grid-column field="discrimination" title="标准区分度" sortable align="center"></tiny-grid-column>
+              <tiny-grid-column field="discrimination" title="区分度" sortable align="center"></tiny-grid-column>
               <tiny-grid-column title="作答详情" align="center">
                 <template #default="{ row }">
                   <div v-if="row.option" class="cz">
