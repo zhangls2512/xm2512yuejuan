@@ -59,7 +59,7 @@ async function getMarkCurve() {
   markcurve.value = {
     data: res.data.map(item => {
       return {
-        finalTotalScore: item.finalTotalScore,
+        score: item.score,
         '数量': item.count
       }
     }),
@@ -67,7 +67,7 @@ async function getMarkCurve() {
       show: false
     },
     xAxis: {
-      data: 'finalTotalScore',
+      data: 'score',
       name: '分数'
     },
     yAxis: {

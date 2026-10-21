@@ -62,23 +62,6 @@ exports.main = async (event, configfilepath) => {
         schoolId: true
       }
     })
-    if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
-      const adminexist = examsubjectres.admin.find(item => item.account == account.account)
-      if (!adminexist) {
-        return {
-          errCode: 403,
-          errMsg: '无权限',
-          errFix: '无修复建议'
-        }
-      }
-      if (adminexist && !adminexist.permission.includes('updateScore')) {
-        return {
-          errCode: 403,
-          errMsg: '无权限',
-          errFix: '无修复建议'
-        }
-      }
-    }
     const marklogres = await db.collection('marklog').findOne({
       examId: requestdata.id,
       subject: requestdata.subject,
@@ -100,6 +83,23 @@ exports.main = async (event, configfilepath) => {
           errCode: 400,
           errMsg: '请求参数错误',
           errFix: '传递有效的answer参数'
+        }
+      }
+      if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
+        const adminexist = examsubjectres.admin.find(item => item.account == account.account)
+        if (!adminexist) {
+          return {
+            errCode: 403,
+            errMsg: '无权限',
+            errFix: '无修复建议'
+          }
+        }
+        if (adminexist && !adminexist.permission.includes('updateScore') && !adminexist.permission.includes('checkObjectiveQuestionMarklog')) {
+          return {
+            errCode: 403,
+            errMsg: '无权限',
+            errFix: '无修复建议'
+          }
         }
       }
       await db.collection('marklog').updateOne({
@@ -127,6 +127,23 @@ exports.main = async (event, configfilepath) => {
           errCode: 400,
           errMsg: '请求参数错误',
           errFix: '传递有效的stepScore参数'
+        }
+      }
+      if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
+        const adminexist = examsubjectres.admin.find(item => item.account == account.account)
+        if (!adminexist) {
+          return {
+            errCode: 403,
+            errMsg: '无权限',
+            errFix: '无修复建议'
+          }
+        }
+        if (adminexist && !adminexist.permission.includes('updateScore')) {
+          return {
+            errCode: 403,
+            errMsg: '无权限',
+            errFix: '无修复建议'
+          }
         }
       }
       if (examsubjectres.markStatus != 'end') {

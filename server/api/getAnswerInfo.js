@@ -66,7 +66,7 @@ exports.main = async (event, configfilepath) => {
           errFix: '无修复建议'
         }
       }
-      if (adminexist && !adminexist.permission.includes('manageAnswer')) {
+      if (adminexist && !adminexist.permission.includes('manageAnswer') && !adminexist.permission.includes('checkObjectiveQuestionMarklog')) {
         return {
           errCode: 403,
           errMsg: '无权限',

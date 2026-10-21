@@ -93,9 +93,9 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    let data
+    let result
     if (!requestdata.markerAccount) {
-      data = await db.collection('marklog').aggregate([
+      const data = await db.collection('marklog').aggregate([
         {
           $match: {
             examId: requestdata.id,
@@ -127,36 +127,28 @@ exports.main = async (event, configfilepath) => {
           }
         }
       ]).toArray()
+      result = data.map(item => {
+        return {
+          count: item.count,
+          score: item.finalTotalScore
+        }
+      })
     }
     if (requestdata.markerAccount) {
-      data = await db.collection('marklog').aggregate([
+      const data = await db.collection('marklog').aggregate([
         {
           $match: {
             examId: requestdata.id,
             subject: requestdata.subject,
             questionName: requestdata.questionName,
-            type: 'system',
-            questionReason: '',
-            updateMarkerAccount: '',
-            $or: [
-              {
-                firstMarkerAccount: requestdata.markerAccount
-              },
-              {
-                secondMarkerAccount: requestdata.markerAccount
-              },
-              {
-                thirdMarkerAccount: requestdata.markerAccount
-              },
-              {
-                arbitrateMarkerAccount: requestdata.markerAccount
-              }
-            ]
+            type: {
+              $in: ['first', 'second', 'third', 'arbitrate']
+            }
           }
         },
         {
           $group: {
-            _id: '$finalTotalScore',
+            _id: '$totalScore',
             count: {
               $sum: 1
             }
@@ -165,21 +157,27 @@ exports.main = async (event, configfilepath) => {
         {
           $project: {
             _id: 0,
-            finalTotalScore: '$_id',
+            totalScore: '$_id',
             count: 1
           }
         },
         {
           $sort: {
-            finalTotalScore: 1
+            totalScore: 1
           }
         }
       ]).toArray()
+      result = data.map(item => {
+        return {
+          count: item.count,
+          score: item.totalScore
+        }
+      })
     }
     return {
       errCode: 0,
       errMsg: '成功',
-      data: data
+      data: result
     }
   }
 }

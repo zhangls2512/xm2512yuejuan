@@ -142,7 +142,7 @@ exports.main = async (event, configfilepath) => {
       subject: requestdata.subject,
       questionName: requestdata.questionName,
       type: {
-        $in: ['first', 'second', 'third', 'arbitrate', 'question']
+        $in: ['first', 'second', 'third', 'arbitrate', 'question', 'consistencycheck']
       }
     })
     const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/marktrace/'
