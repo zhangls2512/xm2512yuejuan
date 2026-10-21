@@ -89,7 +89,7 @@ function clearHistory() {
           <tiny-divider direction="vertical"></tiny-divider>
           <router-link class="footer-text" to="/qrcodegeneratetool" target="_blank">二维码生成工具</router-link>
           <tiny-divider direction="vertical"></tiny-divider>
-          <img src="/hmos.png"></img>
+          <img src="/hmos.png" style="height:20px"></img>
           <a class="footer-text" href="https://appgallery.huawei.com/apptest/AbN5vJgP7M2" target="_blank">鸿蒙App</a>
         </div>
         <div class="sp">
