@@ -103,7 +103,10 @@ exports.main = async (event, configfilepath) => {
             questionName: requestdata.questionName,
             type: 'system',
             questionReason: '',
-            updateMarkerAccount: ''
+            updateMarkerAccount: '',
+            finalStepScore: {
+              $size: examsubjectres.subjectiveQuestion.find(item => item.name == requestdata.questionName).stepScore.length
+            }
           }
         },
         {
@@ -141,6 +144,7 @@ exports.main = async (event, configfilepath) => {
             examId: requestdata.id,
             subject: requestdata.subject,
             questionName: requestdata.questionName,
+            markerAccount: requestdata.markerAccount,
             type: {
               $in: ['first', 'second', 'third', 'arbitrate']
             }
