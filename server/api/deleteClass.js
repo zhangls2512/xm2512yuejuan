@@ -21,22 +21,45 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const deleteres = await db.collection('class').deleteOne({
+    const findres = await db.collection('class').findOne({
       classId: requestdata.id,
       schoolId: account.schoolId
     })
-    if (deleteres.deletedCount != 0) {
-      return {
-        errCode: 0,
-        errMsg: '成功'
-      }
-    }
-    if (deleteres.deletedCount == 0) {
+    if (!findres) {
       return {
         errCode: 400,
         errMsg: '班级不存在',
         errFix: '无修复建议'
       }
+    }
+    const examsubjectres = await db.collection('examsubject').findOne({
+      class: requestdata.id
+    })
+    if (examsubjectres) {
+      return {
+        errCode: 400,
+        errMsg: '已绑定考试科目',
+        errFix: '无修复建议'
+      }
+    }
+    const scorereportres = await db.collection('scorereport').findOne({
+      classId: requestdata.id,
+      type: 'class'
+    })
+    if (scorereportres) {
+      return {
+        errCode: 400,
+        errMsg: '存在成绩报告',
+        errFix: '无修复建议'
+      }
+    }
+    await db.collection('class').deleteOne({
+      classId: requestdata.id,
+      schoolId: account.schoolId
+    })
+    return {
+      errCode: 0,
+      errMsg: '成功'
     }
   }
 }
