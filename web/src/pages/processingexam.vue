@@ -358,7 +358,7 @@ function updatescore(exam, subject) {
                       <tiny-dropdown-item v-if="subject.markStatus == 'end'"
                         @click="config(item, subject)">查看配置</tiny-dropdown-item>
                       <tiny-dropdown-item v-if="subject.markStatus == 'end'"
-                        @click="answer(item, subject.name)">作答记录</tiny-dropdown-item>
+                        @click="answer(item.examId, subject.name)">作答记录</tiny-dropdown-item>
                       <tiny-dropdown-item v-if="subject.markStatus == 'end'"
                         @click="markProgress(item, subject.name)">阅卷进度</tiny-dropdown-item>
                       <tiny-dropdown-item v-if="subject.markStatus != 'end'"
