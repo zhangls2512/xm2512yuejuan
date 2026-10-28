@@ -11,6 +11,7 @@ const pagesize = ref(10)
 const total = ref(0)
 const id = ref('')
 async function get() {
+  data.value = []
   const countres = await request({
     apiPath: '/getClassCount'
   })
@@ -52,12 +53,16 @@ async function search() {
     })
     return
   }
+  currentpage.value = 1
+  total.value = 0
+  data.value = []
   const res = await request({
     apiPath: '/searchClass',
     body: {
       id: id.value
     }
   })
+  total.value = res.data.length
   data.value = res.data
 }
 async function newClass() {

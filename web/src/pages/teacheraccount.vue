@@ -12,6 +12,7 @@ const dialogtitle = ref('')
 const name = ref('')
 let updateaccount = ''
 async function get() {
+  data.value = []
   const countres = await request({
     apiPath: '/getAccountCount',
     body: {
@@ -111,6 +112,9 @@ async function search() {
     })
     return
   }
+  currentpage.value = 1
+  total.value = 0
+  data.value = []
   const res = await request({
     apiPath: '/searchAccount',
     body: {
@@ -118,6 +122,7 @@ async function search() {
       account: account.value
     }
   })
+  total.value = res.data.length
   data.value = res.data
 }
 async function resetAccountPassword(account) {

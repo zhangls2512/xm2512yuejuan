@@ -67,6 +67,7 @@ async function get() {
       return
     }
   }
+  data.value = []
   const countres = await request({
     apiPath: '/getQuestionCount',
     body: {

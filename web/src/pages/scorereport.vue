@@ -40,6 +40,7 @@ async function get() {
     }
   }
   const id = type.value == 'school' ? schoolid.value : type.value == 'class' ? classid.value : ''
+  data.value = []
   const countres = await request({
     apiPath: '/getScorereportCount',
     body: {

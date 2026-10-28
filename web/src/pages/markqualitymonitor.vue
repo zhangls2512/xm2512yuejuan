@@ -77,6 +77,7 @@ async function getMarkCurve() {
   }
 }
 async function getMarkConsistency() {
+  markconsistency.value = []
   const res = await request({
     apiPath: '/getMarkConsistency',
     body: {
@@ -87,6 +88,7 @@ async function getMarkConsistency() {
   markconsistency.value = res.data
 }
 async function getMarkArbitrateRate() {
+  markarbitraterate.value = []
   const res = await request({
     apiPath: '/getMarkArbitrateRate',
     body: {
@@ -168,6 +170,7 @@ async function clearMarklog() {
   })
 }
 async function checkObjectiveQuestionMarklog() {
+  objectivequestioncheckdata.value = {}
   const res = await request({
     apiPath: '/checkObjectiveQuestionMarklog',
     body: {

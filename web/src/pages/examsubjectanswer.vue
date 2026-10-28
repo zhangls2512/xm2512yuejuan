@@ -13,6 +13,7 @@ const studentaccount = ref('')
 const dialog = ref(false)
 const answer = ref([])
 async function get() {
+  data.value = []
   const countres = await request({
     apiPath: '/getAnswerCount',
     body: {
@@ -67,6 +68,9 @@ async function search() {
     })
     return
   }
+  currentpage.value = 1
+  total.value = 0
+  data.value = []
   const res = await request({
     apiPath: '/searchAnswer',
     body: {
@@ -75,6 +79,7 @@ async function search() {
       studentAccount: studentaccount.value
     }
   })
+  total.value = res.data.length
   data.value = res.data.map(item => {
     return {
       ...item,

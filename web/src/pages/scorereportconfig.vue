@@ -20,6 +20,7 @@ const currentpage = ref(1)
 const pagesize = ref(10)
 const total = ref(0)
 async function get() {
+  data.value = []
   const countres = await request({
     apiPath: '/getScorereportconfigCount',
     body: {

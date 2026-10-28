@@ -27,6 +27,7 @@ const huiping = ref(false)
 const dialog = ref(false)
 const reason = ref('')
 async function getHistoryMarklog() {
+  historymarklog.value = []
   const res = await request({
     apiPath: '/getHistoryMarklogList',
     body: {
@@ -149,11 +150,11 @@ function changeselect() {
   get()
   getHistoryMarklog()
 }
-async function enterfullscreen() {
+async function enterFullscreen() {
   await document.documentElement.requestFullscreen()
   fullscreen.value = true
 }
-async function exitfullscreen() {
+async function exitFullscreen() {
   await document.exitFullscreen()
   fullscreen.value = false
 }
@@ -307,8 +308,8 @@ async function mark(id) {
           </div>
           <div class="sp" style="flex-shrink:0;margin-left:10px">
             <div v-if="huiping" class="clickwz" @click="get">继续阅卷</div>
-            <div v-if="!fullscreen" class="clickwz" @click="enterfullscreen">全屏阅卷</div>
-            <div v-if="fullscreen" class="clickwz" @click="exitfullscreen">退出全屏</div>
+            <div v-if="!fullscreen" class="clickwz" @click="enterFullscreen">全屏阅卷</div>
+            <div v-if="fullscreen" class="clickwz" @click="exitFullscreen">退出全屏</div>
           </div>
         </div>
         <div v-for="item, index in answerimage" style="display:flex;justify-content:center">
