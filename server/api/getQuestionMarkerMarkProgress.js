@@ -46,8 +46,8 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const validquestionnames = examsubjectres.subjectiveQuestion.map(item => item.name)
-    if (!validquestionnames.includes(requestdata.questionName)) {
+    const markgroup = examsubjectres.markGroup.find(item => item.questionName.includes(requestdata.questionName))
+    if (!markgroup) {
       return {
         errCode: 400,
         errMsg: '题号不存在',
@@ -62,25 +62,17 @@ exports.main = async (event, configfilepath) => {
         schoolId: true
       }
     })
-    let questionname
+    let access = false
     if (account.type == 'admin' && account.schoolId == examres.schoolId) {
-      questionname = 'all'
+      access = true
     }
     if (examsubjectres.admin.find(item => item.account == account.account && item.permission.includes('getMarkProgress'))) {
-      questionname = 'all'
+      access = true
     }
-    if (!questionname) {
-      for (let i = 0; i < examsubjectres.markGroup.length; i++) {
-        const item = examsubjectres.markGroup[i]
-        if (item.admin.find(item => item.account == account.account && item.permission.includes('getMarkProgress'))) {
-          if (!questionname) {
-            questionname = []
-          }
-          questionname = questionname.concat(item.questionName)
-        }
-      }
+    if (markgroup.admin.find(item => item.account == account.account && item.permission.includes('getMarkProgress'))) {
+      access = true
     }
-    if (!questionname) {
+    if (!access) {
       return {
         errCode: 403,
         errMsg: '无权限',
