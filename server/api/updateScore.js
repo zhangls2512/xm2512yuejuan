@@ -54,7 +54,15 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const examgetres = await db.collection('exam').findOne({
+    const validquestionnames = examsubjectres.objectiveQuestion.map(item => item.name).concat(subjectiveQuestion.map(item => item.name))
+    if (!validquestionnames.includes(requestdata.questionName)) {
+      return {
+        errCode: 400,
+        errMsg: '题号不存在',
+        errFix: '无修复建议'
+      }
+    }
+    const examres = await db.collection('exam').findOne({
       examId: requestdata.id
     }, {
       projection: {
@@ -85,7 +93,7 @@ exports.main = async (event, configfilepath) => {
           errFix: '传递有效的answer参数'
         }
       }
-      if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
+      if (!(account.type == 'admin' && account.schoolId == examres.schoolId)) {
         const adminexist = examsubjectres.admin.find(item => item.account == account.account)
         if (!adminexist) {
           return {
@@ -129,7 +137,7 @@ exports.main = async (event, configfilepath) => {
           errFix: '传递有效的stepScore参数'
         }
       }
-      if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
+      if (!(account.type == 'admin' && account.schoolId == examres.schoolId)) {
         const adminexist = examsubjectres.admin.find(item => item.account == account.account)
         if (!adminexist) {
           return {

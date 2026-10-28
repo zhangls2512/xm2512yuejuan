@@ -30,22 +30,22 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const examsubjectgetres = await db.collection('examsubject').findOne({
+    const examsubjectres = await db.collection('examsubject').findOne({
       examId: requestdata.id,
       name: requestdata.name
     })
-    if (!examsubjectgetres) {
+    if (!examsubjectres) {
       return {
         errCode: 400,
         errMsg: '科目不存在',
         errFix: '无修复建议'
       }
     }
-    const examgetres = await db.collection('exam').findOne({
+    const examres = await db.collection('exam').findOne({
       examId: requestdata.id
     })
-    if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
-      const adminexist = examgetres.admin.find(item => item.account == account.account)
+    if (!(account.type == 'admin' && account.schoolId == examres.schoolId)) {
+      const adminexist = examres.admin.find(item => item.account == account.account)
       if (!adminexist) {
         return {
           errCode: 403,
@@ -61,14 +61,14 @@ exports.main = async (event, configfilepath) => {
         }
       }
     }
-    if (examgetres.end) {
+    if (examres.end) {
       return {
         errCode: 400,
         errMsg: '考试已结束',
         errFix: '无修复建议'
       }
     }
-    const answergetres = await db.collection('answer').findOne({
+    const answerres = await db.collection('answer').findOne({
       examId: requestdata.id,
       subject: requestdata.name
     }, {
@@ -76,14 +76,14 @@ exports.main = async (event, configfilepath) => {
         _id: false
       }
     })
-    if (answergetres) {
+    if (answerres) {
       return {
         errCode: 400,
         errMsg: '存在作答记录',
         errFix: '无修复建议'
       }
     }
-    const markloggetres = await db.collection('marklog').findOne({
+    const marklogres = await db.collection('marklog').findOne({
       examId: requestdata.id,
       subject: requestdata.name
     }, {
@@ -91,24 +91,24 @@ exports.main = async (event, configfilepath) => {
         _id: false
       }
     })
-    if (markloggetres) {
+    if (marklogres) {
       return {
         errCode: 400,
         errMsg: '存在阅卷记录',
         errFix: '无修复建议'
       }
     }
-    const scorereportgetres = await db.collection('scorereportconfig').findOne({
+    const scorereportres = await db.collection('scorereportconfig').findOne({
       examId: requestdata.id,
       subject: {
-        $in: [examsubjectgetres.name].concat(examsubjectgetres.subSubject)
+        $in: [examsubjectres.name].concat(examsubjectres.subSubject)
       }
     }, {
       projection: {
         _id: false
       }
     })
-    if (scorereportgetres) {
+    if (scorereportres) {
       return {
         errCode: 400,
         errMsg: '存在成绩报告',

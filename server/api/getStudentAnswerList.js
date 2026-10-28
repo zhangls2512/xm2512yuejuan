@@ -125,7 +125,7 @@ exports.main = async (event, configfilepath) => {
         }
       }
     }
-    const examsubjectgetres = await db.collection('examsubject').findOne({
+    const examsubjectres = await db.collection('examsubject').findOne({
       examId: scorereportconfigres.examId,
       $or: [
         {
@@ -138,14 +138,14 @@ exports.main = async (event, configfilepath) => {
     })
     const marklogres = await db.collection('marklog').find({
       examId: scorereportconfigres.examId,
-      subject: examsubjectgetres.name,
+      subject: examsubjectres.name,
       studentAccount: studentAccount,
       questionName: {
         $in: scorereportconfigres.config.scoringQuestionNames
       },
       type: 'system'
     }).toArray()
-    const questions = examsubjectgetres.objectiveQuestion.concat(examsubjectgetres.subjectiveQuestion)
+    const questions = examsubjectres.objectiveQuestion.concat(examsubjectres.subjectiveQuestion)
     const result = []
     marklogres.forEach(item => {
       const question = questions.find(i => i.name == item.questionName)

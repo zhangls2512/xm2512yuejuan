@@ -35,29 +35,29 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const examsubjectgetres = await db.collection('examsubject').findOne({
+    const examsubjectres = await db.collection('examsubject').findOne({
       examId: requestdata.id,
       name: requestdata.name
     })
-    if (!examsubjectgetres) {
+    if (!examsubjectres) {
       return {
         errCode: 400,
         errMsg: '科目不存在',
         errFix: '无修复建议'
       }
     }
-    const examgetres = await db.collection('exam').findOne({
+    const examres = await db.collection('exam').findOne({
       examId: requestdata.id
     })
-    if (examgetres.end) {
+    if (examres.end) {
       return {
         errCode: 400,
         errMsg: '考试已结束',
         errFix: '无修复建议'
       }
     }
-    if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
-      const adminexist = examsubjectgetres.admin.find(item => item.account == account.account)
+    if (!(account.type == 'admin' && account.schoolId == examres.schoolId)) {
+      const adminexist = examsubjectres.admin.find(item => item.account == account.account)
       if (!adminexist) {
         return {
           errCode: 403,
@@ -78,14 +78,14 @@ exports.main = async (event, configfilepath) => {
       processing: ['paused', 'end'],
       end: ['paused']
     }
-    if (!allowstatus[examsubjectgetres.markStatus].includes(requestdata.markStatus)) {
+    if (!allowstatus[examsubjectres.markStatus].includes(requestdata.markStatus)) {
       return {
         errCode: 400,
         errMsg: '不可修改为该状态',
         errFix: '无修复建议'
       }
     }
-    if (requestdata.markStatus == 'end' && examsubjectgetres.answerOnline && examsubjectgetres.endTime >= Date.now()) {
+    if (requestdata.markStatus == 'end' && examsubjectres.answerOnline && examsubjectres.endTime >= Date.now()) {
       return {
         errCode: 400,
         errMsg: '作答未结束',
@@ -101,7 +101,7 @@ exports.main = async (event, configfilepath) => {
       }
     })
     if (requestdata.markStatus == 'end') {
-      require('../util/scorereport').generateDefaultScoreReport(examgetres, examsubjectgetres, configfilepath)
+      require('../util/scorereport').generateDefaultScoreReport(examres, examsubjectres, configfilepath)
     }
     return {
       errCode: 0,

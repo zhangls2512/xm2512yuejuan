@@ -71,13 +71,13 @@ exports.main = async (event, configfilepath) => {
       item.subject = []
     })
     const examids = data.map(item => item.examId)
-    const examsubjectgetres = await db.collection('examsubject').find({
+    const examsubjectres = await db.collection('examsubject').find({
       examId: {
         $in: examids
       }
     }).toArray()
-    examsubjectgetres.sort((a, b) => a.name.localeCompare(b.name))
-    examsubjectgetres.forEach(item => {
+    examsubjectres.sort((a, b) => a.name.localeCompare(b.name))
+    examsubjectres.forEach(item => {
       const index = examids.indexOf(item.examId)
       const deletekeys = ['_id', 'examId', 'adminAccount', 'createTime']
       deletekeys.forEach(key => {

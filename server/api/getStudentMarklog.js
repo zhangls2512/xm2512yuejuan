@@ -56,7 +56,7 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const examgetres = await db.collection('exam').findOne({
+    const examres = await db.collection('exam').findOne({
       examId: requestdata.id
     }, {
       projection: {
@@ -64,7 +64,7 @@ exports.main = async (event, configfilepath) => {
         schoolId: true
       }
     })
-    if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
+    if (!(account.type == 'admin' && account.schoolId == examres.schoolId)) {
       const adminexist = examsubjectres.admin.find(item => item.account == account.account)
       if (!adminexist) {
         return {

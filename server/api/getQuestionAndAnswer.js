@@ -57,8 +57,8 @@ exports.main = async (event, configfilepath) => {
     if (!scorereportconfigres.config.scoringQuestionNames.includes(requestdata.questionName)) {
       return {
         errCode: 400,
-        errMsg: '请求参数错误',
-        errFix: '传递有效的questionName参数'
+        errMsg: '题号不存在',
+        errFix: '无修复建议'
       }
     }
     let access = false
@@ -125,7 +125,7 @@ exports.main = async (event, configfilepath) => {
         }
       }
     }
-    const examsubjectgetres = await db.collection('examsubject').findOne({
+    const examsubjectres = await db.collection('examsubject').findOne({
       examId: scorereportconfigres.examId,
       $or: [
         {
@@ -136,7 +136,7 @@ exports.main = async (event, configfilepath) => {
         }
       ]
     })
-    const questions = examsubjectgetres.objectiveQuestion.concat(examsubjectgetres.subjectiveQuestion)
+    const questions = examsubjectres.objectiveQuestion.concat(examsubjectres.subjectiveQuestion)
     const question = questions.find(item => item.name == requestdata.questionName)
     if (!question.questionId) {
       return {

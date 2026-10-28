@@ -21,39 +21,39 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const examgetres = await db.collection('exam').findOne({
+    const examres = await db.collection('exam').findOne({
       examId: requestdata.id
     })
-    if (!examgetres) {
+    if (!examres) {
       return {
         errCode: 400,
         errMsg: '考试不存在',
         errFix: '无修复建议'
       }
     }
-    const admin = examgetres.admin.find(item => item.account == account.account)
-    if (!admin && (account.type != 'admin' || account.schoolId != examgetres.schoolId)) {
+    const admin = examres.admin.find(item => item.account == account.account)
+    if (!admin && (account.type != 'admin' || account.schoolId != examres.schoolId)) {
       return {
         errCode: 403,
         errMsg: '无权限',
         errFix: '无修复建议'
       }
     }
-    if (admin && !admin.permission.includes('updateExamEndStatus')) {
+    if (admin && !admin.permission.includes('updateEndStatus')) {
       return {
         errCode: 403,
         errMsg: '无权限',
         errFix: '无修复建议'
       }
     }
-    if (examgetres.end) {
+    if (examres.end) {
       return {
         errCode: 400,
         errMsg: '考试已结束',
         errFix: '无修复建议'
       }
     }
-    const examsubjectgetres = await db.collection('examsubject').findOne({
+    const examsubjectres = await db.collection('examsubject').findOne({
       examId: requestdata.id,
       markStatus: {
         $ne: 'end'
@@ -63,7 +63,7 @@ exports.main = async (event, configfilepath) => {
         _id: false
       }
     })
-    if (examsubjectgetres) {
+    if (examsubjectres) {
       return {
         errCode: 400,
         errMsg: '存在未结束阅卷的科目',

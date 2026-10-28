@@ -36,18 +36,18 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const examsubjectgetres = await db.collection('examsubject').findOne({
+    const examsubjectres = await db.collection('examsubject').findOne({
       examId: requestdata.id,
       name: requestdata.subject
     })
-    if (!examsubjectgetres) {
+    if (!examsubjectres) {
       return {
         errCode: 400,
         errMsg: '科目不存在',
         errFix: '无修复建议'
       }
     }
-    const examgetres = await db.collection('exam').findOne({
+    const examres = await db.collection('exam').findOne({
       examId: requestdata.id
     }, {
       projection: {
@@ -56,8 +56,8 @@ exports.main = async (event, configfilepath) => {
         schoolId: true
       }
     })
-    if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
-      const adminexist = examsubjectgetres.admin.find(item => item.account == account.account)
+    if (!(account.type == 'admin' && account.schoolId == examres.schoolId)) {
+      const adminexist = examsubjectres.admin.find(item => item.account == account.account)
       if (!adminexist) {
         return {
           errCode: 403,
@@ -73,14 +73,14 @@ exports.main = async (event, configfilepath) => {
         }
       }
     }
-    if (examsubjectgetres.answerOnline && examsubjectgetres.endTime >= Date.now()) {
+    if (examsubjectres.answerOnline && examsubjectres.endTime >= Date.now()) {
       return {
         errCode: 400,
         errMsg: '作答未结束',
         errFix: '无修复建议'
       }
     }
-    const scorelist = getScoreList(examsubjectgetres, requestdata.csv)
+    const scorelist = getScoreList(examsubjectres, requestdata.csv)
     if (!scorelist) {
       return {
         errCode: 400,
@@ -88,7 +88,7 @@ exports.main = async (event, configfilepath) => {
         errFix: '传递有效的csv参数'
       }
     }
-    supplyScore(scorelist, examsubjectgetres, examgetres, account.account, configfilepath)
+    supplyScore(scorelist, examsubjectres, examres, account.account, configfilepath)
     return {
       errCode: 0,
       errMsg: '成功'

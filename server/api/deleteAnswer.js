@@ -37,32 +37,32 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const examsubjectgetres = await db.collection('examsubject').findOne({
+    const examsubjectres = await db.collection('examsubject').findOne({
       examId: requestdata.id,
       name: requestdata.subject
     })
-    if (!examsubjectgetres) {
+    if (!examsubjectres) {
       return {
         errCode: 400,
         errMsg: '科目不存在',
         errFix: '无修复建议'
       }
     }
-    if (examsubjectgetres.markStatus == 'processing') {
+    if (examsubjectres.markStatus == 'processing') {
       return {
         errCode: 400,
         errMsg: '阅卷进行中',
         errFix: '无修复建议'
       }
     }
-    if (examsubjectgetres.markStatus == 'end') {
+    if (examsubjectres.markStatus == 'end') {
       return {
         errCode: 400,
         errMsg: '阅卷已结束',
         errFix: '无修复建议'
       }
     }
-    const examgetres = await db.collection('exam').findOne({
+    const examres = await db.collection('exam').findOne({
       examId: requestdata.id
     }, {
       projection: {
@@ -70,8 +70,8 @@ exports.main = async (event, configfilepath) => {
         schoolId: true
       }
     })
-    if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
-      const adminexist = examsubjectgetres.admin.find(item => item.account == account.account)
+    if (!(account.type == 'admin' && account.schoolId == examres.schoolId)) {
+      const adminexist = examsubjectres.admin.find(item => item.account == account.account)
       if (!adminexist) {
         return {
           errCode: 403,
@@ -90,7 +90,7 @@ exports.main = async (event, configfilepath) => {
     const scorereportconfigres = await db.collection('scorereportconfig').findOne({
       examId: requestdata.id,
       subject: {
-        $in: [examsubjectgetres.name].concat(examsubjectgetres.subSubject)
+        $in: [examsubjectres.name].concat(examsubjectres.subSubject)
       },
       student: requestdata.studentAccount
     }, {
@@ -111,7 +111,7 @@ exports.main = async (event, configfilepath) => {
       studentAccount: requestdata.studentAccount
     })
     if (deleteres.deletedCount != 0) {
-      if (!examsubjectgetres.answerOnline || (examsubjectgetres.answerOnline && examsubjectgetres.markGroup.length > 0)) {
+      if (!examsubjectres.answerOnline || (examsubjectres.answerOnline && examsubjectres.markGroup.length > 0)) {
         const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject
         rmdir(rootdir + '/answer/' + requestdata.studentAccount)
         rmdir(rootdir + '/marktrace/' + requestdata.studentAccount)

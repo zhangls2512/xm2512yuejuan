@@ -127,7 +127,7 @@ exports.main = async (event, configfilepath) => {
         }
       }
     }
-    const examsubjectgetres = await db.collection('examsubject').findOne({
+    const examsubjectres = await db.collection('examsubject').findOne({
       examId: scorereportconfigres.examId,
       $or: [
         {
@@ -140,7 +140,7 @@ exports.main = async (event, configfilepath) => {
     })
     const marklogres = await db.collection('marklog').find({
       examId: scorereportconfigres.examId,
-      subject: examsubjectgetres.name,
+      subject: examsubjectres.name,
       studentAccount: studentAccount,
       questionName: {
         $in: scorereportconfigres.config.scoringQuestionNames
@@ -148,7 +148,7 @@ exports.main = async (event, configfilepath) => {
       type: 'system'
     }).toArray()
     const result = {
-      answerOnline: examsubjectgetres.answerOnline,
+      answerOnline: examsubjectres.answerOnline,
       image: []
     }
     function getFirstNonEmptyPrefix(obj) {
@@ -160,16 +160,16 @@ exports.main = async (event, configfilepath) => {
       }
       return ''
     }
-    const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + examsubjectgetres.name
+    const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + examsubjectres.name
     if (!result.answerOnline) {
       const answer = await db.collection('answer').findOne({
         examId: scorereportconfigres.examId,
-        subject: examsubjectgetres.name,
+        subject: examsubjectres.name,
         studentAccount: studentAccount
       })
-      const volume = examsubjectgetres.volume.find(item => item.name == answer.answer.volume)
+      const volume = examsubjectres.volume.find(item => item.name == answer.answer.volume)
       function getCoordCount(questionname) {
-        const markgroup = examsubjectgetres.markGroup.find(m => m.questionName.includes(questionname))
+        const markgroup = examsubjectres.markGroup.find(m => m.questionName.includes(questionname))
         const pages = volume.page
         let count = 0
         for (let i = 0; i < pages.length; i++) {
@@ -216,7 +216,7 @@ exports.main = async (event, configfilepath) => {
           }
         }
       })
-      const trace = getScanTrace(examsubjectgetres, marklogarr, answer.answer.pageOriginCoord, answer.answer.volume)
+      const trace = getScanTrace(examsubjectres, marklogarr, answer.answer.pageOriginCoord, answer.answer.volume)
       volume.page.forEach((item, index) => {
         result.image.push({
           answerImage: read(rootdir + '/answer/' + studentAccount + '/' + index),
@@ -226,7 +226,7 @@ exports.main = async (event, configfilepath) => {
     }
     if (result.answerOnline) {
       const marklogarr = []
-      marklogres.filter(m => examsubjectgetres.subjectiveQuestion.map(q => q.name).includes(m.questionName)).forEach(item => {
+      marklogres.filter(m => examsubjectres.subjectiveQuestion.map(q => q.name).includes(m.questionName)).forEach(item => {
         const marktype = getFirstNonEmptyPrefix(item)
         if (!marktype) {
           marklogarr.push({
@@ -246,10 +246,10 @@ exports.main = async (event, configfilepath) => {
           })
         }
       })
-      const allquestionnames = examsubjectgetres.subjectiveQuestion.map(item => item.name)
-      const trace = getOnlineTrace(examsubjectgetres, marklogarr.sort((a, b) => allquestionnames.indexOf(a.questionName) - allquestionnames.indexOf(b.questionName)))
+      const allquestionnames = examsubjectres.subjectiveQuestion.map(item => item.name)
+      const trace = getOnlineTrace(examsubjectres, marklogarr.sort((a, b) => allquestionnames.indexOf(a.questionName) - allquestionnames.indexOf(b.questionName)))
       marklogarr.forEach((item, index) => {
-        const markgroup = examsubjectgetres.markGroup.find(m => m.questionName.includes(item.questionName))
+        const markgroup = examsubjectres.markGroup.find(m => m.questionName.includes(item.questionName))
         result.image.push({
           questionName: item.questionName,
           answerImage: read(rootdir + '/answer/' + studentAccount + '/' + markgroup.name),

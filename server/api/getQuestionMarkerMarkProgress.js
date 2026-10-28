@@ -46,7 +46,15 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const examgetres = await db.collection('exam').findOne({
+    const validquestionnames = examsubjectres.subjectiveQuestion.map(item => item.name)
+    if (!validquestionnames.includes(requestdata.questionName)) {
+      return {
+        errCode: 400,
+        errMsg: '题号不存在',
+        errFix: '无修复建议'
+      }
+    }
+    const examres = await db.collection('exam').findOne({
       examId: requestdata.id
     }, {
       projection: {
@@ -55,7 +63,7 @@ exports.main = async (event, configfilepath) => {
       }
     })
     let questionname
-    if (account.type == 'admin' && account.schoolId == examgetres.schoolId) {
+    if (account.type == 'admin' && account.schoolId == examres.schoolId) {
       questionname = 'all'
     }
     if (examsubjectres.admin.find(item => item.account == account.account && item.permission.includes('getMarkProgress'))) {
@@ -77,16 +85,6 @@ exports.main = async (event, configfilepath) => {
         errCode: 403,
         errMsg: '无权限',
         errFix: '无修复建议'
-      }
-    }
-    if (questionname == 'all') {
-      questionname = examsubjectres.subjectiveQuestion.map(item => item.name)
-    }
-    if (!questionname.includes(requestdata.questionName)) {
-      return {
-        errCode: 400,
-        errMsg: '请求参数错误',
-        errFix: '传递有效的questionName参数'
       }
     }
     const result = await db.collection('marklog').aggregate([

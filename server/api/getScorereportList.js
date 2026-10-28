@@ -212,12 +212,12 @@ exports.main = async (event, configfilepath) => {
       }
     }
     const exammap = {}
-    const examgetres = await db.collection('exam').find({
+    const examres = await db.collection('exam').find({
       examId: {
         $in: [...new Set(data.map(item => item.examId))]
       }
     }).toArray()
-    examgetres.forEach(item => {
+    examres.forEach(item => {
       exammap[item.examId] = item
     })
     data.forEach(item => {

@@ -28,25 +28,25 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const examsubjectgetres = await db.collection('examsubject').findOne({
+    const examsubjectres = await db.collection('examsubject').findOne({
       examId: requestdata.id,
       name: requestdata.name
     })
-    if (!examsubjectgetres) {
+    if (!examsubjectres) {
       return {
         errCode: 400,
         errMsg: '科目不存在',
         errFix: '无修复建议'
       }
     }
-    if (examsubjectgetres.markStatus != 'end') {
+    if (examsubjectres.markStatus != 'end') {
       return {
         errCode: 400,
         errMsg: '阅卷未结束',
         errFix: '无修复建议'
       }
     }
-    const examgetres = await db.collection('exam').findOne({
+    const examres = await db.collection('exam').findOne({
       examId: requestdata.id
     }, {
       projection: {
@@ -54,8 +54,8 @@ exports.main = async (event, configfilepath) => {
         schoolId: true
       }
     })
-    if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
-      const adminexist = examsubjectgetres.admin.find(item => item.account == account.account)
+    if (!(account.type == 'admin' && account.schoolId == examres.schoolId)) {
+      const adminexist = examsubjectres.admin.find(item => item.account == account.account)
       if (!adminexist) {
         return {
           errCode: 403,
@@ -117,7 +117,7 @@ exports.main = async (event, configfilepath) => {
     return {
       errCode: 0,
       errMsg: '成功',
-      data: generatecsv(examsubjectgetres, marklog)
+      data: generatecsv(examsubjectres, marklog)
     }
   }
 }

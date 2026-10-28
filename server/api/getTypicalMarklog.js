@@ -66,8 +66,8 @@ exports.main = async (event, configfilepath) => {
     if (!scorereportconfigres.config.scoringQuestionNames.includes(requestdata.questionName)) {
       return {
         errCode: 400,
-        errMsg: '请求参数错误',
-        errFix: '传递有效的questionName参数'
+        errMsg: '题号不存在',
+        errFix: '无修复建议'
       }
     }
     let access = false
@@ -129,7 +129,7 @@ exports.main = async (event, configfilepath) => {
         }
       }
     }
-    const examsubjectgetres = await db.collection('examsubject').findOne({
+    const examsubjectres = await db.collection('examsubject').findOne({
       examId: scorereportconfigres.examId,
       $or: [
         {
@@ -140,14 +140,7 @@ exports.main = async (event, configfilepath) => {
         }
       ]
     })
-    if (!examsubjectgetres.subjectiveQuestion.map(item => item.name).includes(requestdata.questionName)) {
-      return {
-        errCode: 400,
-        errMsg: '请求参数错误',
-        errFix: '传递有效的questionName参数'
-      }
-    }
-    if (examsubjectgetres.markStatus != 'end') {
+    if (examsubjectres.markStatus != 'end') {
       return {
         errCode: 400,
         errMsg: '阅卷未结束',
@@ -160,7 +153,7 @@ exports.main = async (event, configfilepath) => {
         {
           $match: {
             examId: scorereportconfigres.examId,
-            subject: examsubjectgetres.name,
+            subject: examsubjectres.name,
             questionName: requestdata.questionName,
             excellent: true
           }
@@ -177,7 +170,7 @@ exports.main = async (event, configfilepath) => {
         {
           $match: {
             examId: scorereportconfigres.examId,
-            subject: examsubjectgetres.name,
+            subject: examsubjectres.name,
             questionName: requestdata.questionName,
             typicalMistake: true
           }
@@ -197,21 +190,21 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const markgroup = examsubjectgetres.markGroup.find(item => item.questionName.includes(requestdata.questionName))
+    const markgroup = examsubjectres.markGroup.find(item => item.questionName.includes(requestdata.questionName))
     const result = {
       answerImage: [],
       stepScore: marklogres.stepScore,
       totalScore: fixtwo(marklogres.totalScore)
     }
-    const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + examsubjectgetres.name + '/answer/' + marklogres.studentAccount + '/'
-    if (!examsubjectgetres.answerOnline) {
+    const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + scorereportconfigres.examId + '/' + examsubjectres.name + '/answer/' + marklogres.studentAccount + '/'
+    if (!examsubjectres.answerOnline) {
       const answer = await db.collection('answer').findOne({
         examId: scorereportconfigres.examId,
-        subject: examsubjectgetres.name,
+        subject: examsubjectres.name,
         studentAccount: marklogres.studentAccount
       })
       if (answer) {
-        const volume = examsubjectgetres.volume.find(item => item.name == answer.answer.volume)
+        const volume = examsubjectres.volume.find(item => item.name == answer.answer.volume)
         if (volume) {
           const pages = volume.page
           for (let i = 0; i < pages.length; i++) {
@@ -226,7 +219,7 @@ exports.main = async (event, configfilepath) => {
         }
       }
     }
-    if (examsubjectgetres.answerOnline) {
+    if (examsubjectres.answerOnline) {
       result.answerImage.push(read(rootdir + markgroup.name))
     }
     return {

@@ -74,11 +74,11 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const examgetres = await db.collection('exam').findOne({
+    const examres = await db.collection('exam').findOne({
       examId: scorereportconfigres.examId
     })
     let validaccounts = []
-    if (!examgetres.schoolId) {
+    if (!examres.schoolId) {
       validaccounts = await db.collection('account').find({
         type: 'teacher'
       }, {
@@ -88,9 +88,9 @@ exports.main = async (event, configfilepath) => {
         }
       }).toArray()
     }
-    if (examgetres.schoolId) {
+    if (examres.schoolId) {
       validaccounts = await db.collection('account').find({
-        schoolId: examgetres.schoolId,
+        schoolId: examres.schoolId,
         type: 'teacher'
       }, {
         projection: {
@@ -122,8 +122,8 @@ exports.main = async (event, configfilepath) => {
       }
     }
     if (scorereportconfigres.subject == '多学科') {
-      const admin = examgetres.admin.find(item => item.account == account.account)
-      if (!admin && (account.type != 'admin' || account.schoolId != examgetres.schoolId)) {
+      const admin = examres.admin.find(item => item.account == account.account)
+      if (!admin && (account.type != 'admin' || account.schoolId != examres.schoolId)) {
         return {
           errCode: 403,
           errMsg: '无权限',
@@ -149,7 +149,7 @@ exports.main = async (event, configfilepath) => {
         const item = requestdata.scorereportconfigIdArray[i]
         const scoreconfig = await db.collection('scorereportconfig').findOne({
           scorereportconfigId: item,
-          examId: examgetres.examId,
+          examId: examres.examId,
           subject: {
             $ne: '多学科'
           },
@@ -297,7 +297,7 @@ exports.main = async (event, configfilepath) => {
           errFix: '传递有效的config参数'
         }
       }
-      const examsubjectgetres = await db.collection('examsubject').findOne({
+      const examsubjectres = await db.collection('examsubject').findOne({
         examId: scorereportconfigres.examId,
         $or: [
           {
@@ -309,11 +309,11 @@ exports.main = async (event, configfilepath) => {
         ]
       })
       let validquestionnames = []
-      if (scorereportconfigres.subject == examsubjectgetres.name) {
-        validquestionnames = examsubjectgetres.objectiveQuestion.map(item => item.name).concat(examsubjectgetres.subjectiveQuestion.map(item => item.name))
+      if (scorereportconfigres.subject == examsubjectres.name) {
+        validquestionnames = examsubjectres.objectiveQuestion.map(item => item.name).concat(examsubjectres.subjectiveQuestion.map(item => item.name))
       }
-      if (examsubjectgetres.subSubject.includes(scorereportconfigres.subject)) {
-        validquestionnames = examsubjectgetres.objectiveQuestion.filter(item => item.subject == scorereportconfigres.subject).map(item => item.name).concat(examsubjectgetres.subjectiveQuestion.filter(item => item.subject == scorereportconfigres.subject).map(item => item.name))
+      if (examsubjectres.subSubject.includes(scorereportconfigres.subject)) {
+        validquestionnames = examsubjectres.objectiveQuestion.filter(item => item.subject == scorereportconfigres.subject).map(item => item.name).concat(examsubjectres.subjectiveQuestion.filter(item => item.subject == scorereportconfigres.subject).map(item => item.name))
       }
       if (config.scoringQuestionNames.some(item => !validquestionnames.includes(item))) {
         return {
@@ -322,8 +322,8 @@ exports.main = async (event, configfilepath) => {
           errFix: '传递有效的config参数'
         }
       }
-      if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
-        const adminexist = examsubjectgetres.admin.find(item => item.account == account.account)
+      if (!(account.type == 'admin' && account.schoolId == examres.schoolId)) {
+        const adminexist = examsubjectres.admin.find(item => item.account == account.account)
         if (!adminexist) {
           return {
             errCode: 403,

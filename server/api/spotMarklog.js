@@ -64,7 +64,15 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const examgetres = await db.collection('exam').findOne({
+    const validquestionnames = examsubjectres.subjectiveQuestion.map(item => item.name)
+    if (!validquestionnames.includes(requestdata.questionName)) {
+      return {
+        errCode: 400,
+        errMsg: '题号不存在',
+        errFix: '无修复建议'
+      }
+    }
+    const examres = await db.collection('exam').findOne({
       examId: requestdata.id
     }, {
       projection: {
@@ -73,7 +81,7 @@ exports.main = async (event, configfilepath) => {
       }
     })
     let questionname
-    if (account.type == 'admin' && account.schoolId == examgetres.schoolId) {
+    if (account.type == 'admin' && account.schoolId == examres.schoolId) {
       questionname = 'all'
     }
     if (examsubjectres.admin.find(item => item.account == account.account && item.permission.includes('spotMarklog'))) {

@@ -136,7 +136,7 @@ exports.main = async (event, configfilepath) => {
           errFix: '无修复建议'
         }
       }
-      const examgetres = await db.collection('exam').findOne({
+      const examres = await db.collection('exam').findOne({
         examId: requestdata.id
       }, {
         projection: {
@@ -144,7 +144,7 @@ exports.main = async (event, configfilepath) => {
           schoolId: true
         }
       })
-      if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
+      if (!(account.type == 'admin' && account.schoolId == examres.schoolId)) {
         const adminexist = data.admin.find(item => item.account == account.account)
         if (!adminexist) {
           return {
@@ -174,17 +174,17 @@ exports.main = async (event, configfilepath) => {
         }
       }
       let studentexist = false
-      if (!examgetres.schoolId) {
+      if (!examres.schoolId) {
         studentexist = await db.collection('account').findOne({
           account: requestdata.studentAccount,
           type: 'student'
         })
       }
-      if (examgetres.schoolId) {
+      if (examres.schoolId) {
         studentexist = await db.collection('account').findOne({
           account: requestdata.studentAccount,
           type: 'student',
-          schoolId: examgetres.schoolId
+          schoolId: examres.schoolId
         })
       }
       if (!studentexist) {

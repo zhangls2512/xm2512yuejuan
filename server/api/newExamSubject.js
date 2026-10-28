@@ -32,18 +32,18 @@ exports.main = async (event, configfilepath) => {
           errFix: '无修复建议'
         }
       }
-      const examgetres = await db.collection('exam').findOne({
+      const examres = await db.collection('exam').findOne({
         examId: requestdata.id
       })
-      if (!examgetres) {
+      if (!examres) {
         return {
           errCode: 400,
           errMsg: '考试不存在',
           errFix: '无修复建议'
         }
       }
-      if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
-        const adminexist = examgetres.admin.find(item => item.account == account.account)
+      if (!(account.type == 'admin' && account.schoolId == examres.schoolId)) {
+        const adminexist = examres.admin.find(item => item.account == account.account)
         if (!adminexist) {
           return {
             errCode: 403,
@@ -59,14 +59,14 @@ exports.main = async (event, configfilepath) => {
           }
         }
       }
-      if (examgetres.end) {
+      if (examres.end) {
         return {
           errCode: 400,
           errMsg: '考试已结束',
           errFix: '无修复建议'
         }
       }
-      const examsubjectgetres = await db.collection('examsubject').findOne({
+      const examsubjectres = await db.collection('examsubject').findOne({
         examId: requestdata.id,
         $or: [
           {
@@ -77,7 +77,7 @@ exports.main = async (event, configfilepath) => {
           }
         ]
       })
-      if (examsubjectgetres) {
+      if (examsubjectres) {
         return {
           errCode: 400,
           errMsg: '科目已存在',
@@ -86,7 +86,7 @@ exports.main = async (event, configfilepath) => {
       }
       if (checkres.data.class.length > 0) {
         let validclass = []
-        if (!examgetres.schoolId) {
+        if (!examres.schoolId) {
           validclass = await db.collection('class').find({}, {
             projection: {
               _id: false,
@@ -94,9 +94,9 @@ exports.main = async (event, configfilepath) => {
             }
           }).toArray()
         }
-        if (examgetres.schoolId) {
+        if (examres.schoolId) {
           validclass = await db.collection('class').find({
-            schoolId: examgetres.schoolId
+            schoolId: examres.schoolId
           }, {
             projection: {
               _id: false,
@@ -115,7 +115,7 @@ exports.main = async (event, configfilepath) => {
       }
       if (checkres.data.adminAccount.length > 0) {
         let validadmins = []
-        if (!examgetres.schoolId) {
+        if (!examres.schoolId) {
           validadmins = await db.collection('account').find({
             type: {
               $ne: 'student'
@@ -127,9 +127,9 @@ exports.main = async (event, configfilepath) => {
             }
           }).toArray()
         }
-        if (examgetres.schoolId) {
+        if (examres.schoolId) {
           validadmins = await db.collection('account').find({
-            schoolId: examgetres.schoolId,
+            schoolId: examres.schoolId,
             type: {
               $ne: 'student'
             }

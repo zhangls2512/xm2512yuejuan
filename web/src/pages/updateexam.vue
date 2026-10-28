@@ -14,15 +14,15 @@ const account = ref('')
 const accountpermission = ref([])
 const permission = ref([
   {
-    value: 'updateExamEndStatus',
+    value: 'updateEndStatus',
     label: '结束、重启考试'
   },
   {
-    value: 'updateExamInfo',
+    value: 'updateInfo',
     label: '修改考试信息'
   },
   {
-    value: 'deleteExam',
+    value: 'delete',
     label: '删除考试'
   },
   {

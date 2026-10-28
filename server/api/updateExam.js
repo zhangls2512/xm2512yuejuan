@@ -39,7 +39,7 @@ exports.main = async (event, configfilepath) => {
   }
   const admin = []
   const adminaccount = []
-  const validpermissions = ['updateExamEndStatus', 'updateExamInfo', 'deleteExam', 'manageSubject', 'manageScorereportconfig']
+  const validpermissions = ['updateEndStatus', 'updateInfo', 'delete', 'manageSubject', 'manageScorereportconfig']
   for (let i = 0; i < requestdata.admin.length; i++) {
     const item = requestdata.admin[i]
     if (typeof (item.account) != 'string' || item.account.length != 36 || !Array.isArray(item.permission) || !item.permission.every(p => validpermissions.includes(p))) {
@@ -69,18 +69,18 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const examgetres = await db.collection('exam').findOne({
+    const examres = await db.collection('exam').findOne({
       examId: requestdata.id
     })
-    if (!examgetres) {
+    if (!examres) {
       return {
         errCode: 400,
         errMsg: '考试不存在',
         errFix: '无修复建议'
       }
     }
-    if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
-      const adminexist = examgetres.admin.find(item => item.account == account.account)
+    if (!(account.type == 'admin' && account.schoolId == examres.schoolId)) {
+      const adminexist = examres.admin.find(item => item.account == account.account)
       if (!adminexist) {
         return {
           errCode: 403,
@@ -88,7 +88,7 @@ exports.main = async (event, configfilepath) => {
           errFix: '无修复建议'
         }
       }
-      if (adminexist && !adminexist.permission.includes('updateExamInfo')) {
+      if (adminexist && !adminexist.permission.includes('updateInfo')) {
         return {
           errCode: 403,
           errMsg: '无权限',
@@ -96,7 +96,7 @@ exports.main = async (event, configfilepath) => {
         }
       }
     }
-    if (examgetres.end) {
+    if (examres.end) {
       return {
         errCode: 400,
         errMsg: '考试已结束',
@@ -105,7 +105,7 @@ exports.main = async (event, configfilepath) => {
     }
     if (adminaccount.length > 0) {
       let validadmins = []
-      if (!examgetres.schoolId) {
+      if (!examres.schoolId) {
         validadmins = await db.collection('account').find({
           type: {
             $ne: 'student'
@@ -117,9 +117,9 @@ exports.main = async (event, configfilepath) => {
           }
         }).toArray()
       }
-      if (examgetres.schoolId) {
+      if (examres.schoolId) {
         validadmins = await db.collection('account').find({
-          schoolId: examgetres.schoolId,
+          schoolId: examres.schoolId,
           type: {
             $ne: 'student'
           }

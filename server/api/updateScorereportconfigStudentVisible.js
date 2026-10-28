@@ -31,12 +31,12 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const examgetres = await db.collection('exam').findOne({
+    const examres = await db.collection('exam').findOne({
       examId: scorereportconfigres.examId
     })
     if (scorereportconfigres.subject == '多学科') {
-      const admin = examgetres.admin.find(item => item.account == account.account)
-      if (!admin && (account.type != 'admin' || account.schoolId != examgetres.schoolId)) {
+      const admin = examres.admin.find(item => item.account == account.account)
+      if (!admin && (account.type != 'admin' || account.schoolId != examres.schoolId)) {
         return {
           errCode: 403,
           errMsg: '无权限',
@@ -52,7 +52,7 @@ exports.main = async (event, configfilepath) => {
       }
     }
     if (scorereportconfigres.subject != '多学科') {
-      const examsubjectgetres = await db.collection('examsubject').findOne({
+      const examsubjectres = await db.collection('examsubject').findOne({
         examId: scorereportconfigres.examId,
         $or: [
           {
@@ -63,8 +63,8 @@ exports.main = async (event, configfilepath) => {
           }
         ]
       })
-      if (!(account.type == 'admin' && account.schoolId == examgetres.schoolId)) {
-        const adminexist = examsubjectgetres.admin.find(item => item.account == account.account)
+      if (!(account.type == 'admin' && account.schoolId == examres.schoolId)) {
+        const adminexist = examsubjectres.admin.find(item => item.account == account.account)
         if (!adminexist) {
           return {
             errCode: 403,
