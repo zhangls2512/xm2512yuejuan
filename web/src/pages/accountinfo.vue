@@ -58,11 +58,11 @@ async function updatePassword() {
       password: newpassworda.value
     }
   })
-  closeDialog()
   TinyModal.message({
     message: '修改成功，请重新登录',
     status: 'success'
   })
+  closeDialog()
   localStorage.removeItem('authorization')
   localStorage.removeItem('accountinfo')
   router.push('/login')
