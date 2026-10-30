@@ -48,7 +48,7 @@ function drawImage(ctx, item) {
 function drawText(ctx, item) {
   const [x, y] = getCoord(item)
   const fontSize = item.size
-  ctx.font = fontSize + 'px sans-serif'
+  ctx.font = fontSize + 'px HarmonyOS_Sans'
   ctx.fillStyle = 'red'
   ctx.textBaseline = 'top'
   const lines = item.content.split('\n')
