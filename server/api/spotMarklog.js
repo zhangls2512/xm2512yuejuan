@@ -115,7 +115,29 @@ exports.main = async (event, configfilepath) => {
             questionName: requestdata.questionName,
             type: 'system',
             questionReason: '',
-            updateMarkerAccount: ''
+            updateMarkerAccount: '',
+            $or: [
+              {
+                firstMarkerAccount: {
+                  $ne: ''
+                }
+              },
+              {
+                secondMarkerAccount: {
+                  $ne: ''
+                }
+              },
+              {
+                thirdMarkerAccount: {
+                  $ne: ''
+                }
+              },
+              {
+                arbitrateMarkerAccount: {
+                  $ne: ''
+                }
+              }
+            ]
           }
         },
         {
