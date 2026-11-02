@@ -54,7 +54,7 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const validquestionnames = examsubjectres.objectiveQuestion.map(item => item.name).concat(subjectiveQuestion.map(item => item.name))
+    const validquestionnames = examsubjectres.objectiveQuestion.map(item => item.name).concat(examsubjectres.subjectiveQuestion.map(item => item.name))
     if (!validquestionnames.includes(requestdata.questionName)) {
       return {
         errCode: 400,
