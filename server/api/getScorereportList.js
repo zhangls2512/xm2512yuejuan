@@ -25,13 +25,25 @@ exports.main = async (event, configfilepath) => {
     let data = []
     const confignamemap = {}
     if (account.type == 'student') {
-      const idres = await db.collection('scorereportconfig').find({
-        studentVisible: true,
-        status: 'finished',
-        student: account.account
-      }).sort({
-        updateTime: -1
-      }).skip(skip).limit(limit).toArray()
+      let idres
+      if (typeof (requestdata.subject) == 'string' && requestdata.subject) {
+        idres = await db.collection('scorereportconfig').find({
+          subject: requestdata.subject,
+          studentVisible: true,
+          status: 'finished',
+          student: account.account
+        }).sort({
+          updateTime: -1
+        }).skip(skip).limit(limit).toArray()
+      } else {
+        idres = await db.collection('scorereportconfig').find({
+          studentVisible: true,
+          status: 'finished',
+          student: account.account
+        }).sort({
+          updateTime: -1
+        }).skip(skip).limit(limit).toArray()
+      }
       idres.forEach(item => {
         confignamemap[item.scorereportconfigId] = item.name
       })

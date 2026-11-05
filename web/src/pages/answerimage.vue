@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, defineExpose } from 'vue'
 const props = defineProps({
   data: {
     type: Object,
@@ -100,6 +100,16 @@ function getCoord(item) {
   }
   return [0, 0]
 }
+function getImageDataurl() {
+  const canvas = c.value
+  if (!canvas) {
+    return ''
+  }
+  return canvas.toDataURL('image/png')
+}
+defineExpose({
+  getImageDataurl
+})
 </script>
 
 <template>

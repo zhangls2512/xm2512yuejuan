@@ -16,11 +16,20 @@ exports.main = async (event, configfilepath) => {
     }
     let count = 0
     if (account.type == 'student') {
-      count = await db.collection('scorereportconfig').countDocuments({
-        studentVisible: true,
-        status: 'finished',
-        student: account.account
-      })
+      if (typeof (requestdata.subject) == 'string' && requestdata.subject) {
+        count = await db.collection('scorereportconfig').countDocuments({
+          subject: requestdata.subject,
+          studentVisible: true,
+          status: 'finished',
+          student: account.account
+        })
+      } else {
+        count = await db.collection('scorereportconfig').countDocuments({
+          studentVisible: true,
+          status: 'finished',
+          student: account.account
+        })
+      }
     }
     if (account.type == 'teacher') {
       if (!['joint', 'school', 'class'].includes(requestdata.type)) {

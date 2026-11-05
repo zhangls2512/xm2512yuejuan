@@ -4,7 +4,7 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { TinyHuichartsHistogram as TinyChartHistogram } from '@opentiny/vue-huicharts'
 import { decode } from '../util/code'
-import { saveFile } from '../util/file'
+import { saveFile, getImageSize } from '../util/file'
 import request from '../util/request'
 import answerimagecanvas from './answerimage.vue'
 import answerlistgrid from './answerlist.vue'
@@ -29,6 +29,7 @@ const kpdialog = ref(false)
 const knowledgepointlist = ref([])
 const aadialog = ref(false)
 const answerimage = ref({})
+const answerimageref = ref({})
 const chartdata = ref({})
 const schoolmap = ref({})
 const classmap = ref({})
@@ -202,6 +203,32 @@ async function openAa(stu) {
 function closeAa() {
   aadialog.value = false
   answerimage.value = {}
+}
+async function exportAnswerImagePdf() {
+  const list = []
+  for (let i = 0; i < answerimage.value.image.length; i++) {
+    const item = answerimageref.value[i]
+    const dataurl = item.getImageDataurl()
+    if (dataurl) {
+      list.push(dataurl)
+    }
+  }
+  if (list.length > 0) {
+    const size = await getImageSize(list[0])
+    const { jsPDF } = await import('jspdf')
+    const pdf = new jsPDF({
+      orientation: size.width > size.height ? 'landscape' : 'portrait',
+      unit: 'px',
+      format: [size.width, size.height]
+    })
+    pdf.addImage(list[0], 'PNG', 0, 0, size.width, size.height)
+    for (let i = 1; i < list.length; i++) {
+      const itemsize = await getImageSize(list[i])
+      pdf.addPage([itemsize.width, itemsize.height])
+      pdf.addImage(list[i], 'PNG', 0, 0, itemsize.width, itemsize.height)
+    }
+    pdf.save(data.value.examName + '（' + data.value.subject + '）原卷.pdf')
+  }
 }
 function flatStudents(students) {
   return students.map(stu => {
@@ -620,17 +647,19 @@ function downloadScore() {
       <div v-if="!answerimage.answerOnline">
         <div class="cz">
           <img v-if="answerimage.image.length == 0" src="/noimage.png"></img>
-          <div v-for="image in answerimage.image">
-            <answerimagecanvas :data="image"></answerimagecanvas>
+          <div><tiny-button v-if="answerimage.image.length > 0" type="info" @click="exportAnswerImagePdf"">导出</tiny-button></div>
+          <div v-for="item, index in answerimage.image">
+              <answerimagecanvas :data="item" :ref="el => answerimageref[index] = el"></answerimagecanvas>
           </div>
         </div>
       </div>
       <div v-if="answerimage.answerOnline">
         <div class="cz">
           <img v-if="answerimage.image.length == 0" src="/noimage.png"></img>
-          <div v-for="image in answerimage.image" class="sp">
-            <div class="bold-text">{{ image.questionName }}</div>
-            <answerimagecanvas :data="image"></answerimagecanvas>
+          <div><tiny-button v-if="answerimage.image.length > 0" type="info" @click="exportAnswerImagePdf"">导出</tiny-button></div>
+          <div v-for="item, index in answerimage.image" class="sp">
+              <div class="bold-text">{{ item.questionName }}</div>
+              <answerimagecanvas :data="item" :ref="el => answerimageref[index] = el"></answerimagecanvas>
           </div>
         </div>
       </div>

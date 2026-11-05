@@ -31,7 +31,7 @@ async function get() {
       })
       return
     }
-    if (!subject.value) {
+    if (accountinfo.value.type == 'teacher' && !subject.value) {
       TinyModal.message({
         message: '请输入科目',
         status: 'warning'
@@ -108,21 +108,21 @@ function info(info) {
 
 <template>
   <div class="cz">
-    <tiny-form v-if="accountinfo.type == 'teacher'">
-      <tiny-form-item label="类型">
+    <tiny-form>
+      <tiny-form-item v-if="accountinfo.type == 'teacher'" label="类型">
         <tiny-radio-group v-model="type">
           <tiny-radio label="joint">联考</tiny-radio>
           <tiny-radio label="school">学校</tiny-radio>
           <tiny-radio label="class">班级</tiny-radio>
         </tiny-radio-group>
       </tiny-form-item>
-      <tiny-form-item v-if="type == 'school' && !accountinfo.schoolId" label="学校">
+      <tiny-form-item v-if="accountinfo.type == 'teacher' && type == 'school' && !accountinfo.schoolId" label="学校">
         <div v-if="schools.length == 0">无学校</div>
         <tiny-radio-group v-model="schoolid">
           <tiny-radio v-for="item in schools" :label="item.id">{{ item.name }}</tiny-radio>
         </tiny-radio-group>
       </tiny-form-item>
-      <tiny-form-item v-if="type == 'class'" label="班级">
+      <tiny-form-item v-if="accountinfo.type == 'teacher' && type == 'class'" label="班级">
         <div v-if="classes.length == 0">无班级</div>
         <tiny-radio-group v-model="classid">
           <tiny-radio v-for="item in classes" :label="item.id">{{ item.name }}</tiny-radio>
