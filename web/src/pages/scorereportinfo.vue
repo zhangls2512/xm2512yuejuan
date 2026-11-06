@@ -205,6 +205,11 @@ function closeAa() {
   answerimage.value = {}
 }
 async function exportAnswerImagePdf() {
+  const loading = TinyLoading.service({
+    lock: true,
+    size: 'large',
+    background: 'rgba(0, 0, 0, 0.5)'
+  })
   const list = []
   for (let i = 0; i < answerimage.value.image.length; i++) {
     const item = answerimageref.value[i]
@@ -227,7 +232,10 @@ async function exportAnswerImagePdf() {
       pdf.addPage([itemsize.width, itemsize.height])
       pdf.addImage(list[i], 'PNG', 0, 0, itemsize.width, itemsize.height)
     }
+    loading.close()
     pdf.save(data.value.examName + '（' + data.value.subject + '）原卷.pdf')
+  } else {
+    loading.close()
   }
 }
 function flatStudents(students) {
