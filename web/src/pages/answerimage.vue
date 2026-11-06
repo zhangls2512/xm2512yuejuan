@@ -100,15 +100,25 @@ function getCoord(item) {
   }
   return [0, 0]
 }
-function getImageDataurl() {
-  const canvas = c.value
-  if (!canvas) {
-    return ''
-  }
-  return canvas.toDataURL('image/png')
+async function getImage() {
+  return new Promise(async (resolve) => {
+    const canvas = c.value
+    if (!canvas) {
+      resolve('')
+    }
+    if (canvas) {
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg'))
+      const buffer = await blob.arrayBuffer()
+      resolve({
+        data: new Uint8Array(buffer),
+        width: canvas.width,
+        height: canvas.height
+      })
+    }
+  })
 }
 defineExpose({
-  getImageDataurl
+  getImage
 })
 </script>
 

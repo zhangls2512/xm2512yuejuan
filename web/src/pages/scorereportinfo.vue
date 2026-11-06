@@ -4,7 +4,7 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { TinyHuichartsHistogram as TinyChartHistogram } from '@opentiny/vue-huicharts'
 import { decode } from '../util/code'
-import { saveFile, getImageSize } from '../util/file'
+import { saveFile } from '../util/file'
 import request from '../util/request'
 import answerimagecanvas from './answerimage.vue'
 import answerlistgrid from './answerlist.vue'
@@ -210,33 +210,24 @@ async function exportAnswerImagePdf() {
     size: 'large',
     background: 'rgba(0, 0, 0, 0.5)'
   })
-  const list = []
+  let pdf
   for (let i = 0; i < answerimage.value.image.length; i++) {
     const item = answerimageref.value[i]
-    const dataurl = item.getImageDataurl()
-    if (dataurl) {
-      list.push(dataurl)
+    const image = await item.getImage()
+    if (i == 0) {
+      const { jsPDF } = await import('jspdf')
+      pdf = new jsPDF({
+        orientation: image.width > image.height ? 'landscape' : 'portrait',
+        unit: 'px',
+        format: [image.width, image.height]
+      })
+    } else {
+      pdf.addPage([image.width, image.height], image.width > image.height ? 'landscape' : 'portrait')
     }
+    pdf.addImage(image.data, 'JPEG', 0, 0, image.width, image.height, undefined, 'NONE')
   }
-  if (list.length > 0) {
-    const size = await getImageSize(list[0])
-    const { jsPDF } = await import('jspdf')
-    const pdf = new jsPDF({
-      orientation: size.width > size.height ? 'landscape' : 'portrait',
-      unit: 'px',
-      format: [size.width, size.height]
-    })
-    pdf.addImage(list[0], 'PNG', 0, 0, size.width, size.height)
-    for (let i = 1; i < list.length; i++) {
-      const itemsize = await getImageSize(list[i])
-      pdf.addPage([itemsize.width, itemsize.height])
-      pdf.addImage(list[i], 'PNG', 0, 0, itemsize.width, itemsize.height)
-    }
-    loading.close()
-    pdf.save(data.value.examName + '（' + data.value.subject + '）原卷.pdf')
-  } else {
-    loading.close()
-  }
+  loading.close()
+  pdf.save(data.value.examName + '（' + data.value.subject + '）原卷.pdf')
 }
 function flatStudents(students) {
   return students.map(stu => {
