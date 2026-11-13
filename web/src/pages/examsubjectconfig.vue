@@ -2,10 +2,13 @@
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { decode } from '../util/code'
+import request from '../util/request'
 import time from '../util/time'
 const route = useRoute()
 const info = route.query.info
 const data = ref({})
+const classmap = ref({})
+const accountmap = ref({})
 if (info) {
   try {
     data.value = decode(info)
@@ -14,8 +17,20 @@ if (info) {
       data.value.subject.startTime = time(data.value.subject.startTime)
       data.value.subject.endTime = time(data.value.subject.endTime)
     }
+    getClassAccountMap()
   } catch {
   }
+}
+async function getClassAccountMap() {
+  const res = await request({
+    apiPath: '/getExamSubjectClassAccountMap',
+    body: {
+      id: data.value.exam.examId,
+      name: data.value.subject.name
+    }
+  })
+  classmap.value = res.class
+  accountmap.value = res.account
 }
 function formatCorrectOptionIndex(a) {
   return a.cellValue.map(index => data.value.subject.objectiveQuestion[a.$rowIndex].option[index]).join('')
@@ -66,14 +81,16 @@ function formatPage(p) {
     </div>
     <div class="sp">
       <div class="bold-text">班级</div>
-      <div class="cz">
-        <div v-for="item in data.subject.class">{{ item }}</div>
-      </div>
+      <div>{{data.subject.class.map(item => classmap[item]).join('、')}}</div>
     </div>
     <div class="sp">
       <div class="bold-text">管理员</div>
       <tiny-grid :data="data.subject.admin" style="flex:1">
-        <tiny-grid-column field="account" title="账号" align="center"></tiny-grid-column>
+        <tiny-grid-column title="账号" align="center">
+          <template #default="{ row }">
+            <div>{{ accountmap[row.account] }}</div>
+          </template>
+        </tiny-grid-column>
         <tiny-grid-column field="permission" title="权限" align="center" show-overflow></tiny-grid-column>
       </tiny-grid>
     </div>
@@ -136,7 +153,11 @@ function formatPage(p) {
         <tiny-grid-column title="管理员" align="center">
           <template #default="{ row }">
             <tiny-grid :data="row.admin" style="flex:1">
-              <tiny-grid-column field="account" title="账号" align="center"></tiny-grid-column>
+              <tiny-grid-column title="账号" align="center">
+                <template #default="{ row: admin }">
+                  <div>{{ accountmap[admin.account] }}</div>
+                </template>
+              </tiny-grid-column>
               <tiny-grid-column field="permission" title="权限" align="center" show-overflow></tiny-grid-column>
             </tiny-grid>
           </template>
@@ -144,7 +165,11 @@ function formatPage(p) {
         <tiny-grid-column title="阅卷人" align="center">
           <template #default="{ row }">
             <tiny-grid :data="row.member" style="flex:1">
-              <tiny-grid-column field="account" title="账号" align="center"></tiny-grid-column>
+              <tiny-grid-column title="账号" align="center">
+                <template #default="{ row: member }">
+                  <div>{{ accountmap[member.account] }}</div>
+                </template>
+              </tiny-grid-column>
               <tiny-grid-column field="quota" title="任务量" align="center"></tiny-grid-column>
               <tiny-grid-column field="allowExceedQuota" title="允许超任务量" align="center"
                 format-text="boole"></tiny-grid-column>
@@ -154,7 +179,11 @@ function formatPage(p) {
         <tiny-grid-column field="consistencyCheckPercent" title="分数一致性检测比例" align="center"></tiny-grid-column>
         <tiny-grid-column field="time" title="评数" align="center"></tiny-grid-column>
         <tiny-grid-column field="secondMarkPercent" title="双评比例" align="center"></tiny-grid-column>
-        <tiny-grid-column field="arbitrator" title="仲裁人" align="center"></tiny-grid-column>
+        <tiny-grid-column title="仲裁人" align="center">
+          <template #default="{ row }">
+            <div>{{row.arbitrator.map(item => accountmap[item]).join('、')}}</div>
+          </template>
+        </tiny-grid-column>
       </tiny-grid>
     </div>
     <div class="line"></div>
