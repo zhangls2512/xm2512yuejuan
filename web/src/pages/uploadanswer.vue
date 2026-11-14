@@ -176,8 +176,7 @@ function next() {
       <div class="cz" style="flex:1">
         <div v-for="item, index in answerimage" style="display:flex;justify-content:center;position:relative">
           <img v-if="item" :ref="element => setImgRef(element, index)" :src="item" style="flex:1;min-width:0"></img>
-          <canvas v-if="item" :ref="element => setCanvasRef(element, index)"
-            style="position:absolute;inset:0;pointer-events:none"></canvas>
+          <canvas v-if="item" :ref="element => setCanvasRef(element, index)" style="position:absolute;inset:0"></canvas>
           <div v-if="!item" class="large-text" style="color:red">图片数据异常</div>
         </div>
       </div>
