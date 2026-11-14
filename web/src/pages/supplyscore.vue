@@ -16,18 +16,20 @@ if (info) {
 }
 async function upload() {
   const content = await readFile('csv')
-  await request({
-    apiPath: '/supplyScore',
-    body: {
-      id: data.value.examId,
-      subject: data.value.subject.name,
-      csv: content
-    }
-  })
-  TinyModal.message({
-    message: '操作成功。后台正在补录，请耐心等待',
-    status: 'success'
-  })
+  if (content) {
+    await request({
+      apiPath: '/supplyScore',
+      body: {
+        id: data.value.examId,
+        subject: data.value.subject.name,
+        csv: content
+      }
+    })
+    TinyModal.message({
+      message: '操作成功。后台正在补录，请耐心等待',
+      status: 'success'
+    })
+  }
 }
 function generateExampleCsv(subjectconfig) {
   const questions = subjectconfig.objectiveQuestion.concat(subjectconfig.subjectiveQuestion)

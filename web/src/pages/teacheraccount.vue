@@ -96,22 +96,24 @@ async function submit() {
 }
 async function newAccounts() {
   const content = await readFile('csv')
-  await request({
-    apiPath: '/newAccounts',
-    body: {
-      list: content.split('\r\n').map(item => item.split(',')).flat().map(item => {
-        return {
-          type: 'teacher',
-          name: item
-        }
-      })
-    }
-  })
-  TinyModal.message({
-    message: '批量新增成功',
-    status: 'success'
-  })
-  get()
+  if (content) {
+    await request({
+      apiPath: '/newAccounts',
+      body: {
+        list: content.split('\r\n').map(item => item.split(',')).flat().map(item => {
+          return {
+            type: 'teacher',
+            name: item
+          }
+        })
+      }
+    })
+    TinyModal.message({
+      message: '批量新增成功',
+      status: 'success'
+    })
+    get()
+  }
 }
 async function copy(value) {
   await navigator.clipboard.writeText(value)
