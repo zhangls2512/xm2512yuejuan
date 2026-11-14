@@ -2,6 +2,20 @@
 document.title = '智能阅卷系统 - 更新日志'
 const data = [
   {
+    versionNumber: '1.6.12',
+    releaseDate: '2026-11-14',
+    logs: [
+      {
+        type: 'U',
+        content: '批量新增老师、学生账号'
+      },
+      {
+        type: 'F',
+        content: '修复了一些已知的问题'
+      }
+    ]
+  },
+  {
     versionNumber: '1.6.11',
     releaseDate: '2026-11-13',
     logs: [

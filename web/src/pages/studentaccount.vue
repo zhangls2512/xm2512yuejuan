@@ -1,6 +1,7 @@
 <script setup>
 document.title = '智能阅卷系统 - 账号管理 - 学生'
 import { ref } from 'vue'
+import { readFile } from '../util/file'
 import request from '../util/request'
 const data = ref([])
 const currentpage = ref(1)
@@ -93,6 +94,25 @@ async function submit() {
   closeDialog()
   get()
 }
+async function newAccounts() {
+  const content = await readFile('csv')
+  await request({
+    apiPath: '/newAccounts',
+    body: {
+      list: content.split('\r\n').map(item => item.split(',')).flat().map(item => {
+        return {
+          type: 'student',
+          name: item
+        }
+      })
+    }
+  })
+  TinyModal.message({
+    message: '批量新增成功',
+    status: 'success'
+  })
+  get()
+}
 async function copy(value) {
   await navigator.clipboard.writeText(value)
   TinyModal.message({
@@ -154,7 +174,10 @@ async function deleteAccount(account) {
 
 <template>
   <div class="cz">
-    <div><tiny-button type="success" @click="openDialog('')">新增</tiny-button></div>
+    <div class="sp">
+      <tiny-button type="success" @click="openDialog('')">新增</tiny-button>
+      <tiny-button type="info" @click="newAccounts">批量新增</tiny-button>
+    </div>
     <div class="sp">
       <tiny-input v-model="account" clearable minlength="36" maxlength="36" placeholder="请输入账号"></tiny-input>
       <tiny-button type="info" @click="search">搜索</tiny-button>

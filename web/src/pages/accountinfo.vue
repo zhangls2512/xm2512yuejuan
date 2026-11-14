@@ -12,21 +12,29 @@ const typemap = {
   teacher: '老师',
   student: '学生'
 }
-const exist = localStorage.getItem('accountinfo')
-if (exist) {
-  accountinfo.value = JSON.parse(exist)
-  if (accountinfo.value.type != 'admin') {
-    accountinfo.value.typewz = typemap[accountinfo.value.type]
-  }
-  if (accountinfo.value.type == 'admin') {
-    if (!accountinfo.value.schoolId) {
-      accountinfo.value.typewz = '联考管理员'
+async function get() {
+  const authorization = localStorage.getItem('authorization')
+  if (authorization) {
+    const res = await request({
+      apiPath: '/getAccountInfo',
+      authorization: authorization
+    })
+    accountinfo.value = res.data
+    localStorage.setItem('accountinfo', JSON.stringify(res.data))
+    if (accountinfo.value.type != 'admin') {
+      accountinfo.value.typewz = typemap[accountinfo.value.type]
     }
-    if (accountinfo.value.schoolId) {
-      accountinfo.value.typewz = '学校管理员'
+    if (accountinfo.value.type == 'admin') {
+      if (!accountinfo.value.schoolId) {
+        accountinfo.value.typewz = '联考管理员'
+      }
+      if (accountinfo.value.schoolId) {
+        accountinfo.value.typewz = '学校管理员'
+      }
     }
   }
 }
+get()
 function closeDialog() {
   dialog.value = false
   newpassworda.value = ''
