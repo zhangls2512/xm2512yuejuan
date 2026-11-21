@@ -1,8 +1,8 @@
 'use strict'
 exports.main = async (event, configfilepath) => {
   const crypto = require('crypto')
-  const db = await (require('../util/db').database(configfilepath))
   const { checkArrNotHaveSameItem } = require('../util/checksubjectconfig')
+  const db = await (require('../util/db').database(configfilepath))
   const requestdata = JSON.parse(event.body)
   if (typeof (requestdata.id) != 'string' || requestdata.id.length != 36) {
     return {
@@ -142,17 +142,17 @@ exports.main = async (event, configfilepath) => {
           errFix: '传递有效的scorereportconfigIdArray参数'
         }
       }
+      const scoreconfigs = await db.collection('scorereportconfig').find({
+        examId: requestdata.id,
+        subject: {
+          $ne: '多学科'
+        },
+        status: 'finished'
+      }).toArray()
       const subjects = []
       for (let i = 0; i < requestdata.scorereportconfigIdArray.length; i++) {
         const item = requestdata.scorereportconfigIdArray[i]
-        const scoreconfig = await db.collection('scorereportconfig').findOne({
-          scorereportconfigId: item,
-          examId: requestdata.id,
-          subject: {
-            $ne: '多学科'
-          },
-          status: 'finished'
-        })
+        const scoreconfig = scoreconfigs.find(sc => sc.scorereportconfigId == item)
         if (!scoreconfig) {
           return {
             errCode: 400,

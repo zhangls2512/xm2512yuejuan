@@ -67,29 +67,31 @@ async function search() {
 }
 async function newClass() {
   const content = await readFile()
-  let info
-  try {
-    info = JSON.parse(content)
-  } catch {
-    TinyModal.message({
-      message: '文件内容非法',
-      status: 'warning'
-    })
-  }
-  if (info) {
-    await request({
-      apiPath: '/newClass',
-      body: {
-        name: info.name,
-        student: info.student,
-        subject: info.subject
-      }
-    })
-    TinyModal.message({
-      message: '新增成功',
-      status: 'success'
-    })
-    get()
+  if (content) {
+    let info
+    try {
+      info = JSON.parse(content)
+    } catch {
+      TinyModal.message({
+        message: '文件内容非法',
+        status: 'warning'
+      })
+    }
+    if (info) {
+      await request({
+        apiPath: '/newClass',
+        body: {
+          name: info.name,
+          student: info.student,
+          subject: info.subject
+        }
+      })
+      TinyModal.message({
+        message: '新增成功',
+        status: 'success'
+      })
+      get()
+    }
   }
 }
 function info(info) {
@@ -97,30 +99,32 @@ function info(info) {
 }
 async function updateClass(id) {
   const content = await readFile()
-  let info
-  try {
-    info = JSON.parse(content)
-  } catch {
-    TinyModal.message({
-      message: '文件内容非法',
-      status: 'warning'
-    })
-  }
-  if (info) {
-    await request({
-      apiPath: '/updateClass',
-      body: {
-        id: id,
-        name: info.name,
-        student: info.student,
-        subject: info.subject
-      }
-    })
-    TinyModal.message({
-      message: '修改成功',
-      status: 'success'
-    })
-    get()
+  if (content) {
+    let info
+    try {
+      info = JSON.parse(content)
+    } catch {
+      TinyModal.message({
+        message: '文件内容非法',
+        status: 'warning'
+      })
+    }
+    if (info) {
+      await request({
+        apiPath: '/updateClass',
+        body: {
+          id: id,
+          name: info.name,
+          student: info.student,
+          subject: info.subject
+        }
+      })
+      TinyModal.message({
+        message: '修改成功',
+        status: 'success'
+      })
+      get()
+    }
   }
 }
 async function deleteClass(id) {

@@ -75,27 +75,29 @@ function dealQuestion(info) {
 }
 async function updateSubject(param) {
   const content = await readFile()
-  let info
-  try {
-    info = JSON.parse(content)
-    info.id = param.examId
-    info.name = param.subject.name
-  } catch {
-    TinyModal.message({
-      message: '文件内容非法',
-      status: 'warning'
-    })
-  }
-  if (info) {
-    await request({
-      apiPath: '/updateExamSubject',
-      body: info
-    })
-    TinyModal.message({
-      message: '修改成功',
-      status: 'success'
-    })
-    get()
+  if (content) {
+    let info
+    try {
+      info = JSON.parse(content)
+      info.id = param.examId
+      info.name = param.subject.name
+    } catch {
+      TinyModal.message({
+        message: '文件内容非法',
+        status: 'warning'
+      })
+    }
+    if (info) {
+      await request({
+        apiPath: '/updateExamSubject',
+        body: info
+      })
+      TinyModal.message({
+        message: '修改成功',
+        status: 'success'
+      })
+      get()
+    }
   }
 }
 function config(param) {

@@ -78,33 +78,35 @@ async function generateScorereportconfig(id) {
 }
 async function newScorereportconfig() {
   const content = await readFile()
-  let info
-  try {
-    info = JSON.parse(content)
-    info.id = param.value.examId
-  } catch {
-    TinyModal.message({
-      message: '文件内容非法',
-      status: 'warning'
-    })
-  }
-  if (param.value.subject == '多学科' && info.subject != '多学科') {
-    TinyModal.message({
-      message: '文件内容非法',
-      status: 'warning'
-    })
-    return
-  }
-  if (info) {
-    await request({
-      apiPath: '/newScorereportconfig',
-      body: info
-    })
-    TinyModal.message({
-      message: '新增成功',
-      status: 'success'
-    })
-    get()
+  if (content) {
+    let info
+    try {
+      info = JSON.parse(content)
+      info.id = param.value.examId
+    } catch {
+      TinyModal.message({
+        message: '文件内容非法',
+        status: 'warning'
+      })
+    }
+    if (param.value.subject == '多学科' && info.subject != '多学科') {
+      TinyModal.message({
+        message: '文件内容非法',
+        status: 'warning'
+      })
+      return
+    }
+    if (info) {
+      await request({
+        apiPath: '/newScorereportconfig',
+        body: info
+      })
+      TinyModal.message({
+        message: '新增成功',
+        status: 'success'
+      })
+      get()
+    }
   }
 }
 async function updateStudentVisible(id) {
@@ -122,33 +124,35 @@ async function updateStudentVisible(id) {
 }
 async function updateScorereportconfig(id) {
   const content = await readFile()
-  let info
-  try {
-    info = JSON.parse(content)
-    info.id = id
-  } catch {
-    TinyModal.message({
-      message: '文件内容非法',
-      status: 'warning'
-    })
-  }
-  if (param.value.subject == '多学科' && info.subject != '多学科') {
-    TinyModal.message({
-      message: '文件内容非法',
-      status: 'warning'
-    })
-    return
-  }
-  if (info) {
-    await request({
-      apiPath: '/updateScorereportconfig',
-      body: info
-    })
-    TinyModal.message({
-      message: '修改成功',
-      status: 'success'
-    })
-    get()
+  if (content) {
+    let info
+    try {
+      info = JSON.parse(content)
+      info.id = id
+    } catch {
+      TinyModal.message({
+        message: '文件内容非法',
+        status: 'warning'
+      })
+    }
+    if (param.value.subject == '多学科' && info.subject != '多学科') {
+      TinyModal.message({
+        message: '文件内容非法',
+        status: 'warning'
+      })
+      return
+    }
+    if (info) {
+      await request({
+        apiPath: '/updateScorereportconfig',
+        body: info
+      })
+      TinyModal.message({
+        message: '修改成功',
+        status: 'success'
+      })
+      get()
+    }
   }
 }
 async function deleteScorereportconfig(id) {
