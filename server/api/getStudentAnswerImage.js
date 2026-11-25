@@ -138,6 +138,17 @@ exports.main = async (event, configfilepath) => {
         }
       ]
     })
+    const result = {
+      answerOnline: examsubjectres.answerOnline,
+      image: []
+    }
+    if (result.answerOnline && examsubjectres.subjectiveQuestion.length == 0) {
+      return {
+        errCode: 0,
+        errMsg: '成功',
+        data: result
+      }
+    }
     const marklogres = await db.collection('marklog').find({
       examId: scorereportconfigres.examId,
       subject: examsubjectres.name,
@@ -147,10 +158,6 @@ exports.main = async (event, configfilepath) => {
       },
       type: 'system'
     }).toArray()
-    const result = {
-      answerOnline: examsubjectres.answerOnline,
-      image: []
-    }
     function getFirstNonEmptyPrefix(obj) {
       const priority = ['update', 'question', 'arbitrate', 'third', 'second', 'first']
       for (let i = 0; i < priority.length; i++) {

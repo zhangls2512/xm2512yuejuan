@@ -82,61 +82,63 @@ exports.main = async (event, configfilepath) => {
     let totalall = 0
     if (questionname == 'all') {
       questionname = examsubjectres.subjectiveQuestion.map(item => item.name)
-      const question = examsubjectres.objectiveQuestion.map(item => item.name)
-      const item = {
-        questionName: '客观题',
-        progress: 0,
-        finished: 0,
-        total: 0,
-        detail: []
-      }
-      const statres = await db.collection('marklog').aggregate([
-        {
-          $match: {
-            examId: requestdata.id,
-            subject: requestdata.subject,
-            type: 'system',
-            questionName: {
-              $in: question
+      if (examsubjectres.objectiveQuestion.length > 0) {
+        const question = examsubjectres.objectiveQuestion.map(item => item.name)
+        const item = {
+          questionName: '客观题',
+          progress: 0,
+          finished: 0,
+          total: 0,
+          detail: []
+        }
+        const statres = await db.collection('marklog').aggregate([
+          {
+            $match: {
+              examId: requestdata.id,
+              subject: requestdata.subject,
+              type: 'system',
+              questionName: {
+                $in: question
+              }
             }
-          }
-        },
-        {
-          $group: {
-            _id: null,
-            total: {
-              $sum: 1
-            },
-            finished: {
-              $sum: {
-                $cond: [
-                  {
-                    $eq: ['$finished', true]
-                  },
-                  1,
-                  0
-                ]
+          },
+          {
+            $group: {
+              _id: null,
+              total: {
+                $sum: 1
+              },
+              finished: {
+                $sum: {
+                  $cond: [
+                    {
+                      $eq: ['$finished', true]
+                    },
+                    1,
+                    0
+                  ]
+                }
               }
             }
           }
+        ]).toArray()
+        const stat = statres[0] ?? {
+          finished: 0,
+          total: 0
         }
-      ]).toArray()
-      const stat = statres[0] ?? {
-        finished: 0,
-        total: 0
+        item.detail.push({
+          name: '已识别量',
+          count: stat.finished
+        })
+        item.detail.push({
+          name: '总量',
+          count: stat.total
+        })
+        item.finished = stat.finished
+        item.total = stat.total
+        item.progress = percent(item.finished, item.total)
+        result.list.push(item)
       }
-      item.detail.push({
-        name: '已识别量',
-        count: stat.finished
-      })
-      item.detail.push({
-        name: '总量',
-        count: stat.total
-      })
-      item.finished = stat.finished
-      item.total = stat.total
-      item.progress = percent(item.finished, item.total)
-      result.list.push(item)
     }
     function percent(finished, total) {
       if (finished == total) {
@@ -148,20 +150,19 @@ exports.main = async (event, configfilepath) => {
       }
       return p / 10
     }
-    const scorediffcase = {
-      $switch: {
-        branches: examsubjectres.subjectiveQuestion.map(item => ({
-          case: {
-            $eq: ['$questionName', item.name]
-          },
-          then: item.arbitrateScoreDiff
-        })),
-        default: 0
-      }
-    }
-    let stats = []
     if (examsubjectres.subjectiveQuestion.length > 0) {
-      stats = await db.collection('marklog').aggregate([
+      const scorediffcase = {
+        $switch: {
+          branches: examsubjectres.subjectiveQuestion.map(item => ({
+            case: {
+              $eq: ['$questionName', item.name]
+            },
+            then: item.arbitrateScoreDiff
+          })),
+          default: 0
+        }
+      }
+      const stats = await db.collection('marklog').aggregate([
         {
           $match: {
             examId: requestdata.id,
@@ -341,171 +342,171 @@ exports.main = async (event, configfilepath) => {
           }
         }
       ]).toArray()
-    }
-    const questionnamemap = {}
-    stats.forEach(item => {
-      questionnamemap[item._id] = item
-    })
-    const questiontimemap = {}
-    questionname.forEach(item => {
-      if (!questiontimemap[item]) {
-        const markgroup = examsubjectres.markGroup.find(i => i.questionName.includes(item))
-        markgroup.questionName.forEach(item => {
-          questiontimemap[item] = {
-            time: markgroup.time,
-            secondMarkPercent: markgroup.secondMarkPercent
+      const questionnamemap = {}
+      stats.forEach(item => {
+        questionnamemap[item._id] = item
+      })
+      const questiontimemap = {}
+      questionname.forEach(item => {
+        if (!questiontimemap[item]) {
+          const markgroup = examsubjectres.markGroup.find(i => i.questionName.includes(item))
+          markgroup.questionName.forEach(item => {
+            questiontimemap[item] = {
+              time: markgroup.time,
+              secondMarkPercent: markgroup.secondMarkPercent
+            }
+          })
+        }
+        const qstat = questionnamemap[item] ?? {
+          firstFinished: 0,
+          firstTotal: 0,
+          secondFinished: 0,
+          thirdFinished: 0,
+          thirdPending: 0,
+          arbitrateFinished: 0,
+          arbitratePending: 0,
+          questionFinished: 0,
+          questionTotal: 0,
+        }
+        const time = questiontimemap[item].time
+        if (time == 1) {
+          const stat = {
+            questionName: item,
+            progress: 0,
+            finished: 0,
+            total: 0,
+            detail: [
+              {
+                name: '一评已阅量',
+                count: qstat.firstFinished
+              },
+              {
+                name: '一评总量',
+                count: qstat.firstTotal
+              },
+              {
+                name: '问题卷已处理量',
+                count: qstat.questionFinished
+              },
+              {
+                name: '问题卷总量',
+                count: qstat.questionTotal
+              }
+            ]
           }
-        })
-      }
-      const qstat = questionnamemap[item] ?? {
-        firstFinished: 0,
-        firstTotal: 0,
-        secondFinished: 0,
-        thirdFinished: 0,
-        thirdPending: 0,
-        arbitrateFinished: 0,
-        arbitratePending: 0,
-        questionFinished: 0,
-        questionTotal: 0,
-      }
-      const time = questiontimemap[item].time
-      if (time == 1) {
-        const stat = {
-          questionName: item,
-          progress: 0,
-          finished: 0,
-          total: 0,
-          detail: [
-            {
-              name: '一评已阅量',
-              count: qstat.firstFinished
-            },
-            {
-              name: '一评总量',
-              count: qstat.firstTotal
-            },
-            {
-              name: '问题卷已处理量',
-              count: qstat.questionFinished
-            },
-            {
-              name: '问题卷总量',
-              count: qstat.questionTotal
-            }
-          ]
+          stat.finished = qstat.firstFinished + qstat.questionFinished
+          stat.total = qstat.firstTotal + qstat.questionTotal
+          totalfinished += stat.finished
+          totalall += stat.total
+          stat.progress = percent(stat.finished, stat.total)
+          result.list.push(stat)
         }
-        stat.finished = qstat.firstFinished + qstat.questionFinished
-        stat.total = qstat.firstTotal + qstat.questionTotal
-        totalfinished += stat.finished
-        totalall += stat.total
-        stat.progress = percent(stat.finished, stat.total)
-        result.list.push(stat)
-      }
-      if (time == 2) {
-        const stat = {
-          questionName: item,
-          progress: 0,
-          finished: 0,
-          total: 0,
-          detail: [
-            {
-              name: '一评已阅量',
-              count: qstat.firstFinished
-            },
-            {
-              name: '一评总量',
-              count: qstat.firstTotal
-            },
-            {
-              name: '二评已阅量',
-              count: qstat.secondFinished
-            },
-            {
-              name: '二评总量',
-              count: Math.max(Math.round(qstat.firstTotal * questiontimemap[item].secondMarkPercent), qstat.secondFinished)
-            },
-            {
-              name: '仲裁已阅量',
-              count: qstat.arbitrateFinished
-            },
-            {
-              name: '仲裁总量',
-              count: qstat.arbitrateFinished + qstat.arbitratePending
-            },
-            {
-              name: '问题卷已处理量',
-              count: qstat.questionFinished
-            },
-            {
-              name: '问题卷总量',
-              count: qstat.questionTotal
-            }
-          ]
+        if (time == 2) {
+          const stat = {
+            questionName: item,
+            progress: 0,
+            finished: 0,
+            total: 0,
+            detail: [
+              {
+                name: '一评已阅量',
+                count: qstat.firstFinished
+              },
+              {
+                name: '一评总量',
+                count: qstat.firstTotal
+              },
+              {
+                name: '二评已阅量',
+                count: qstat.secondFinished
+              },
+              {
+                name: '二评总量',
+                count: Math.max(Math.round(qstat.firstTotal * questiontimemap[item].secondMarkPercent), qstat.secondFinished)
+              },
+              {
+                name: '仲裁已阅量',
+                count: qstat.arbitrateFinished
+              },
+              {
+                name: '仲裁总量',
+                count: qstat.arbitrateFinished + qstat.arbitratePending
+              },
+              {
+                name: '问题卷已处理量',
+                count: qstat.questionFinished
+              },
+              {
+                name: '问题卷总量',
+                count: qstat.questionTotal
+              }
+            ]
+          }
+          stat.finished = qstat.firstFinished + qstat.secondFinished + qstat.arbitrateFinished + qstat.questionFinished
+          stat.total = qstat.firstTotal + stat.detail[3].count + stat.detail[5].count + qstat.questionTotal
+          totalfinished += stat.finished
+          totalall += stat.total
+          stat.progress = percent(stat.finished, stat.total)
+          result.list.push(stat)
         }
-        stat.finished = qstat.firstFinished + qstat.secondFinished + qstat.arbitrateFinished + qstat.questionFinished
-        stat.total = qstat.firstTotal + stat.detail[3].count + stat.detail[5].count + qstat.questionTotal
-        totalfinished += stat.finished
-        totalall += stat.total
-        stat.progress = percent(stat.finished, stat.total)
-        result.list.push(stat)
-      }
-      if (time == 3) {
-        const stat = {
-          questionName: item,
-          progress: 0,
-          finished: 0,
-          total: 0,
-          detail: [
-            {
-              name: '一评已阅量',
-              count: qstat.firstFinished
-            },
-            {
-              name: '一评总量',
-              count: qstat.firstTotal
-            },
-            {
-              name: '二评已阅量',
-              count: qstat.secondFinished
-            },
-            {
-              name: '二评总量',
-              count: Math.max(Math.round(qstat.firstTotal * questiontimemap[item].secondMarkPercent), qstat.secondFinished)
-            },
-            {
-              name: '三评已阅量',
-              count: qstat.thirdFinished
-            },
-            {
-              name: '三评总量',
-              count: qstat.thirdFinished + qstat.thirdPending
-            },
-            {
-              name: '仲裁已阅量',
-              count: qstat.arbitrateFinished
-            },
-            {
-              name: '仲裁总量',
-              count: qstat.arbitrateFinished + qstat.arbitratePending - qstat.thirdPending
-            },
-            {
-              name: '问题卷已处理量',
-              count: qstat.questionFinished
-            },
-            {
-              name: '问题卷总量',
-              count: qstat.questionTotal
-            }
-          ]
+        if (time == 3) {
+          const stat = {
+            questionName: item,
+            progress: 0,
+            finished: 0,
+            total: 0,
+            detail: [
+              {
+                name: '一评已阅量',
+                count: qstat.firstFinished
+              },
+              {
+                name: '一评总量',
+                count: qstat.firstTotal
+              },
+              {
+                name: '二评已阅量',
+                count: qstat.secondFinished
+              },
+              {
+                name: '二评总量',
+                count: Math.max(Math.round(qstat.firstTotal * questiontimemap[item].secondMarkPercent), qstat.secondFinished)
+              },
+              {
+                name: '三评已阅量',
+                count: qstat.thirdFinished
+              },
+              {
+                name: '三评总量',
+                count: qstat.thirdFinished + qstat.thirdPending
+              },
+              {
+                name: '仲裁已阅量',
+                count: qstat.arbitrateFinished
+              },
+              {
+                name: '仲裁总量',
+                count: qstat.arbitrateFinished + qstat.arbitratePending - qstat.thirdPending
+              },
+              {
+                name: '问题卷已处理量',
+                count: qstat.questionFinished
+              },
+              {
+                name: '问题卷总量',
+                count: qstat.questionTotal
+              }
+            ]
+          }
+          stat.finished = qstat.firstFinished + qstat.secondFinished + qstat.thirdFinished + qstat.arbitrateFinished + qstat.questionFinished
+          stat.total = qstat.firstTotal + stat.detail[3].count + stat.detail[5].count + stat.detail[7].count + qstat.questionTotal
+          totalfinished += stat.finished
+          totalall += stat.total
+          stat.progress = percent(stat.finished, stat.total)
+          result.list.push(stat)
         }
-        stat.finished = qstat.firstFinished + qstat.secondFinished + qstat.thirdFinished + qstat.arbitrateFinished + qstat.questionFinished
-        stat.total = qstat.firstTotal + stat.detail[3].count + stat.detail[5].count + stat.detail[7].count + qstat.questionTotal
-        totalfinished += stat.finished
-        totalall += stat.total
-        stat.progress = percent(stat.finished, stat.total)
-        result.list.push(stat)
-      }
-    })
+      })
+    }
     if (result.progress) {
       result.finished = totalfinished
       result.total = totalall

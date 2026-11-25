@@ -93,6 +93,16 @@ async function newExam() {
   })
   router.push('/processingexam')
 }
+function formatPermission(a) {
+  const permissionmap = {
+    updateEndStatus: '结束、重启考试',
+    updateInfo: '修改考试信息',
+    delete: '删除考试',
+    manageSubject: '管理科目',
+    manageScorereportconfig: '管理多学科成绩报告配置'
+  }
+  return a.cellValue.map(item => permissionmap[item]).join()
+}
 </script>
 
 <template>
@@ -120,7 +130,8 @@ async function newExam() {
           <tiny-button type="success" @click="addAdmin">添加</tiny-button>
           <tiny-grid :data="admin">
             <tiny-grid-column field="account" title="账号" align="center"></tiny-grid-column>
-            <tiny-grid-column field="permission" title="权限" align="center" show-overflow></tiny-grid-column>
+            <tiny-grid-column field="permission" title="权限" align="center" :format-text="formatPermission"
+              show-overflow></tiny-grid-column>
             <tiny-grid-column title="操作" align="center">
               <template #default="{ $rowIndex }">
                 <tiny-button type="danger" @click="removeAdmin($rowIndex)">删除</tiny-button>

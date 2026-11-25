@@ -28,6 +28,9 @@ if (info) {
     data.value.subject.objectiveQuestion.forEach(item => {
       objectivequestionmap[item.name] = item
     })
+    if (data.value.subject.subjectiveQuestion.length == 0) {
+      tabname.value = '客观题核查'
+    }
   } catch {
   }
 }
@@ -98,7 +101,7 @@ async function getMarkArbitrateRate() {
   })
   markarbitraterate.value = res.data
 }
-async function get() {
+async function spotMarklog() {
   if (!questionname.value) {
     TinyModal.message({
       message: '请选择题号',
@@ -137,7 +140,7 @@ async function newQuestion() {
     message: '提交成功',
     status: 'success'
   })
-  get()
+  answer.value = {}
 }
 async function clearMarklog() {
   if (!questionname.value) {
@@ -233,7 +236,7 @@ async function submit(item) {
       <div>{{ data.subject.name }}</div>
     </div>
     <tiny-tabs v-model="tabname">
-      <tiny-tab-item title="分数曲线" name="分数曲线">
+      <tiny-tab-item v-if="data.subject.subjectiveQuestion.length > 0" title="分数曲线" name="分数曲线">
         <template #default>
           <div class="cz">
             <div class="sp">
@@ -248,12 +251,12 @@ async function submit(item) {
           </div>
         </template>
       </tiny-tab-item>
-      <tiny-tab-item title="分数一致性" name="分数一致性">
+      <tiny-tab-item v-if="data.subject.subjectiveQuestion.length > 0" title="分数一致性" name="分数一致性">
         <template #default>
           <div class="cz">
             <div><tiny-button type="info" @click="getMarkConsistency">获取</tiny-button></div>
-            <div style="color:red">偏差率：平均分差占该题总分的百分比。</div>
-            <div class="wide-sp">
+            <div v-if="markconsistency.length > 0" style="color:red">偏差率：平均分差占该题总分的百分比。</div>
+            <div v-if="markconsistency.length > 0" class="wide-sp">
               <div class="bold-text">阅卷人账号</div>
               <div class="bold-text">题号</div>
               <div class="bold-text">平均分差</div>
@@ -275,11 +278,11 @@ async function submit(item) {
           </div>
         </template>
       </tiny-tab-item>
-      <tiny-tab-item title="仲裁率" name="仲裁率">
+      <tiny-tab-item v-if="data.subject.subjectiveQuestion.length > 0" title="仲裁率" name="仲裁率">
         <template #default>
           <div class="cz">
             <div><tiny-button type="info" @click="getMarkArbitrateRate">获取</tiny-button></div>
-            <div class="wide-sp">
+            <div v-if="markarbitraterate.length > 0" class="wide-sp">
               <div class="bold-text">题号</div>
               <div class="bold-text">阅卷人账号</div>
               <div class="bold-text">仲裁率</div>
@@ -299,7 +302,7 @@ async function submit(item) {
           </div>
         </template>
       </tiny-tab-item>
-      <tiny-tab-item title="阅卷记录抽样" name="阅卷记录抽样">
+      <tiny-tab-item v-if="data.subject.subjectiveQuestion.length > 0" title="阅卷记录抽样" name="阅卷记录抽样">
         <template #default>
           <div class="cz">
             <div class="sp">
@@ -308,7 +311,7 @@ async function submit(item) {
                 <tiny-option v-for="item in questionnamearr" :value="item"></tiny-option>
               </tiny-base-select>
               <tiny-input v-model="markeraccount" clearable maxlength="36" placeholder="请输入阅卷人账号"></tiny-input>
-              <tiny-button type="info" @click="get">抽取</tiny-button>
+              <tiny-button type="info" @click="spotMarklog">抽取</tiny-button>
             </div>
             <div class="spacebetween" style="align-items:flex-start">
               <div class="cz" style="flex:1">
@@ -336,7 +339,7 @@ async function submit(item) {
           </div>
         </template>
       </tiny-tab-item>
-      <tiny-tab-item title="阅卷记录清空" name="阅卷记录清空">
+      <tiny-tab-item v-if="data.subject.subjectiveQuestion.length > 0" title="阅卷记录清空" name="阅卷记录清空">
         <template #default>
           <div class="sp">
             <div class="bold-text">题号</div>
@@ -347,12 +350,13 @@ async function submit(item) {
           </div>
         </template>
       </tiny-tab-item>
-      <tiny-tab-item title="客观题核查" name="客观题核查">
+      <tiny-tab-item v-if="data.subject.objectiveQuestion.length > 0" title="客观题核查" name="客观题核查">
         <template #default>
           <div class="cz">
             <div><tiny-button type="info" @click="checkObjectiveQuestionMarklog">核查</tiny-button></div>
-            <tiny-tabs v-model="objectivequestionchecktabname">
-              <tiny-tab-item v-if="objectivequestioncheckdata" title="未选" name="未选">
+            <tiny-tabs v-if="objectivequestioncheckdata.empty || objectivequestioncheckdata.multiple"
+              v-model="objectivequestionchecktabname">
+              <tiny-tab-item v-if="objectivequestioncheckdata.empty" title="未选" name="未选">
                 <template #default>
                   <div class="cz">
                     <div class="wide-sp">
@@ -379,7 +383,7 @@ async function submit(item) {
                   </div>
                 </template>
               </tiny-tab-item>
-              <tiny-tab-item v-if="objectivequestioncheckdata" title="单选题多选" name="单选题多选">
+              <tiny-tab-item v-if="objectivequestioncheckdata.multiple" title="单选题多选" name="单选题多选">
                 <template #default>
                   <div class="cz">
                     <div class="wide-sp">

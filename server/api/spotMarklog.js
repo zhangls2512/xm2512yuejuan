@@ -64,11 +64,17 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const validquestionnames = examsubjectres.subjectiveQuestion.map(item => item.name)
-    if (!validquestionnames.includes(requestdata.questionName)) {
+    if (examsubjectres.subjectiveQuestion.length == 0) {
       return {
         errCode: 400,
-        errMsg: '题号不存在',
+        errMsg: '无主观题',
+        errFix: '无修复建议'
+      }
+    }
+    if (!examsubjectres.subjectiveQuestion.find(item => item.name == requestdata.questionName)) {
+      return {
+        errCode: 400,
+        errMsg: '非主观题',
         errFix: '无修复建议'
       }
     }

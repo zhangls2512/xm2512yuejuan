@@ -317,9 +317,9 @@ function updatescore(exam, subject) {
         <div class="line"></div>
         <div v-for="subject in item.subject" class="cz">
           <div class="spacebetween">
-            <div class="wide-sp">
-              <div style="width:150px">【{{ subject.name }}】</div>
-              <div v-if="admin" class="sp" style="width:600px">
+            <div class="gap-sp" style="width:90%">
+              <div style="width:10%">【{{ subject.name }}】</div>
+              <div v-if="admin" class="sp" style="width:45%">
                 <div v-if="subject.markStatus != 'end'" class="clickwz"
                   @click="updateSubject(item.examId, subject.name)">○ 编辑配置</div>
                 <div v-if="subject.markStatus == 'end'" class="disabledwz" style="cursor:not-allowed">☑ 编辑配置</div>
@@ -339,15 +339,15 @@ function updatescore(exam, subject) {
                 <div v-if="subject.markStatus == 'end'" class="clickwz"
                   @click="updateMarkStatus(item.examId, subject.name, 'paused')">○ 重新阅卷</div>
               </div>
-              <div class="sp">
+              <div class="sp" style="width:40%">
                 <div v-if="subject.markStatus == 'end'" class="footer-text">阅卷已结束。</div>
                 <div v-if="subject.markStatus != 'end'" class="clickwz" @click="config(item, subject)">查看配置</div>
                 <div v-if="admin && subject.markStatus != 'end'" class="clickwz"
                   @click="answer(item.examId, subject.name)">作答记录</div>
                 <div v-if="admin && subject.markStatus != 'end'" class="clickwz"
                   @click="markProgress(item, subject.name)">阅卷进度</div>
-                <div v-if="admin && subject.markStatus != 'end'" class="clickwz"
-                  @click="dealQuestion(item, subject.name)">处理问题卷</div>
+                <div v-if="admin && subject.markStatus != 'end' && subject.subjectiveQuestion.length > 0"
+                  class="clickwz" @click="dealQuestion(item, subject.name)">处理问题卷</div>
                 <div v-if="admin && subject.markStatus == 'end'" class="clickwz"
                   @click="getAnswerCsv(item, subject.name)">导出小题明细</div>
                 <div v-if="admin && subject.markStatus == 'end'" class="clickwz"
@@ -398,3 +398,11 @@ function updatescore(exam, subject) {
       :total="total" @current-change="currentpageChange" @size-change="pagesizeChange"></tiny-pager>
   </div>
 </template>
+
+<style scoped>
+.gap-sp {
+  align-items: center;
+  display: flex;
+  gap: 2.5%;
+}
+</style>

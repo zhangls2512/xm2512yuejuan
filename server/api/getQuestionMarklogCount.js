@@ -46,6 +46,13 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
+    if (examsubjectres.subjectiveQuestion.length == 0) {
+      return {
+        errCode: 400,
+        errMsg: '无主观题',
+        errFix: '无修复建议'
+      }
+    }
     const examres = await db.collection('exam').findOne({
       examId: requestdata.id
     }, {

@@ -50,6 +50,26 @@ function formatPage(p) {
   })
   return result.join()
 }
+function formatPermission(a) {
+  const permissionmap = {
+    dealQuestion: '处理问题卷',
+    updateMarkStatus: '修改阅卷状态',
+    getMarkProgress: '查看阅卷进度',
+    getMarkCurve: '查看评分曲线',
+    getMarkConsistency: '查看分数一致性',
+    getMarkArbitrateRate: '查看仲裁率',
+    spotMarklog: '阅卷记录抽样',
+    clearMarklog: '阅卷记录清空',
+    checkObjectiveQuestionMarklog: '客观题核查',
+    updateScore: '修改分数',
+    manageAnswer: '管理作答记录',
+    manageScorereportconfig: '管理成绩报告配置',
+    getAnswerCsv: '导出小题明细',
+    updateConfig: '修改配置',
+    supplyScore: '成绩补录'
+  }
+  return a.cellValue.map(item => permissionmap[item]).join()
+}
 </script>
 
 <template>
@@ -91,7 +111,8 @@ function formatPage(p) {
             <div>{{ accountmap[row.account] }}</div>
           </template>
         </tiny-grid-column>
-        <tiny-grid-column field="permission" title="权限" align="center" show-overflow></tiny-grid-column>
+        <tiny-grid-column field="permission" title="权限" align="center" :format-text="formatPermission"
+          show-overflow></tiny-grid-column>
       </tiny-grid>
     </div>
     <div class="sp">
@@ -158,7 +179,8 @@ function formatPage(p) {
                   <div>{{ accountmap[admin.account] }}</div>
                 </template>
               </tiny-grid-column>
-              <tiny-grid-column field="permission" title="权限" align="center" show-overflow></tiny-grid-column>
+              <tiny-grid-column field="permission" title="权限" align="center" :format-text="formatPermission"
+                show-overflow></tiny-grid-column>
             </tiny-grid>
           </template>
         </tiny-grid-column>
