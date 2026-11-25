@@ -79,6 +79,13 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
+    if (examres.end) {
+      return {
+        errCode: 400,
+        errMsg: '考试已结束',
+        errFix: '无修复建议'
+      }
+    }
     if (!(account.type == 'admin' && account.schoolId == examres.schoolId)) {
       const adminexist = examres.admin.find(item => item.account == account.account)
       if (!adminexist) {
