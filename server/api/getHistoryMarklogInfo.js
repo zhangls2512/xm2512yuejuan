@@ -57,8 +57,8 @@ exports.main = async (event, configfilepath) => {
       }
     }
     const markgroup = examsubjectres.markGroup.find(item => item.questionName.includes(marklogres.questionName))
-    const member = markgroup.member.find(item => item.account == account.account)
-    if (marklogres.type != 'arbitrate' && !member) {
+    const ismember = markgroup.member.find(item => item.account == account.account)
+    if (marklogres.type != 'arbitrate' && !ismember) {
       return {
         errCode: 403,
         errMsg: '无权限',

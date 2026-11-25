@@ -85,8 +85,8 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const member = markgroup.member.find(item => item.account == account.account)
-    if (requestdata.type == 'normal' && !member) {
+    const ismember = markgroup.member.find(item => item.account == account.account)
+    if (requestdata.type == 'normal' && !ismember) {
       return {
         errCode: 403,
         errMsg: '无权限',
@@ -122,8 +122,8 @@ exports.main = async (event, configfilepath) => {
           $in: ['first', 'second', 'third']
         }
       })
-      if (!member.allowExceedQuota) {
-        const yu = member.quota * markgroup.questionName.length - count
+      if (!ismember.allowExceedQuota) {
+        const yu = ismember.quota * markgroup.questionName.length - count
         quota[0] = yu > 0 ? yu : 0
       }
       if (markgroup.consistencyCheckPercent > 0) {

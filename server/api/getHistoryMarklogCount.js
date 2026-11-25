@@ -82,8 +82,8 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const member = markgroup.member.find(item => item.account == account.account)
-    if (requestdata.type == 'normal' && !member) {
+    const ismember = markgroup.member.find(item => item.account == account.account)
+    if (requestdata.type == 'normal' && !ismember) {
       return {
         errCode: 403,
         errMsg: '无权限',

@@ -50,13 +50,6 @@ exports.main = async (event, configfilepath) => {
       examId: marklogres.examId,
       name: marklogres.subject
     })
-    if (examsubjectres.markStatus == 'paused') {
-      return {
-        errCode: 400,
-        errMsg: '阅卷未开始',
-        errFix: '无修复建议'
-      }
-    }
     if (examsubjectres.markStatus == 'end') {
       return {
         errCode: 400,
@@ -90,10 +83,48 @@ exports.main = async (event, configfilepath) => {
         }
       }
     }
+    if (examsubjectres.markStatus == 'paused' && !questionname) {
+      return {
+        errCode: 400,
+        errMsg: '阅卷未开始',
+        errFix: '无修复建议'
+      }
+    }
     const markgroup = examsubjectres.markGroup.find(item => item.questionName.includes(marklogres.questionName))
-    const member = markgroup.member.find(item => item.account == account.account)
+    const ismember = markgroup.member.find(item => item.account == account.account)
     const isarbitrator = markgroup.arbitrator && markgroup.arbitrator.includes(account.account)
-    if (!member && !isarbitrator && (!questionname || (questionname != 'all' && !questionname.includes(marklogres.questionName)))) {
+    let access = false
+    if (ismember && !marklogres.arbitrateMarkerAccount) {
+      if (marklogres.firstMarkerAccount == account.account || marklogres.secondMarkerAccount == account.account || marklogres.thirdMarkerAccount == account.account) {
+        access = true
+      } else {
+        if (markgroup.time == 1 && !marklogres.firstMarkerAccount) {
+          access = true
+        }
+        if (markgroup.time == 2 && !marklogres.secondMarkerAccount) {
+          access = true
+        }
+        if (markgroup.time == 3 && marklogres.minScoreDiff > examsubjectres.subjectiveQuestion.find(q => q.name == marklogres.questionName).arbitrateScoreDiff) {
+          access = true
+        }
+      }
+    }
+    if (isarbitrator) {
+      if (marklogres.arbitrateMarkerAccount == account.account) {
+        access = true
+      }
+      if (!marklogres.arbitrateMarkerAccount && marklogres.minScoreDiff > examsubjectres.subjectiveQuestion.find(q => q.name == marklogres.questionName).arbitrateScoreDiff) {
+        if (markgroup.time == 2 || (markgroup.time == 3 && marklogres.thirdMarkerAccount)) {
+          access = true
+        }
+      }
+    }
+    if (questionname == 'all' || questionname.includes(marklogres.questionName)) {
+      if (marklogres.firstMarkerAccount || marklogres.secondMarkerAccount || marklogres.thirdMarkerAccount || marklogres.arbitrateMarkerAccount) {
+        access = true
+      }
+    }
+    if (!access) {
       return {
         errCode: 403,
         errMsg: '无权限',
