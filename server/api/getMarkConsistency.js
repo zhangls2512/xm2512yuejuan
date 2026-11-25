@@ -80,7 +80,7 @@ exports.main = async (event, configfilepath) => {
         }
       }
     }
-    if (!questionname || (questionname != 'all' && !questionname.includes(requestdata.questionName))) {
+    if (!questionname || questionname.length == 0) {
       return {
         errCode: 403,
         errMsg: '无权限',

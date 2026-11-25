@@ -18,11 +18,11 @@ exports.main = async (event, configfilepath) => {
       errFix: '传递有效的subject参数'
     }
   }
-  if (typeof (requestdata.questionName) != 'string' || !requestdata.questionName) {
+  if (typeof (requestdata.name) != 'string' || !requestdata.name) {
     return {
       errCode: 400,
       errMsg: '请求参数错误',
-      errFix: '传递有效的questionName参数'
+      errFix: '传递有效的name参数'
     }
   }
   const res = await require('../util/authcheck').main(event.headers, configfilepath)
@@ -69,7 +69,7 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    if (!examsubjectres.subjectiveQuestion.find(item => item.name == requestdata.questionName)) {
+    if (!examsubjectres.subjectiveQuestion.find(item => item.name == requestdata.name)) {
       return {
         errCode: 400,
         errMsg: '非主观题',
@@ -102,7 +102,7 @@ exports.main = async (event, configfilepath) => {
         }
       }
     }
-    if (!questionname || (questionname != 'all' && !questionname.includes(requestdata.questionName))) {
+    if (!questionname || (questionname != 'all' && !questionname.includes(requestdata.name))) {
       return {
         errCode: 403,
         errMsg: '无权限',
@@ -129,7 +129,7 @@ exports.main = async (event, configfilepath) => {
     await db.collection('marklog').updateOne({
       examId: requestdata.id,
       subject: requestdata.subject,
-      questionName: requestdata.questionName,
+      questionName: requestdata.name,
       type: 'system',
       updateMarkerAccount: ''
     }, {
@@ -154,13 +154,13 @@ exports.main = async (event, configfilepath) => {
     await db.collection('marklog').deleteMany({
       examId: requestdata.id,
       subject: requestdata.subject,
-      questionName: requestdata.questionName,
+      questionName: requestdata.name,
       type: {
         $in: ['first', 'second', 'third', 'arbitrate', 'question', 'consistencycheck']
       }
     })
     const rootdir = readConfig(configfilepath, 'dataRootPath') + '/exam/' + requestdata.id + '/' + requestdata.subject + '/marktrace/'
-    const startswith = ['first', 'second', 'third', 'arbitrate', 'question'].map(item => requestdata.questionName + '-' + item)
+    const startswith = ['first', 'second', 'third', 'arbitrate', 'question'].map(item => requestdata.name + '-' + item)
     rmstartswith(rootdir, startswith)
     return {
       errCode: 0,

@@ -11,11 +11,11 @@ exports.main = async (event, configfilepath) => {
       errFix: '传递有效的id参数'
     }
   }
-  if (typeof (requestdata.questionName) != 'string' || !requestdata.questionName) {
+  if (typeof (requestdata.name) != 'string' || !requestdata.name) {
     return {
       errCode: 400,
       errMsg: '请求参数错误',
-      errFix: '传递有效的questionName参数'
+      errFix: '传递有效的name参数'
     }
   }
   const res = await require('../util/authcheck').main(event.headers, configfilepath)
@@ -54,7 +54,7 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    if (!scorereportconfigres.config.scoringQuestionNames.includes(requestdata.questionName)) {
+    if (!scorereportconfigres.config.scoringQuestionNames.includes(requestdata.name)) {
       return {
         errCode: 400,
         errMsg: '题号不存在',
@@ -137,7 +137,7 @@ exports.main = async (event, configfilepath) => {
       ]
     })
     const questions = examsubjectres.objectiveQuestion.concat(examsubjectres.subjectiveQuestion)
-    const question = questions.find(item => item.name == requestdata.questionName)
+    const question = questions.find(item => item.name == requestdata.name)
     if (!question.questionId) {
       return {
         errCode: 400,

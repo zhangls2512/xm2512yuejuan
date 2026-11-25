@@ -24,7 +24,7 @@ async function openQa(questionname) {
     apiPath: '/getQuestionAndAnswer',
     body: {
       id: props.id,
-      questionName: questionname
+      name: questionname
     }
   })
   qa.value = res.data
@@ -39,7 +39,7 @@ async function openSa(questionname) {
     apiPath: '/getStudentQuestionAnswer',
     body: {
       id: props.id,
-      questionName: questionname
+      name: questionname
     }
   })
   answer.value = res.data

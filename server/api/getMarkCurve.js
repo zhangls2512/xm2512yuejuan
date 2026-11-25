@@ -16,11 +16,11 @@ exports.main = async (event, configfilepath) => {
       errFix: '传递有效的subject参数'
     }
   }
-  if (typeof (requestdata.questionName) != 'string' || !requestdata.questionName) {
+  if (typeof (requestdata.name) != 'string' || !requestdata.name) {
     return {
       errCode: 400,
       errMsg: '请求参数错误',
-      errFix: '传递有效的questionName参数'
+      errFix: '传递有效的name参数'
     }
   }
   if (typeof (requestdata.markerAccount) != 'string' || (requestdata.markerAccount && requestdata.markerAccount.length != 36)) {
@@ -67,7 +67,7 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    if (!examsubjectres.subjectiveQuestion.find(item => item.name == requestdata.questionName)) {
+    if (!examsubjectres.subjectiveQuestion.find(item => item.name == requestdata.name)) {
       return {
         errCode: 400,
         errMsg: '非主观题',
@@ -100,7 +100,7 @@ exports.main = async (event, configfilepath) => {
         }
       }
     }
-    if (!questionname || (questionname != 'all' && !questionname.includes(requestdata.questionName))) {
+    if (!questionname || (questionname != 'all' && !questionname.includes(requestdata.name))) {
       return {
         errCode: 403,
         errMsg: '无权限',
@@ -114,12 +114,12 @@ exports.main = async (event, configfilepath) => {
           $match: {
             examId: requestdata.id,
             subject: requestdata.subject,
-            questionName: requestdata.questionName,
+            questionName: requestdata.name,
             type: 'system',
             questionReason: '',
             updateMarkerAccount: '',
             finalStepScore: {
-              $size: examsubjectres.subjectiveQuestion.find(item => item.name == requestdata.questionName).stepScore.length
+              $size: examsubjectres.subjectiveQuestion.find(item => item.name == requestdata.name).stepScore.length
             }
           }
         },
@@ -157,7 +157,7 @@ exports.main = async (event, configfilepath) => {
           $match: {
             examId: requestdata.id,
             subject: requestdata.subject,
-            questionName: requestdata.questionName,
+            questionName: requestdata.name,
             markerAccount: requestdata.markerAccount,
             type: {
               $in: ['first', 'second', 'third', 'arbitrate']

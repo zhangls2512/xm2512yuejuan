@@ -13,11 +13,11 @@ exports.main = async (event, configfilepath) => {
       errFix: '传递有效的id参数'
     }
   }
-  if (typeof (requestdata.questionName) != 'string' || !requestdata.questionName) {
+  if (typeof (requestdata.name) != 'string' || !requestdata.name) {
     return {
       errCode: 400,
       errMsg: '请求参数错误',
-      errFix: '传递有效的questionName参数'
+      errFix: '传递有效的name参数'
     }
   }
   const res = await require('../util/authcheck').main(event.headers, configfilepath)
@@ -71,7 +71,7 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    if (!scorereportconfigres.config.scoringQuestionNames.includes(requestdata.questionName)) {
+    if (!scorereportconfigres.config.scoringQuestionNames.includes(requestdata.name)) {
       return {
         errCode: 400,
         errMsg: '题号不存在',
@@ -160,7 +160,7 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    if (!examsubjectres.subjectiveQuestion.find(item => item.name == requestdata.questionName)) {
+    if (!examsubjectres.subjectiveQuestion.find(item => item.name == requestdata.name)) {
       return {
         errCode: 400,
         errMsg: '非主观题',
@@ -171,7 +171,7 @@ exports.main = async (event, configfilepath) => {
       examId: scorereportconfigres.examId,
       subject: examsubjectres.name,
       studentAccount: studentAccount,
-      questionName: requestdata.questionName,
+      questionName: requestdata.name,
       type: 'system'
     })
     if (!marklogres) {
@@ -181,7 +181,7 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const markgroup = examsubjectres.markGroup.find(item => item.questionName.includes(requestdata.questionName))
+    const markgroup = examsubjectres.markGroup.find(item => item.questionName.includes(requestdata.name))
     const result = {
       answerImage: [],
       stepScore: marklogres.finalStepScore,

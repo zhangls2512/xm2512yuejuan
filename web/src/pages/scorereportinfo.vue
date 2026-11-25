@@ -135,7 +135,7 @@ async function openQa(questionname) {
     apiPath: '/getQuestionAndAnswer',
     body: {
       id: data.value.id,
-      questionName: questionname
+      name: questionname
     }
   })
   qa.value = res.data
@@ -167,7 +167,7 @@ async function openSa(questionname, stu) {
     body: {
       id: data.value.id,
       studentAccount: stu,
-      questionName: questionname
+      name: questionname
     }
   })
   answer.value = res.data
@@ -178,7 +178,7 @@ async function openSab(row, type) {
     apiPath: '/getTypicalMarklog',
     body: {
       id: data.value.id,
-      questionName: row.name,
+      name: row.name,
       type: type
     }
   })

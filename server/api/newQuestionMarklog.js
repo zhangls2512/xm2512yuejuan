@@ -93,7 +93,7 @@ exports.main = async (event, configfilepath) => {
     const markgroup = examsubjectres.markGroup.find(item => item.questionName.includes(marklogres.questionName))
     const member = markgroup.member.find(item => item.account == account.account)
     const isarbitrator = markgroup.arbitrator && markgroup.arbitrator.includes(account.account)
-    if (!member && !isarbitrator && (!questionname || (questionname != 'all' && !questionname.includes(requestdata.questionName)))) {
+    if (!member && !isarbitrator && (!questionname || (questionname != 'all' && !questionname.includes(marklogres.questionName)))) {
       return {
         errCode: 403,
         errMsg: '无权限',

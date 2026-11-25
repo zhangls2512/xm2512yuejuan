@@ -16,11 +16,11 @@ exports.main = async (event, configfilepath) => {
       errFix: '传递有效的subject参数'
     }
   }
-  if (typeof (requestdata.questionName) != 'string' || !requestdata.questionName) {
+  if (typeof (requestdata.name) != 'string' || !requestdata.name) {
     return {
       errCode: 400,
       errMsg: '请求参数错误',
-      errFix: '传递有效的questionName参数'
+      errFix: '传递有效的name参数'
     }
   }
   const res = await require('../util/authcheck').main(event.headers, configfilepath)
@@ -53,7 +53,7 @@ exports.main = async (event, configfilepath) => {
         errFix: '无修复建议'
       }
     }
-    const markgroup = examsubjectres.markGroup.find(item => item.questionName.includes(requestdata.questionName))
+    const markgroup = examsubjectres.markGroup.find(item => item.questionName.includes(requestdata.name))
     if (!markgroup) {
       return {
         errCode: 400,
@@ -91,7 +91,7 @@ exports.main = async (event, configfilepath) => {
         $match: {
           examId: requestdata.id,
           subject: requestdata.subject,
-          questionName: requestdata.questionName,
+          questionName: requestdata.name,
           type: {
             $in: ['first', 'second', 'third', 'arbitrate']
           }

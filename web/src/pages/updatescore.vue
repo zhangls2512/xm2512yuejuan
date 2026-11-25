@@ -49,7 +49,7 @@ async function submit(item) {
     id: data.value.examId,
     subject: data.value.subject,
     studentAccount: studentaccount.value,
-    questionName: item.questionName
+    name: item.questionName
   }
   if (item.answer) {
     body.answer = item.answer

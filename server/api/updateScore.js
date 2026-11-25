@@ -24,11 +24,11 @@ exports.main = async (event, configfilepath) => {
       errFix: '传递有效的studentAccount参数'
     }
   }
-  if (typeof (requestdata.questionName) != 'string' || !requestdata.questionName) {
+  if (typeof (requestdata.name) != 'string' || !requestdata.name) {
     return {
       errCode: 400,
       errMsg: '请求参数错误',
-      errFix: '传递有效的questionName参数'
+      errFix: '传递有效的name参数'
     }
   }
   const res = await require('../util/authcheck').main(event.headers, configfilepath)
@@ -55,7 +55,7 @@ exports.main = async (event, configfilepath) => {
       }
     }
     const validquestionnames = examsubjectres.objectiveQuestion.map(item => item.name).concat(examsubjectres.subjectiveQuestion.map(item => item.name))
-    if (!validquestionnames.includes(requestdata.questionName)) {
+    if (!validquestionnames.includes(requestdata.name)) {
       return {
         errCode: 400,
         errMsg: '题号不存在',
@@ -74,7 +74,7 @@ exports.main = async (event, configfilepath) => {
       examId: requestdata.id,
       subject: requestdata.subject,
       studentAccount: requestdata.studentAccount,
-      questionName: requestdata.questionName,
+      questionName: requestdata.name,
       type: 'system'
     })
     if (!marklogres) {
@@ -85,7 +85,7 @@ exports.main = async (event, configfilepath) => {
       }
     }
     if (marklogres.answer) {
-      const question = examsubjectres.objectiveQuestion.find(q => q.name == requestdata.questionName)
+      const question = examsubjectres.objectiveQuestion.find(q => q.name == requestdata.name)
       if (!Array.isArray(requestdata.answer) || !requestdata.answer.every(item => question.option[item])) {
         return {
           errCode: 400,
@@ -114,7 +114,7 @@ exports.main = async (event, configfilepath) => {
         examId: requestdata.id,
         subject: requestdata.subject,
         studentAccount: requestdata.studentAccount,
-        questionName: requestdata.questionName,
+        questionName: requestdata.name,
         type: 'system'
       }, {
         $set: {
@@ -129,7 +129,7 @@ exports.main = async (event, configfilepath) => {
           errFix: '传递有效的stepScore参数'
         }
       }
-      const question = examsubjectres.subjectiveQuestion.find(q => q.name == requestdata.questionName)
+      const question = examsubjectres.subjectiveQuestion.find(q => q.name == requestdata.name)
       if (requestdata.stepScore.length != question.stepScore.length || !requestdata.stepScore.every((item, index) => question.stepScore[index].includes(item))) {
         return {
           errCode: 400,
@@ -172,7 +172,7 @@ exports.main = async (event, configfilepath) => {
           examId: requestdata.id,
           subject: requestdata.subject,
           studentAccount: requestdata.studentAccount,
-          questionName: requestdata.questionName,
+          questionName: requestdata.name,
           markerAccount: account.account,
           excellent: false,
           typicalMistake: false,
@@ -198,7 +198,7 @@ exports.main = async (event, configfilepath) => {
         examId: requestdata.id,
         subject: requestdata.subject,
         studentAccount: requestdata.studentAccount,
-        questionName: requestdata.questionName,
+        questionName: requestdata.name,
         type: 'system'
       }, {
         $set: {

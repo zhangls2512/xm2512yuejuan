@@ -34,7 +34,7 @@ async function open(name) {
     body: {
       id: data.value.examId,
       subject: data.value.subject,
-      questionName: name
+      name: name
     }
   })
   markerprogress.value = res.data

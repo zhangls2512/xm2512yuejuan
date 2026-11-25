@@ -55,7 +55,7 @@ async function getMarkCurve() {
     body: {
       id: data.value.examId,
       subject: data.value.subject.name,
-      questionName: questionname.value,
+      name: questionname.value,
       markerAccount: markeraccount.value
     }
   })
@@ -122,7 +122,7 @@ async function spotMarklog() {
     body: {
       id: data.value.examId,
       subject: data.value.subject.name,
-      questionName: questionname.value,
+      name: questionname.value,
       markerAccount: markeraccount.value
     }
   })
@@ -161,7 +161,7 @@ async function clearMarklog() {
           body: {
             id: data.value.examId,
             subject: data.value.subject.name,
-            questionName: questionname.value
+            name: questionname.value
           }
         })
         TinyModal.message({
@@ -209,7 +209,7 @@ async function submit(item) {
       id: data.value.examId,
       subject: data.value.subject.name,
       studentAccount: item.studentAccount,
-      questionName: item.questionName,
+      name: item.questionName,
       answer: item.answer
     }
   })
