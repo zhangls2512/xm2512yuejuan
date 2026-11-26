@@ -114,7 +114,7 @@ exports.main = async (event, configfilepath) => {
       if (marklogres.arbitrateMarkerAccount == account.account) {
         access = true
       }
-      if (marklogres.secondMarkerAccount && !marklogres.arbitrateMarkerAccount && marklogres.minScoreDiff > arbitratescorediff) {
+      if (!marklogres.arbitrateMarkerAccount && marklogres.minScoreDiff > arbitratescorediff) {
         if (markgroup.time == 2 || (markgroup.time == 3 && marklogres.thirdMarkerAccount)) {
           access = true
         }
