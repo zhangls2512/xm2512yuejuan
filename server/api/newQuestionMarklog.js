@@ -99,13 +99,13 @@ exports.main = async (event, configfilepath) => {
       if (marklogres.firstMarkerAccount == account.account || marklogres.secondMarkerAccount == account.account || marklogres.thirdMarkerAccount == account.account) {
         access = true
       } else {
-        if (markgroup.time == 1 && !marklogres.firstMarkerAccount) {
+        if (!marklogres.firstMarkerAccount) {
           access = true
         }
-        if (markgroup.time == 2 && !marklogres.secondMarkerAccount) {
+        if (!marklogres.secondMarkerAccount && markgroup.time >= 2) {
           access = true
         }
-        if (markgroup.time == 3 && !marklogres.thirdMarkerAccount && marklogres.minScoreDiff > arbitratescorediff) {
+        if (!marklogres.thirdMarkerAccount && markgroup.time == 3 && marklogres.minScoreDiff > arbitratescorediff) {
           access = true
         }
       }
