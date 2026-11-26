@@ -93,6 +93,7 @@ exports.main = async (event, configfilepath) => {
     const markgroup = examsubjectres.markGroup.find(item => item.questionName.includes(marklogres.questionName))
     const ismember = markgroup.member.find(item => item.account == account.account)
     const isarbitrator = markgroup.arbitrator && markgroup.arbitrator.includes(account.account)
+    const arbitratescorediff = examsubjectres.subjectiveQuestion.find(q => q.name == marklogres.questionName).arbitrateScoreDiff
     let access = false
     if (ismember && !marklogres.arbitrateMarkerAccount) {
       if (marklogres.firstMarkerAccount == account.account || marklogres.secondMarkerAccount == account.account || marklogres.thirdMarkerAccount == account.account) {
@@ -104,7 +105,7 @@ exports.main = async (event, configfilepath) => {
         if (markgroup.time == 2 && !marklogres.secondMarkerAccount) {
           access = true
         }
-        if (markgroup.time == 3 && marklogres.minScoreDiff > examsubjectres.subjectiveQuestion.find(q => q.name == marklogres.questionName).arbitrateScoreDiff) {
+        if (markgroup.time == 3 && !marklogres.thirdMarkerAccount && marklogres.minScoreDiff > arbitratescorediff) {
           access = true
         }
       }
@@ -113,7 +114,7 @@ exports.main = async (event, configfilepath) => {
       if (marklogres.arbitrateMarkerAccount == account.account) {
         access = true
       }
-      if (!marklogres.arbitrateMarkerAccount && marklogres.minScoreDiff > examsubjectres.subjectiveQuestion.find(q => q.name == marklogres.questionName).arbitrateScoreDiff) {
+      if (marklogres.secondMarkerAccount && !marklogres.arbitrateMarkerAccount && marklogres.minScoreDiff > arbitratescorediff) {
         if (markgroup.time == 2 || (markgroup.time == 3 && marklogres.thirdMarkerAccount)) {
           access = true
         }

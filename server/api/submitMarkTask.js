@@ -238,14 +238,14 @@ exports.main = async (event, configfilepath) => {
           minscorediff = Math.abs(secondsum - firstsum)
           finalstepscore = average(marklogres.firstMarkStepScore, requestdata.stepScore)
         }
-        if (!['', account.account].includes(marklogres.firstMarkerAccount) && !['', account.account].includes(marklogres.secondMarkerAccount) && markgroup.time == 3 && marklogres.minScoreDiff > question.arbitrateScoreDiff && ismember && !marklogres.thirdMarkerAccount && !marklogres.arbitrateMarkerAccount) {
+        if (!['', account.account].includes(marklogres.firstMarkerAccount) && !['', account.account].includes(marklogres.secondMarkerAccount) && !marklogres.thirdMarkerAccount && !marklogres.arbitrateMarkerAccount && markgroup.time == 3 && ismember && marklogres.minScoreDiff > question.arbitrateScoreDiff) {
           type = 'newthird'
           marktype = 'third'
           const res = sanping(marklogres.firstMarkStepScore, marklogres.secondMarkStepScore, requestdata.stepScore)
           minscorediff = res.minscorediff
           finalstepscore = res.finalstepscore
         }
-        if (!['', account.account].includes(marklogres.firstMarkerAccount) && !['', account.account].includes(marklogres.secondMarkerAccount) && markgroup.time >= 2 && marklogres.minScoreDiff > question.arbitrateScoreDiff && !marklogres.arbitrateMarkerAccount && isarbitrator && marklogres.thirdMarkerAccount != account.account) {
+        if (!['', account.account].includes(marklogres.firstMarkerAccount) && !['', account.account].includes(marklogres.secondMarkerAccount) && marklogres.thirdMarkerAccount != account.account && !marklogres.arbitrateMarkerAccount && markgroup.time >= 2 && isarbitrator && marklogres.minScoreDiff > question.arbitrateScoreDiff) {
           if (markgroup.time == 2 || (markgroup.time == 3 && marklogres.thirdMarkerAccount)) {
             type = 'newarbitrate'
             marktype = 'arbitrate'
